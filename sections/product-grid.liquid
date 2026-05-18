@@ -1,0 +1,15 @@
+<section class="arsenal-section" id="arsenal">
+  <div class="section-header">
+    <div class="section-eyebrow">✦ Catálogo ✦</div>
+    <h2 class="section-title">O Arsenal das Sombras</h2>
+    <p class="section-subtitle">Cada peça escolhida com intenção. Nada aqui é decoração vazia.</p>
+  </div>
+  <div class="products-grid">
+    {%- for product in collections.all.products limit: 10 -%}
+      {%- render 'product-card', product: product -%}
+    {%- endfor -%}
+  </div>
+  <div class="section-cta">
+    <a href="/collections/all" class="btn-ghost">Ver Catálogo Completo</a>
+  </div>
+</section>
