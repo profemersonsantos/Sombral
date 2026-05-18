@@ -1,0 +1,31 @@
+<div class="cart-page">
+  <h1 class="section-title">Seu Ritual de Compra</h1>
+  {%- if cart.item_count > 0 -%}
+    {%- form 'cart', cart -%}
+      {%- for item in cart.items -%}
+        <div class="cart-item">
+          <img src="{{ item.image | img_url: '120x' }}" alt="{{ item.title }}">
+          <div class="cart-item-info">
+            <p class="cart-item-title">{{ item.title }}</p>
+            <p class="cart-item-variant">{{ item.variant.title }}</p>
+            <p class="cart-item-price">{{ item.price | money }}</p>
+          </div>
+          <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" class="qty-input">
+          <a href="{{ item.url_to_remove }}" class="remove-item">✕</a>
+        </div>
+      {%- endfor -%}
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span class="total-price">{{ cart.total_price | money }}</span>
+        </div>
+        <button type="submit" name="checkout" class="btn-invocar">Finalizar Ritual</button>
+      </div>
+    {%- endform -%}
+  {%- else -%}
+    <div class="cart-empty">
+      <p>Seu altar está vazio.</p>
+      <a href="/collections/all" class="btn-invocar">Explorar o Arsenal</a>
+    </div>
+  {%- endif -%}
+</div>
