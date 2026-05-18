@@ -1,0 +1,40 @@
+<div class="product-page">
+  <div class="product-container">
+    <div class="product-gallery">
+      {%- for image in product.images -%}
+        <img src="{{ image | img_url: '800x' }}" alt="{{ image.alt | escape }}" {% if forloop.first %}class="active"{% endif %}>
+      {%- endfor -%}
+    </div>
+    <div class="product-info">
+      <p class="product-vendor">{{ product.vendor }}</p>
+      <h1 class="product-title">{{ product.title }}</h1>
+      <div class="product-price"><span class="price">{{ product.price | money }}</span></div>
+      <div class="product-description">{{ product.description }}</div>
+      {%- form 'product', product -%}
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            <div class="option-selector">
+              <label>{{ option.name }}</label>
+              <select name="id" class="variant-selector">
+                {%- for variant in product.variants -%}
+                  <option value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %}>
+                    {{ variant.title }} — {{ variant.price | money }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <button type="submit" class="btn-invocar" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          Invocar este Objeto
+        </button>
+      {%- endform -%}
+      <div class="product-guarantees">
+        <span>🔒 Compra Segura</span>
+        <span>📦 Frete Grátis acima de R$79,90</span>
+        <span>↩️ Garantia 7 Dias</span>
+      </div>
+    </div>
+  </div>
+</div>
