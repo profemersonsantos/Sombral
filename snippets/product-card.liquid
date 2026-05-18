@@ -1,0 +1,21 @@
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card-link">
+    <div class="product-card-image">
+      {%- if product.featured_image -%}
+        <img src="{{ product.featured_image | img_url: '400x' }}" alt="{{ product.title | escape }}" loading="lazy">
+      {%- else -%}
+        <div class="product-card-placeholder"><span>✦</span></div>
+      {%- endif -%}
+    </div>
+    <div class="product-card-info">
+      <h3 class="product-card-title">{{ product.title }}</h3>
+      <div class="product-card-price">
+        {%- if product.compare_at_price > product.price -%}
+          <span class="price-old">{{ product.compare_at_price | money }}</span>
+        {%- endif -%}
+        <span class="price-current">{{ product.price | money }}</span>
+      </div>
+      <button class="btn-invocar btn-small">Invocar</button>
+    </div>
+  </a>
+</div>
