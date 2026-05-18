@@ -1,0 +1,13 @@
+{
+  "sections": {
+    "announcement": { "type": "announcement-bar", "disabled": false },
+    "hero": { "type": "hero-section", "disabled": false },
+    "arsenal": { "type": "product-grid", "disabled": false },
+    "kits": { "type": "kits-section", "disabled": false },
+    "diferenciais": { "type": "diferenciais-section", "disabled": false },
+    "depoimentos": { "type": "depoimentos-section", "disabled": false },
+    "faq": { "type": "faq-section", "disabled": false },
+    "cta-final": { "type": "cta-final-section", "disabled": false }
+  },
+  "order": ["announcement","hero","arsenal","kits","diferenciais","depoimentos","faq","cta-final"]
+}
