@@ -1,40 +1,130 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<nav class="breadcrumb">
+  <a href="/">Início</a>
+  <span class="breadcrumb-sep">›</span>
+  <a href="/collections/all">Catálogo</a>
+  <span class="breadcrumb-sep">›</span>
+  <span>{{ product.title }}</span>
+</nav>
+
 <div class="product-page">
-  <div class="product-container">
-    <div class="product-gallery">
-      {%- for image in product.images -%}
-        <img src="{{ image | img_url: '800x' }}" alt="{{ image.alt | escape }}" {% if forloop.first %}class="active"{% endif %}>
-      {%- endfor -%}
-    </div>
-    <div class="product-info">
-      <p class="product-vendor">{{ product.vendor }}</p>
-      <h1 class="product-title">{{ product.title }}</h1>
-      <div class="product-price"><span class="price">{{ product.price | money }}</span></div>
-      <div class="product-description">{{ product.description }}</div>
-      {%- form 'product', product -%}
-        {%- unless product.has_only_default_variant -%}
-          {%- for option in product.options_with_values -%}
-            <div class="option-selector">
-              <label>{{ option.name }}</label>
-              <select name="id" class="variant-selector">
-                {%- for variant in product.variants -%}
-                  <option value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %}>
-                    {{ variant.title }} — {{ variant.price | money }}
-                  </option>
-                {%- endfor -%}
-              </select>
-            </div>
-          {%- endfor -%}
-        {%- endunless -%}
-        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-        <button type="submit" class="btn-invocar" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
-          Invocar este Objeto
-        </button>
-      {%- endform -%}
-      <div class="product-guarantees">
-        <span>🔒 Compra Segura</span>
-        <span>📦 Frete Grátis acima de R$79,90</span>
-        <span>↩️ Garantia 7 Dias</span>
-      </div>
+  <div class="product-gallery">
+    <div class="product-main-image">
+      {%- if product.featured_image -%}
+        <img id="main-product-image"
+             src="{{ current_variant.image | default: product.featured_image | img_url: '800x800', crop: 'center' }}"
+             alt="{{ product.title | escape }}"
+             style="width:100%;height:100%;object-fit:cover;transition:opacity 0.3s ease;">
+      {%- else -%}
+        <div style="width:100%;height:100%;min-height:400px;display:flex;align-items:center;justify-content:center;background:var(--bg-hover);">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(123,47,190,0.3)" stroke-width="1">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+      {%- endif -%}
     </div>
   </div>
+
+  <div class="product-info">
+    <p class="product-vendor">{{ product.vendor }}</p>
+    <h1 class="product-info-title">{{ product.title }}</h1>
+    <div class="product-info-price" id="variant-price">
+      R$ {{ current_variant.price | money_without_currency }}
+    </div>
+
+    <form action="/cart/add" method="post" enctype="multipart/form-data">
+      {%- unless product.has_only_default_variant -%}
+        {%- for option in product.options_with_values -%}
+          <span class="variant-label">{{ option.name }}</span>
+          <div class="variant-options">
+            {%- for value in option.values -%}
+              <div class="variant-option {% if forloop.first %}active{% endif %}"
+                   data-value="{{ value }}">{{ value }}</div>
+            {%- endfor -%}
+          </div>
+        {%- endfor -%}
+      {%- endunless -%}
+
+      <select name="id" id="variant-select" style="display:none;">
+        {%- for variant in product.variants -%}
+          <option
+            value="{{ variant.id }}"
+            data-price="{{ variant.price | money_without_currency }}"
+            data-image="{{ variant.image | img_url: '800x800', crop: 'center' }}"
+            data-image-alt="{{ variant.image.alt | escape }}"
+            {% if variant == current_variant %}selected{% endif %}>
+            {{ variant.title }}
+          </option>
+        {%- endfor -%}
+      </select>
+
+      <button type="submit" class="btn btn-primary product-add-btn" id="add-to-cart-btn">
+        Invocar — R$ <span id="btn-price">{{ current_variant.price | money_without_currency }}</span>
+      </button>
+    </form>
+
+    <a href="https://wa.me/5519989085731" class="btn btn-outline"
+       style="width:100%;justify-content:center;margin-top:0.75rem;" target="_blank">
+      Dúvidas? WhatsApp
+    </a>
+
+    <div class="product-desc">{{ product.description }}</div>
+  </div>
 </div>
+
+<script>
+(function() {
+  var select      = document.getElementById('variant-select');
+  var mainImg     = document.getElementById('main-product-image');
+  var priceEl     = document.getElementById('variant-price');
+  var btnPrice    = document.getElementById('btn-price');
+  var options     = document.querySelectorAll('.variant-option');
+
+  // Atualiza imagem, preço e select ao clicar numa opção de variante
+  options.forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      // Remove active dos irmãos
+      var siblings = this.parentElement.querySelectorAll('.variant-option');
+      siblings.forEach(function(s) { s.classList.remove('active'); });
+      this.classList.add('active');
+
+      // Monta o título da variante selecionada (ex: "Pentagrama")
+      var selectedValues = [];
+      document.querySelectorAll('.variant-options').forEach(function(group) {
+        var active = group.querySelector('.variant-option.active');
+        if (active) selectedValues.push(active.dataset.value);
+      });
+      var variantTitle = selectedValues.join(' / ');
+
+      // Encontra a option do select que bate com o título
+      var matched = null;
+      Array.from(select.options).forEach(function(o) {
+        if (o.text.trim() === variantTitle) matched = o;
+      });
+
+      if (matched) {
+        select.value = matched.value;
+
+        // Atualiza preço
+        var price = matched.dataset.price;
+        if (price) {
+          if (priceEl) priceEl.textContent = 'R$ ' + price;
+          if (btnPrice) btnPrice.textContent = price;
+        }
+
+        // Atualiza imagem APENAS se a variante tiver imagem própria
+        var imgSrc = matched.dataset.image;
+        if (mainImg && imgSrc && imgSrc !== 'null' && imgSrc !== '') {
+          mainImg.style.opacity = '0';
+          setTimeout(function() {
+            mainImg.src = imgSrc;
+            mainImg.alt = matched.dataset.imageAlt || '';
+            mainImg.style.opacity = '1';
+          }, 200);
+        }
+      }
+    });
+  });
+})();
+</script>
