@@ -1,4 +1,5 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
+{% assign product_images = product.images %}
 
 <style>
 .product-page {
@@ -16,25 +17,106 @@
   top: 7rem;
 }
 
+/* Imagem principal — fundo preto puro, sem azul */
 .product-main-image {
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-height: 480px;
+  max-height: 500px;
   overflow: hidden;
   border: 1px solid var(--border);
-  background: var(--bg-card);
+  background: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .product-main-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: opacity 0.3s ease;
+  background: #000000;
 }
 
+/* Setas de navegação */
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--accent);
+  color: var(--gold);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  z-index: 10;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.gallery-nav:hover {
+  background: rgba(123,47,190,0.4);
+  border-color: var(--gold);
+}
+
+.gallery-nav.prev { left: 8px; }
+.gallery-nav.next { right: 8px; }
+.gallery-nav.hidden { display: none; }
+
+/* Contador de imagens */
+.gallery-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  background: rgba(0,0,0,0.5);
+  padding: 2px 6px;
+}
+
+/* Thumbnails */
+.product-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.product-thumb {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.product-thumb.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(123,47,190,0.4);
+}
+
+.product-thumb:hover {
+  border-color: var(--gold);
+}
+
+/* Breadcrumb */
 .breadcrumb {
   max-width: 1100px;
   margin: 0 auto;
@@ -49,6 +131,7 @@
 .breadcrumb a:hover { color: var(--text); }
 .breadcrumb-sep { margin: 0 0.5rem; color: var(--accent); }
 
+/* Info do produto */
 .product-info { display: flex; flex-direction: column; gap: 1.2rem; }
 
 .product-info-title {
@@ -97,10 +180,7 @@
   user-select: none;
 }
 
-.variant-option:hover {
-  border-color: var(--accent);
-  color: var(--text);
-}
+.variant-option:hover { border-color: var(--accent); color: var(--text); }
 
 .variant-option.active {
   background: rgba(123,47,190,0.15);
@@ -131,7 +211,7 @@
   box-shadow: 0 0 30px rgba(196,30,138,0.5);
 }
 
-.btn-outline {
+.btn-whatsapp-product {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,9 +227,7 @@
   transition: all 0.2s;
 }
 
-.btn-outline:hover {
-  background: rgba(37,211,102,0.1);
-}
+.btn-whatsapp-product:hover { background: rgba(37,211,102,0.1); }
 
 .product-guarantees {
   display: flex;
@@ -172,11 +250,7 @@
 }
 
 @media (max-width: 768px) {
-  .product-page {
-    grid-template-columns: 1fr;
-    padding: 6rem 1.2rem 3rem;
-    gap: 1.5rem;
-  }
+  .product-page { grid-template-columns: 1fr; padding: 6rem 1.2rem 3rem; gap: 1.5rem; }
   .product-gallery { position: static; }
   .breadcrumb { padding: 5.5rem 1.2rem 0; }
 }
@@ -194,22 +268,40 @@
 
   <!-- GALERIA -->
   <div class="product-gallery">
-    <div class="product-main-image">
-      {%- if product.featured_image -%}
+    <div class="product-main-image" id="main-gallery">
+
+      {%- if product.images.size > 0 -%}
         <img id="main-product-image"
-             src="{{ current_variant.image | default: product.featured_image | img_url: '800x800', crop: 'center' }}"
+             src="{{ product.images[0] | img_url: '800x800' }}"
              alt="{{ product.title | escape }}">
+
+        {%- if product.images.size > 1 -%}
+          <button class="gallery-nav prev" id="btn-prev" onclick="galleryNav(-1)">&#8249;</button>
+          <button class="gallery-nav next" id="btn-next" onclick="galleryNav(1)">&#8250;</button>
+          <div class="gallery-counter" id="gallery-counter">1 / {{ product.images.size }}</div>
+        {%- endif -%}
       {%- else -%}
         <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:300px;">
           <span style="font-size:4rem;color:var(--accent);opacity:0.3;">✦</span>
         </div>
       {%- endif -%}
     </div>
+
+    {%- if product.images.size > 1 -%}
+      <div class="product-thumbs" id="product-thumbs">
+        {%- for image in product.images -%}
+          <div class="product-thumb {% if forloop.first %}active{% endif %}"
+               data-index="{{ forloop.index0 }}"
+               onclick="goToImage({{ forloop.index0 }})">
+            <img src="{{ image | img_url: '120x120' }}" alt="{{ image.alt | escape }}">
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
   </div>
 
   <!-- INFO -->
   <div class="product-info">
-
     <h1 class="product-info-title">{{ product.title }}</h1>
 
     <div class="product-info-price" id="variant-price">
@@ -234,19 +326,20 @@
           <option
             value="{{ variant.id }}"
             data-price="{{ variant.price | money_without_currency }}"
-            data-image="{{ variant.image | img_url: '800x800', crop: 'center' }}"
+            data-image="{{ variant.image | img_url: '800x800' }}"
+            data-image-index="{{ variant.image.position | minus: 1 }}"
             {% if variant == current_variant %}selected{% endif %}>
             {{ variant.title }}
           </option>
         {%- endfor -%}
       </select>
 
-      <button type="submit" class="product-add-btn" id="add-to-cart-btn">
+      <button type="submit" class="product-add-btn">
         Invocar — R$ <span id="btn-price">{{ current_variant.price | money_without_currency }}</span>
       </button>
     </form>
 
-    <a href="https://wa.me/5519989085731" class="btn-outline" target="_blank">
+    <a href="https://wa.me/5519989085731" class="btn-whatsapp-product" target="_blank">
       💬 Dúvidas? Fale pelo WhatsApp
     </a>
 
@@ -257,41 +350,79 @@
     </div>
 
     <div class="product-desc">{{ product.description }}</div>
-
   </div>
 </div>
 
 <script>
 (function(){
-  var select  = document.getElementById('variant-select');
-  var mainImg = document.getElementById('main-product-image');
-  var priceEl = document.getElementById('variant-price');
-  var btnPr   = document.getElementById('btn-price');
+  // Dados das imagens do produto
+  var images = [
+    {%- for image in product.images -%}
+      { src: "{{ image | img_url: '800x800' }}", alt: "{{ image.alt | escape }}" }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ];
 
-  document.querySelectorAll('.variant-option').forEach(function(opt){
-    opt.addEventListener('click', function(){
-      this.parentElement.querySelectorAll('.variant-option').forEach(function(s){ s.classList.remove('active'); });
+  var currentIndex = 0;
+  var mainImg   = document.getElementById('main-product-image');
+  var counter   = document.getElementById('gallery-counter');
+  var select    = document.getElementById('variant-select');
+  var priceEl   = document.getElementById('variant-price');
+  var btnPrice  = document.getElementById('btn-price');
+
+  // Navegar para imagem específica
+  window.goToImage = function(index) {
+    if (!images.length || index < 0 || index >= images.length) return;
+    currentIndex = index;
+    if (mainImg) {
+      mainImg.style.opacity = '0';
+      setTimeout(function() {
+        mainImg.src = images[index].src;
+        mainImg.alt = images[index].alt;
+        mainImg.style.opacity = '1';
+      }, 180);
+    }
+    if (counter) counter.textContent = (index + 1) + ' / ' + images.length;
+    // Atualiza thumbnails
+    document.querySelectorAll('.product-thumb').forEach(function(t) {
+      t.classList.toggle('active', parseInt(t.dataset.index) === index);
+    });
+  };
+
+  // Setas prev/next
+  window.galleryNav = function(dir) {
+    var next = (currentIndex + dir + images.length) % images.length;
+    goToImage(next);
+  };
+
+  // Seleção de variante
+  document.querySelectorAll('.variant-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
+      this.parentElement.querySelectorAll('.variant-option').forEach(function(s) { s.classList.remove('active'); });
       this.classList.add('active');
 
       var vals = [];
-      document.querySelectorAll('.variant-options').forEach(function(g){
+      document.querySelectorAll('.variant-options').forEach(function(g) {
         var a = g.querySelector('.variant-option.active');
-        if(a) vals.push(a.dataset.value);
+        if (a) vals.push(a.dataset.value);
       });
 
       var matched = null;
-      Array.from(select.options).forEach(function(o){
-        if(o.text.trim() === vals.join(' / ')) matched = o;
+      Array.from(select.options).forEach(function(o) {
+        if (o.text.trim() === vals.join(' / ')) matched = o;
       });
 
-      if(matched){
+      if (matched) {
         select.value = matched.value;
+        // Atualiza preço
         var price = matched.dataset.price;
-        if(price){ if(priceEl) priceEl.textContent='R$ '+price; if(btnPr) btnPr.textContent=price; }
-        var img = matched.dataset.image;
-        if(mainImg && img && img!=='null' && img!==''){
-          mainImg.style.opacity='0';
-          setTimeout(function(){ mainImg.src=img; mainImg.style.opacity='1'; },200);
+        if (price) {
+          if (priceEl) priceEl.textContent = 'R$ ' + price;
+          if (btnPrice) btnPrice.textContent = price;
+        }
+        // Troca imagem se variante tem imagem própria
+        var imgIndex = parseInt(matched.dataset.imageIndex);
+        if (!isNaN(imgIndex) && imgIndex >= 0 && images[imgIndex]) {
+          goToImage(imgIndex);
         }
       }
     });
