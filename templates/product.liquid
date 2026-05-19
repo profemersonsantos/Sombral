@@ -315,10 +315,27 @@
       Array.from(select.options).forEach(function(o){ if(o.text.trim()===vals.join(' / ')) matched=o; });
       if(matched){
         select.value=matched.value;
+        // Atualiza preço
         var price=matched.dataset.price;
         if(price){ if(priceEl) priceEl.textContent='R$ '+price; if(btnPr) btnPr.textContent=price; }
-        var idx=parseInt(matched.dataset.imageIndex);
-        if(!isNaN(idx)&&idx>=0&&images[idx]) goToImage(idx);
+        // Troca imagem: procura pela src da variante no array de imagens
+        var varImgSrc=matched.dataset.image;
+        if(varImgSrc && varImgSrc!=='null' && varImgSrc!==''){
+          // Normaliza URL removendo parâmetros para comparar
+          var normalize=function(u){ return u ? u.split('?')[0].replace(/_\d+x\d*\./,'.') : ''; };
+          var targetNorm=normalize(varImgSrc);
+          var foundIdx=-1;
+          for(var i=0;i<images.length;i++){
+            if(normalize(images[i].src)===targetNorm){ foundIdx=i; break; }
+          }
+          // Se encontrou pelo normalize, vai pra ela; senão tenta pelo data-image-index
+          if(foundIdx>=0){
+            goToImage(foundIdx);
+          } else {
+            var idx=parseInt(matched.dataset.imageIndex);
+            if(!isNaN(idx)&&idx>=0&&images[idx]) goToImage(idx);
+          }
+        }
       }
     });
   });
@@ -515,6 +532,66 @@
     gridEl.innerHTML = html;
   }
 
+  // ---- PAGINACAO REVIEWS ----
+  function buildReviewsWithPagination(data) {
+    var gridEl = document.getElementById('reviews-grid');
+    if (!gridEl) return;
+
+    var PER_PAGE = 3;
+    var currentPage = 0;
+    window._reviewsData = data.reviews.slice();
+
+    function render() {
+      var list = window._reviewsData;
+      var total = Math.ceil(list.length / PER_PAGE);
+      var pageItems = list.slice(currentPage * PER_PAGE, (currentPage+1) * PER_PAGE);
+      var html = '';
+      pageItems.forEach(function(r){
+        var sc = r.stars <= 3 ? 's3' : (r.stars === 4 ? 's4' : '');
+        var starStr = '★'.repeat(r.stars) + '☆'.repeat(5-r.stars);
+        html += '<div class="review-card">' +
+          '<span class="review-stars '+sc+'">'+starStr+'</span>' +
+          '<p class="review-text">"'+r.text+'"</p>' +
+          '<div class="review-footer">' +
+            '<div><p class="review-name">'+r.name+(r.ctx?' · <span style="font-weight:400;color:var(--text-muted)">'+r.ctx+'</span>':'')+' </p>' +
+            '<p class="review-city">'+r.city+'</p></div>' +
+            '<span class="review-verified">✓ Verificado</span>' +
+          '</div></div>';
+      });
+      gridEl.innerHTML = html;
+      var nav = document.getElementById('reviews-nav');
+      if(nav){
+        nav.querySelector('.rev-prev').disabled = currentPage===0;
+        nav.querySelector('.rev-next').disabled = currentPage>=total-1;
+        nav.querySelector('.rev-page-info').textContent = (currentPage+1)+' / '+total;
+      }
+    }
+
+    // Injeta nav se não existir
+    if (!document.getElementById('reviews-nav')) {
+      var total = Math.ceil(window._reviewsData.length / PER_PAGE);
+      gridEl.insertAdjacentHTML('afterend',
+        '<div id="reviews-nav" style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;">' +
+        '<button class="rev-prev" onclick="window.reviewsNav(-1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;" disabled>&#8249;</button>' +
+        '<span class="rev-page-info" style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;min-width:60px;text-align:center;">1 / '+total+'</span>' +
+        '<button class="rev-next" onclick="window.reviewsNav(1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;">&#8250;</button>' +
+        '</div>'
+      );
+    }
+
+    window.reviewsNav = function(dir){
+      var total = Math.ceil(window._reviewsData.length / PER_PAGE);
+      currentPage = Math.max(0, Math.min(currentPage+dir, total-1));
+      render();
+      gridEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    };
+
+    window._renderReviews = render;
+    window._setCurrentPage = function(p){ currentPage=p; };
+
+    render();
+  }
+
   // ---- FORM ENVIO ----
   window.submitReview = function() {
     var stars = document.querySelector('input[name="stars"]:checked');
@@ -526,23 +603,36 @@
     if (!name)  { alert('Digite seu nome.'); return; }
     if (text.length < 20) { alert('Escreva ao menos 20 caracteres na sua avaliação.'); return; }
 
-    // Adiciona o card dinamicamente
-    var gridEl = document.getElementById('reviews-grid');
-    var n = parseInt(stars.value);
-    var sc = n <= 3 ? 's3' : (n === 4 ? 's4' : '');
-    var starStr = '★'.repeat(n) + '☆'.repeat(5-n);
-    var card = document.createElement('div');
-    card.className = 'review-card';
-    card.style.borderLeftColor = 'var(--cta)';
-    card.innerHTML =
-      '<span class="review-stars '+sc+'">'+starStr+'</span>' +
-      '<p class="review-text">"'+text.replace(/</g,'&lt;')+'"</p>' +
-      '<div class="review-footer">' +
-        '<div><p class="review-name">'+name.replace(/</g,'&lt;')+'</p>' +
-        '<p class="review-city">'+(city||'Brasil')+'</p></div>' +
-        '<span class="review-verified">✓ Verificado</span>' +
-      '</div>';
-    gridEl.insertBefore(card, gridEl.firstChild);
+    // Adiciona review no topo e vai para primeira página
+    var newReview = {
+      stars: parseInt(stars.value),
+      name: name.replace(/</g,'&lt;'),
+      city: city || 'Brasil',
+      ctx: '',
+      text: text.replace(/</g,'&lt;')
+    };
+    if(window._reviewsData) {
+      window._reviewsData.unshift(newReview);
+      window._setCurrentPage(0);
+      if(window._renderReviews) window._renderReviews();
+    } else {
+      var gridEl = document.getElementById('reviews-grid');
+      var n = parseInt(stars.value);
+      var sc = n <= 3 ? 's3' : (n === 4 ? 's4' : '');
+      var starStr = '★'.repeat(n) + '☆'.repeat(5-n);
+      var card = document.createElement('div');
+      card.className = 'review-card';
+      card.style.borderLeftColor = 'var(--cta)';
+      card.innerHTML =
+        '<span class="review-stars '+sc+'">'+starStr+'</span>' +
+        '<p class="review-text">"'+text.replace(/</g,'&lt;')+'"</p>' +
+        '<div class="review-footer">' +
+          '<div><p class="review-name">'+name.replace(/</g,'&lt;')+'</p>' +
+          '<p class="review-city">'+(city||'Brasil')+'</p></div>' +
+          '<span class="review-verified">✓ Verificado</span>' +
+        '</div>';
+      gridEl.insertBefore(card, gridEl.firstChild);
+    }
 
     // Reset form
     document.querySelectorAll('input[name="stars"]').forEach(function(i){ i.checked=false; });
@@ -555,5 +645,8 @@
   };
 
   buildReviews();
+  // Ativa paginação nos reviews
+  var _pData = allReviews[handle];
+  if(_pData) buildReviewsWithPagination(_pData);
 })();
 </script>
