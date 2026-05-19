@@ -15,13 +15,14 @@
 .product-gallery { position: sticky; top: 7rem; }
 .product-main-image {
   width: 100%; aspect-ratio: 1/1; max-height: 500px;
-  overflow: hidden; border: 1px solid var(--border);
-  background: #000; display: flex; align-items: center;
+  overflow: visible; border: none;
+  background: transparent; display: flex; align-items: center;
   justify-content: center; position: relative;
 }
 .product-main-image img {
   width: 100%; height: 100%; object-fit: contain;
-  transition: opacity 0.3s ease; background: #000;
+  transition: opacity 0.3s ease; background: transparent;
+  mix-blend-mode: multiply;
 }
 .gallery-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
@@ -40,10 +41,10 @@
 }
 .product-thumbs { display: flex; gap: 0.5rem; margin-top: 0.6rem; flex-wrap: wrap; }
 .product-thumb {
-  width: 60px; height: 60px; overflow: hidden;
-  border: 1px solid var(--border); background: #000; cursor: pointer; transition: all 0.2s;
+  width: 60px; height: 60px; overflow: visible;
+  border: 1px solid var(--border); background: transparent; cursor: pointer; transition: all 0.2s;
 }
-.product-thumb img { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.product-thumb img { width: 100%; height: 100%; object-fit: contain; background: transparent; mix-blend-mode: multiply; }
 .product-thumb.active { border-color: var(--accent); box-shadow: 0 0 8px rgba(123,47,190,0.4); }
 .product-thumb:hover { border-color: var(--gold); }
 .breadcrumb {
