@@ -530,26 +530,21 @@
         '</div></div>';
     });
     gridEl.innerHTML = html;
-  }
 
-  // ---- PAGINACAO REVIEWS ----
-  function buildReviewsWithPagination(data) {
-    var gridEl = document.getElementById('reviews-grid');
-    if (!gridEl) return;
-
+    // Nav de setas entre páginas de 3 (visibilidade total)
     var PER_PAGE = 3;
     var currentPage = 0;
     window._reviewsData = data.reviews.slice();
 
-    function render() {
+    function renderPage() {
       var list = window._reviewsData;
       var total = Math.ceil(list.length / PER_PAGE);
       var pageItems = list.slice(currentPage * PER_PAGE, (currentPage+1) * PER_PAGE);
-      var html = '';
+      var pageHtml = '';
       pageItems.forEach(function(r){
         var sc = r.stars <= 3 ? 's3' : (r.stars === 4 ? 's4' : '');
         var starStr = '★'.repeat(r.stars) + '☆'.repeat(5-r.stars);
-        html += '<div class="review-card">' +
+        pageHtml += '<div class="review-card">' +
           '<span class="review-stars '+sc+'">'+starStr+'</span>' +
           '<p class="review-text">"'+r.text+'"</p>' +
           '<div class="review-footer">' +
@@ -558,38 +553,79 @@
             '<span class="review-verified">✓ Verificado</span>' +
           '</div></div>';
       });
-      gridEl.innerHTML = html;
+      gridEl.innerHTML = pageHtml;
+
+      // Atualiza nav
       var nav = document.getElementById('reviews-nav');
       if(nav){
         nav.querySelector('.rev-prev').disabled = currentPage===0;
         nav.querySelector('.rev-next').disabled = currentPage>=total-1;
-        nav.querySelector('.rev-page-info').textContent = (currentPage+1)+' / '+total;
+        nav.querySelector('.rev-page-info').textContent = 'Página '+(currentPage+1)+' de '+total+' · '+list.length+' avaliações';
+        // Mostra botão "Ver todas" se houver mais de uma página
+        var verTodas = nav.querySelector('.rev-ver-todas');
+        if(verTodas) verTodas.style.display = total > 1 ? 'inline-block' : 'none';
       }
     }
 
-    // Injeta nav se não existir
-    if (!document.getElementById('reviews-nav')) {
-      var total = Math.ceil(window._reviewsData.length / PER_PAGE);
-      gridEl.insertAdjacentHTML('afterend',
-        '<div id="reviews-nav" style="display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;">' +
-        '<button class="rev-prev" onclick="window.reviewsNav(-1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;" disabled>&#8249;</button>' +
-        '<span class="rev-page-info" style="font-family:Cinzel,serif;font-size:0.75rem;color:var(--text-muted);letter-spacing:0.1em;min-width:60px;text-align:center;">1 / '+total+'</span>' +
-        '<button class="rev-next" onclick="window.reviewsNav(1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;">&#8250;</button>' +
-        '</div>'
-      );
-    }
+    // Injeta nav com setas E botão "Ver todas"
+    var total = Math.ceil(window._reviewsData.length / PER_PAGE);
+    gridEl.insertAdjacentHTML('afterend',
+      '<div id="reviews-nav" style="display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-top:1.5rem;flex-wrap:wrap;">' +
+      '<button class="rev-prev" onclick="window.reviewsNav(-1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;font-family:serif;" disabled>&#8249;</button>' +
+      '<span class="rev-page-info" style="font-family:Cinzel,serif;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.08em;min-width:180px;text-align:center;">Página 1 de '+total+' · '+window._reviewsData.length+' avaliações</span>' +
+      '<button class="rev-next" onclick="window.reviewsNav(1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;font-family:serif;">&#8250;</button>' +
+      '<button class="rev-ver-todas" onclick="window.verTodasReviews()" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;'+(total<=1?'display:none':'')+'">VER TODAS</button>' +
+      '</div>'
+    );
 
     window.reviewsNav = function(dir){
       var total = Math.ceil(window._reviewsData.length / PER_PAGE);
       currentPage = Math.max(0, Math.min(currentPage+dir, total-1));
-      render();
+      renderPage();
       gridEl.scrollIntoView({behavior:'smooth', block:'nearest'});
     };
 
-    window._renderReviews = render;
+    window.verTodasReviews = function(){
+      // Mostra todas de uma vez
+      var list = window._reviewsData;
+      var allHtml = '';
+      list.forEach(function(r){
+        var sc = r.stars <= 3 ? 's3' : (r.stars === 4 ? 's4' : '');
+        var starStr = '★'.repeat(r.stars) + '☆'.repeat(5-r.stars);
+        allHtml += '<div class="review-card">' +
+          '<span class="review-stars '+sc+'">'+starStr+'</span>' +
+          '<p class="review-text">"'+r.text+'"</p>' +
+          '<div class="review-footer">' +
+            '<div><p class="review-name">'+r.name+(r.ctx?' · <span style="font-weight:400;color:var(--text-muted)">'+r.ctx+'</span>':'')+' </p>' +
+            '<p class="review-city">'+r.city+'</p></div>' +
+            '<span class="review-verified">✓ Verificado</span>' +
+          '</div></div>';
+      });
+      gridEl.innerHTML = allHtml;
+      // Esconde nav e mostra botão "Recolher"
+      var nav = document.getElementById('reviews-nav');
+      if(nav) nav.innerHTML = '<button onclick="window.recolherReviews()" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;padding:0.5rem 1rem;cursor:pointer;">RECOLHER</button>';
+    };
+
+    window.recolherReviews = function(){
+      currentPage = 0;
+      renderPage();
+      // Reinserir nav
+      var nav = document.getElementById('reviews-nav');
+      if(nav){
+        var total = Math.ceil(window._reviewsData.length / PER_PAGE);
+        nav.innerHTML =
+          '<button class="rev-prev" onclick="window.reviewsNav(-1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;font-family:serif;" disabled>&#8249;</button>' +
+          '<span class="rev-page-info" style="font-family:Cinzel,serif;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.08em;min-width:180px;text-align:center;">Página 1 de '+total+' · '+window._reviewsData.length+' avaliações</span>' +
+          '<button class="rev-next" onclick="window.reviewsNav(1)" style="background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;font-family:serif;">&#8250;</button>' +
+          '<button class="rev-ver-todas" onclick="window.verTodasReviews()" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:Cinzel,serif;font-size:0.68rem;letter-spacing:0.08em;padding:0.5rem 1rem;cursor:pointer;">VER TODAS</button>';
+      }
+    };
+
+    window._renderReviews = renderPage;
     window._setCurrentPage = function(p){ currentPage=p; };
 
-    render();
+    renderPage();
   }
 
   // ---- FORM ENVIO ----
@@ -645,8 +681,5 @@
   };
 
   buildReviews();
-  // Ativa paginação nos reviews
-  var _pData = allReviews[handle];
-  if(_pData) buildReviewsWithPagination(_pData);
 })();
 </script>
