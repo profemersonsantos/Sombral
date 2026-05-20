@@ -1,5 +1,4 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
-
 <style>
 .product-page{display:grid;grid-template-columns:1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto;padding:8rem 2rem 4rem;align-items:start;}
 .product-gallery{position:sticky;top:7rem;}
@@ -34,7 +33,6 @@
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
-
 /* REVIEWS */
 .reviews-section{max-width:1100px;margin:0 auto;padding:3rem 2rem 4rem;}
 .reviews-top{display:flex;align-items:flex-start;gap:3rem;margin-bottom:2.5rem;flex-wrap:wrap;}
@@ -59,7 +57,6 @@
 .review-name{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;}
 .review-city{font-size:0.68rem;color:var(--text-muted);margin-top:0.1rem;}
 .review-verified{font-size:0.62rem;color:#25d366;font-family:'Cinzel',serif;}
-
 /* NAV REVIEWS */
 .reviews-nav{display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-bottom:2rem;flex-wrap:wrap;}
 .rev-btn{background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;display:flex;align-items:center;justify-content:center;}
@@ -68,7 +65,6 @@
 .rev-info{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;min-width:160px;}
 .rev-ver-todas{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.08em;padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;}
 .rev-ver-todas:hover{border-color:var(--accent);color:var(--text);}
-
 /* FORM AVALIACAO */
 .review-form-section{background:var(--bg-card);border:1px solid var(--border);padding:2rem;margin-top:0.5rem;}
 .review-form-title{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1.5rem;}
@@ -85,567 +81,533 @@
 .btn-review-submit{background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:0.85rem 2rem;border:none;cursor:pointer;transition:all 0.3s;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
 .btn-review-submit:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(196,30,138,0.4);}
 .review-success{display:none;background:rgba(37,211,102,0.1);border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.8rem;padding:1rem;letter-spacing:0.06em;margin-top:1rem;}
-
 @media(max-width:768px){
-  .product-page{grid-template-columns:1fr;padding:6rem 1.2rem 3rem;gap:1.5rem;}
-  .product-gallery{position:static;}
-  .breadcrumb{padding:5.5rem 1.2rem 0;}
-  .reviews-grid{grid-template-columns:1fr;}
-  .review-form-row{grid-template-columns:1fr;}
-  .reviews-top{gap:1.5rem;}
+.product-page{grid-template-columns:1fr;padding:6rem 1.2rem 3rem;gap:1.5rem;}
+.product-gallery{position:static;}
+.breadcrumb{padding:5.5rem 1.2rem 0;}
+.reviews-grid{grid-template-columns:1fr;}
+.review-form-row{grid-template-columns:1fr;}
+.reviews-top{gap:1.5rem;}
 }
 </style>
-
 <nav class="breadcrumb">
-  <a href="/">Início</a><span class="breadcrumb-sep">›</span>
-  <a href="/collections/all">Catálogo</a><span class="breadcrumb-sep">›</span>
-  <span>{{ product.title }}</span>
+<a href="/">Início</a><span class="breadcrumb-sep">›</span>
+<a href="/collections/all">Catálogo</a><span class="breadcrumb-sep">›</span>
+<span>{{ product.title }}</span>
 </nav>
-
 <div class="product-page">
-  <div class="product-gallery">
-    <div class="product-main-image" id="main-gallery">
-      {%- if product.images.size > 0 -%}
-        <img id="main-product-image" src="{{ product.images[0] | img_url: '800x800' }}" alt="{{ product.title | escape }}">
-        {%- if product.images.size > 1 -%}
-          <button class="gallery-nav prev" onclick="galleryNav(-1)">&#8249;</button>
-          <button class="gallery-nav next" onclick="galleryNav(1)">&#8250;</button>
-          <div class="gallery-counter" id="gallery-counter">1 / {{ product.images.size }}</div>
-        {%- endif -%}
-      {%- else -%}
-        <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:300px;">
-          <span style="font-size:4rem;color:var(--accent);opacity:0.3;">✦</span>
-        </div>
-      {%- endif -%}
-    </div>
-    {%- if product.images.size > 1 -%}
-      <div class="product-thumbs">
-        {%- for image in product.images -%}
-          <div class="product-thumb {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" onclick="goToImage({{ forloop.index0 }})">
-            <img src="{{ image | img_url: '120x120' }}" alt="">
-          </div>
-        {%- endfor -%}
-      </div>
-    {%- endif -%}
-  </div>
-
-  <div class="product-info">
-    <h1 class="product-info-title">{{ product.title }}</h1>
-    <div class="product-rating-inline" id="product-rating-inline"></div>
-    <div class="product-info-price" id="variant-price">R$ {{ current_variant.price | money_without_currency }}</div>
-    <form action="/cart/add" method="post" enctype="multipart/form-data">
-      {%- unless product.has_only_default_variant -%}
-        {%- for option in product.options_with_values -%}
-          <span class="variant-label">{{ option.name }}</span>
-          <div class="variant-options">
-            {%- for value in option.values -%}
-              <div class="variant-option {% if forloop.first %}active{% endif %}" data-value="{{ value }}">{{ value }}</div>
-            {%- endfor -%}
-          </div>
-        {%- endfor -%}
-      {%- endunless -%}
-      <select name="id" id="variant-select" style="display:none;">
-        {%- for variant in product.variants -%}
-          <option value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency }}" data-image="{{ variant.image | img_url: '800x800' }}" data-image-index="{{ variant.image.position | minus: 1 }}" {% if variant == current_variant %}selected{% endif %}>{{ variant.title }}</option>
-        {%- endfor -%}
-      </select>
-      <button type="submit" class="product-add-btn">Invocar — R$ <span id="btn-price">{{ current_variant.price | money_without_currency }}</span></button>
-    </form>
-    <a href="https://wa.me/5519989085731" class="btn-wp" target="_blank">💬 Dúvidas? Fale pelo WhatsApp</a>
-    <div class="product-guarantees">
-      <span>🔒 Compra Segura</span>
-      <span>📦 Frete Grátis acima de R$79,90</span>
-      <span>↩️ Garantia 7 Dias</span>
-    </div>
-    <div class="product-desc">{{ product.description }}</div>
-  </div>
+<div class="product-gallery">
+<div class="product-main-image" id="main-gallery">
+{%- if product.images.size > 0 -%}
+<img id="main-product-image" src="{{ product.images[0] | img_url: '800x800' }}" alt="{{ product.title | escape }}">
+{%- if product.images.size > 1 -%}
+<button class="gallery-nav prev" onclick="galleryNav(-1)">&#8249;</button>
+<button class="gallery-nav next" onclick="galleryNav(1)">&#8250;</button>
+<div class="gallery-counter" id="gallery-counter">1 / {{ product.images.size }}</div>
+{%- endif -%}
+{%- else -%}
+<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:300px;">
+<span style="font-size:4rem;color:var(--accent);opacity:0.3;">✦</span>
 </div>
-
+{%- endif -%}
+</div>
+{%- if product.images.size > 1 -%}
+<div class="product-thumbs">
+{%- for image in product.images -%}
+<div class="product-thumb {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" onclick="goToImage({{ forloop.index0 }})">
+<img src="{{ image | img_url: '120x120' }}" alt="">
+</div>
+{%- endfor -%}
+</div>
+{%- endif -%}
+</div>
+<div class="product-info">
+<h1 class="product-info-title">{{ product.title }}</h1>
+<div class="product-rating-inline" id="product-rating-inline"></div>
+<div class="product-info-price" id="variant-price">R$ {{ current_variant.price | money_without_currency }}</div>
+<form action="/cart/add" method="post" enctype="multipart/form-data">
+{%- unless product.has_only_default_variant -%}
+{%- for option in product.options_with_values -%}
+<span class="variant-label">{{ option.name }}</span>
+<div class="variant-options">
+{%- for value in option.values -%}
+<div class="variant-option {% if forloop.first %}active{% endif %}" data-value="{{ value }}">{{ value }}</div>
+{%- endfor -%}
+</div>
+{%- endfor -%}
+{%- endunless -%}
+<select name="id" id="variant-select" style="display:none;">
+{%- for variant in product.variants -%}
+<option value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency }}" data-image="{{ variant.image | img_url: '800x800' }}" data-image-index="{{ variant.image.position | minus: 1 }}" {% if variant == current_variant %}selected{% endif %}>{{ variant.title }}</option>
+{%- endfor -%}
+</select>
+<button type="submit" class="product-add-btn">Invocar — R$ <span id="btn-price">{{ current_variant.price | money_without_currency }}</span></button>
+</form>
+<a href="https://wa.me/5519989085731" class="btn-wp" target="_blank">💬 Dúvidas? Fale pelo WhatsApp</a>
+<div class="product-guarantees">
+<span>🔒 Compra Segura</span>
+<span>📦 Frete Grátis acima de R$79,90</span>
+<span>↩️ Garantia 7 Dias</span>
+</div>
+<div class="product-desc">{{ product.description }}</div>
+</div>
+</div>
 <div class="reviews-section">
-  <div class="reviews-top" id="reviews-top"></div>
-  <p class="reviews-title-line" id="reviews-title-line"></p>
-  <div class="reviews-grid" id="reviews-grid"></div>
-  <div class="reviews-nav" id="reviews-nav"></div>
-
-  <div class="review-form-section">
-    <p class="review-form-title">✦ Deixe sua avaliação</p>
-    <div class="star-picker" id="star-picker">
-      <input type="radio" id="s5" name="stars" value="5"><label for="s5">★</label>
-      <input type="radio" id="s4" name="stars" value="4"><label for="s4">★</label>
-      <input type="radio" id="s3" name="stars" value="3"><label for="s3">★</label>
-      <input type="radio" id="s2" name="stars" value="2"><label for="s2">★</label>
-      <input type="radio" id="s1" name="stars" value="1"><label for="s1">★</label>
-    </div>
-    <div class="review-form-row">
-      <div class="review-form-group"><label>Seu nome</label><input type="text" id="review-name" placeholder="Ex: Maria S." maxlength="60"></div>
-      <div class="review-form-group"><label>Cidade e Estado</label><input type="text" id="review-city" placeholder="Ex: São Paulo, SP" maxlength="60"></div>
-    </div>
-    <div class="review-form-group"><label>Sua avaliação</label><textarea id="review-text" placeholder="Conte sua experiência com o produto..." maxlength="500"></textarea></div>
-    <button class="btn-review-submit" onclick="submitReview()">Enviar Avaliação</button>
-    <div class="review-success" id="review-success">✦ Avaliação enviada! Obrigado por compartilhar sua experiência.</div>
-  </div>
+<div class="reviews-top" id="reviews-top"></div>
+<p class="reviews-title-line" id="reviews-title-line"></p>
+<div class="reviews-grid" id="reviews-grid"></div>
+<div class="reviews-nav" id="reviews-nav"></div>
+<div class="review-form-section">
+<p class="review-form-title">✦ Deixe sua avaliação</p>
+<div class="star-picker" id="star-picker">
+<input type="radio" id="s5" name="stars" value="5"><label for="s5">★</label>
+<input type="radio" id="s4" name="stars" value="4"><label for="s4">★</label>
+<input type="radio" id="s3" name="stars" value="3"><label for="s3">★</label>
+<input type="radio" id="s2" name="stars" value="2"><label for="s2">★</label>
+<input type="radio" id="s1" name="stars" value="1"><label for="s1">★</label>
 </div>
-
+<div class="review-form-row">
+<div class="review-form-group"><label>Seu nome</label><input type="text" id="review-name" placeholder="Ex: Maria S." maxlength="60"></div>
+<div class="review-form-group"><label>Cidade e Estado</label><input type="text" id="review-city" placeholder="Ex: São Paulo, SP" maxlength="60"></div>
+</div>
+<div class="review-form-group"><label>Sua avaliação</label><textarea id="review-text" placeholder="Conte sua experiência com o produto..." maxlength="500"></textarea></div>
+<button class="btn-review-submit" onclick="submitReview()">Enviar Avaliação</button>
+<div class="review-success" id="review-success">✦ Avaliação enviada! Obrigado por compartilhar sua experiência.</div>
+</div>
+</div>
 <script>
 (function(){
-  // ---- GALERIA ----
-  var images=[{%- for image in product.images -%}{src:"{{ image | img_url: '800x800' }}",alt:"{{ image.alt | escape }}"}{% unless forloop.last %},{% endunless %}{%- endfor -%}];
-  var currentIndex=0;
-  var mainImg=document.getElementById('main-product-image');
-  var counter=document.getElementById('gallery-counter');
-  var select=document.getElementById('variant-select');
-  var priceEl=document.getElementById('variant-price');
-  var btnPr=document.getElementById('btn-price');
-
-  window.goToImage=function(i){
-    if(!images.length||i<0||i>=images.length)return;
-    currentIndex=i;
-    if(mainImg){mainImg.style.opacity='0';setTimeout(function(){mainImg.src=images[i].src;mainImg.alt=images[i].alt;mainImg.style.opacity='1';},180);}
-    if(counter)counter.textContent=(i+1)+' / '+images.length;
-    document.querySelectorAll('.product-thumb').forEach(function(t){t.classList.toggle('active',parseInt(t.dataset.index)===i);});
-  };
-  window.galleryNav=function(dir){goToImage((currentIndex+dir+images.length)%images.length);};
-
-  // ---- VARIANTES ----
-  document.querySelectorAll('.variant-option').forEach(function(opt){
-    opt.addEventListener('click',function(){
-      this.parentElement.querySelectorAll('.variant-option').forEach(function(s){s.classList.remove('active');});
-      this.classList.add('active');
-      var vals=[];
-      document.querySelectorAll('.variant-options').forEach(function(g){var a=g.querySelector('.variant-option.active');if(a)vals.push(a.dataset.value);});
-      var matched=null;
-      Array.from(select.options).forEach(function(o){if(o.text.trim()===vals.join(' / '))matched=o;});
-      if(matched){
-        select.value=matched.value;
-        var price=matched.dataset.price;
-        if(price){if(priceEl)priceEl.textContent='R$ '+price;if(btnPr)btnPr.textContent=price;}
-        var varImgSrc=matched.dataset.image;
-        if(varImgSrc&&varImgSrc!=='null'&&varImgSrc!==''){
-          var norm=function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''};
-          var target=norm(varImgSrc);
-          var found=-1;
-          for(var i=0;i<images.length;i++){if(norm(images[i].src)===target){found=i;break;}}
-          if(found>=0)goToImage(found);
-          else{var idx=parseInt(matched.dataset.imageIndex);if(!isNaN(idx)&&idx>=0&&images[idx])goToImage(idx);}
-        }
-      }
-    });
-  });
-
-  // ---- DADOS DOS REVIEWS ----
-  var handle="{{ product.handle }}";
-  var PER_PAGE=3;
-  var currentPage=0;
-  var allData={};
-
-  allData["sombral-baralho-tarot-das-trevas-goeticas"]={avg:4.8,total:31,dist:{5:77,4:13,3:10},reviews:[
-    {stars:5,name:"Natália R.",city:"São Paulo, SP",ctx:"Tarot há 3 anos",text:"Nunca pensei que um baralho físico pudesse ter tanta presença. As cartas chegaram embaladas com cuidado e o papel é diferente — gramatura real. Já fiz três leituras e as ilustrações dark elevam tudo."},
-    {stars:5,name:"Marcelo F.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei com certo receio por ser online, mas chegou exatamente como na foto. A caixa magnética é um luxo. O guia em português é direto e prático."},
-    {stars:4,name:"Camila T.",city:"Curitiba, PR",ctx:"",text:"Muito bonito e bem acabado. Só achei o guia um pouco curto para iniciantes. Mas o baralho em si é incrível, recomendo."},
-    {stars:5,name:"Jéssica M.",city:"Rio de Janeiro, RJ",ctx:"Colecionadora",text:"Tenho mais de 10 baralhos e esse é o que mais uso. A arte goética tem uma densidade que outras ilustrações não têm. Chegou em 8 dias, bem antes do prazo."},
-    {stars:3,name:"Ricardo P.",city:"Manaus, AM",ctx:"",text:"O baralho é bonito, mas esperava que as 78 cartas fossem todas ilustradas individualmente. Ainda assim vale pela qualidade do papel e da caixa magnética."},
-    {stars:5,name:"Aline G.",city:"Porto Alegre, RS",ctx:"",text:"Presente pra minha irmã que pratica tarot há anos. Ela ficou sem palavras. Disse que é o baralho mais bonito que já viu. Embalagem impecável."},
-    {stars:5,name:"Thiago B.",city:"Fortaleza, CE",ctx:"Leitor profissional",text:"Uso em consultas profissionais. Os clientes ficam impressionados só de ver o baralho. O acabamento fosco não deixa marcas de dedos."},
-    {stars:4,name:"Fernanda L.",city:"Recife, PE",ctx:"",text:"Arte incrível e papel resistente. A caixa magnética fecha com um clique que transmite qualidade. Chegou dentro do prazo e embalado com cuidado."},
-    {stars:5,name:"Bruno A.",city:"Salvador, BA",ctx:"Esotérico há 5 anos",text:"Comprei para estudo e uso diário. A simbologia goética nas ilustrações é precisa — não é apenas estética, tem conteúdo de verdade."},
-    {stars:5,name:"Daniela C.",city:"São Paulo, SP",ctx:"",text:"Cada vez que abro essa caixa parece ritual novo. As cartas deslizam perfeitamente e o papel tem uma textura que baralhos comuns não têm."},
-    {stars:5,name:"Rafael M.",city:"Florianópolis, SC",ctx:"Tarot há 1 ano",text:"Esse baralho me fez levar a prática mais a sério. A arte densa e simbólica provoca reflexão antes mesmo da leitura começar."},
-    {stars:3,name:"Mariana K.",city:"Campinas, SP",ctx:"",text:"Gostei bastante do visual mas algumas cartas vieram com bordas levemente irregulares. Não compromete o uso mas para um produto premium esperava perfeição."},
-    {stars:5,name:"Leonardo S.",city:"Goiânia, GO",ctx:"",text:"O baralho chegou em 10 dias e a embalagem estava impecável. A caixa magnética tem acabamento que parece premium de verdade."},
-    {stars:5,name:"Patrícia V.",city:"Curitiba, PR",ctx:"Wicca",text:"Uso em rituais de adivinhação e as cartas têm uma energia muito especial. A arte goética parece intencional em cada símbolo."},
-    {stars:4,name:"Gustavo R.",city:"São Paulo, SP",ctx:"",text:"Baralho muito bem produzido. Papel premium de verdade. Só achei o guia um pouco genérico — poderia ter interpretações mais profundas."},
-    {stars:5,name:"Amanda F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei para estudar e já li o baralho inteiro duas vezes. As ilustrações têm camadas de significado que você vai descobrindo aos poucos."},
-    {stars:5,name:"Carlos M.",city:"Brasília, DF",ctx:"Ocultismo",text:"Para quem pratica magia goética, esse baralho é uma ferramenta séria. Os arcanos maiores têm referências precisas. Impressionante."},
-    {stars:4,name:"Juliana H.",city:"Porto Alegre, RS",ctx:"",text:"Muito bonito e resistente. Uma estrela a menos pela demora na entrega — mas quando chegou, estava em perfeito estado e valeu a espera."},
-    {stars:5,name:"Rodrigo L.",city:"São Paulo, SP",ctx:"",text:"Presente que virou meu baralho favorito. Minha namorada me deu e eu não consigo parar de usar. A caixa magnética é um detalhe de luxo real."},
-    {stars:5,name:"Bianca T.",city:"Recife, PE",ctx:"Tarotista",text:"Trabalho lendo tarot há 3 anos e esse é o baralho que mais provoca resposta nos consulentes. As imagens dark ativam intuição de forma diferente."},
-    {stars:5,name:"Felipe A.",city:"Natal, RN",ctx:"",text:"Chegou em 7 dias, embalagem com papel de seda preto. Parecia um presente luxuoso mesmo sem pedir embalagem especial. As cartas são excelentes."},
-    {stars:3,name:"Vanessa C.",city:"São Paulo, SP",ctx:"",text:"O baralho é bonito mas algumas cartas dos arcanos menores são muito parecidas visualmente. Para leituras rápidas pode confundir iniciantes."},
-    {stars:5,name:"Eduardo P.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei para colecionar e acabei usando todo dia. A textura das cartas é diferente — não escorrega, não gruda. Qualidade que se sente antes de ver."},
-    {stars:5,name:"Luciana R.",city:"Florianópolis, SC",ctx:"",text:"Uso em práticas de meditação focada em cada arcano. A arte goética convida para um nível de concentração que baralhos coloridos não provocam."},
-    {stars:4,name:"Marcos V.",city:"São Paulo, SP",ctx:"",text:"Excelente produto. Tirei uma estrela porque o guia traduzido tem algumas expressões estranhas em português. As cartas compensam tudo."},
-    {stars:5,name:"Isabela M.",city:"Curitiba, PR",ctx:"",text:"Minha primeira compra aqui e fiquei impressionada com a qualidade. A caixa magnética fechou com um clique que parece premium de verdade."},
-    {stars:5,name:"Renato F.",city:"Porto Alegre, RS",ctx:"Leitor há 8 anos",text:"Em 8 anos lendo tarot nunca vi uma produção tão cuidadosa num preço acessível. Cada carta parece ter sido pensada individualmente."},
-    {stars:5,name:"Tatiana B.",city:"São Paulo, SP",ctx:"",text:"Baralho que equilibra beleza e funcionalidade. Não é só estética — cada símbolo está no lugar certo para facilitar a leitura intuitiva."},
-    {stars:4,name:"Hugo N.",city:"Rio de Janeiro, RJ",ctx:"",text:"Produto muito bom. Uma carta veio com cantinho levemente amassado. Entrei em contato e me ofereceram solução. Bom atendimento."},
-    {stars:5,name:"Alessandra C.",city:"São Paulo, SP",ctx:"Tarot há 2 anos",text:"Os arcanos maiores desse baralho são obras de arte independentes. O Julgamento e a Morte têm uma profundidade visual que nenhum outro baralho que tenho alcança."},
-    {stars:5,name:"Davi R.",city:"Fortaleza, CE",ctx:"",text:"Chegou em 7 dias, embalagem com papel de seda preto e fita. A caixa magnética é sólida e não vai abrir na mochila. Compra certíssima."}
-  ]};
-
-  allData["sombral-gargantilha-das-sombras-com-pingente-ocultista"]={avg:4.7,total:28,dist:{5:64,4:25,3:11},reviews:[
-    {stars:5,name:"Larissa M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O veludo é macio e o pingente Pentagrama é pesado do jeito certo — não é aquele plástico oco. Uso todo dia e já recebi vários elogios."},
-    {stars:4,name:"Bruna K.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o Pentagrama e a qualidade surpreendeu. O fecho ajustável funciona muito bem. Tirei uma estrela porque o prazo demorou um pouco mais que o esperado."},
-    {stars:5,name:"Fernanda O.",city:"Florianópolis, SC",ctx:"",text:"Finalmente uma peça gótica que não parece fantasia barata. O metal oxidado tem acabamento real e o Pentagrama é preciso nos detalhes."},
-    {stars:3,name:"Patrícia A.",city:"Salvador, BA",ctx:"",text:"O veludo é bonito mas o comprimento mínimo ficou largo no meu pescoço fino. O Pentagrama em si é excelente."},
-    {stars:5,name:"Giovanna R.",city:"São Paulo, SP",ctx:"Estética dark",text:"Uso com looks alternativos e é o acessório que mais recebe comentário. A qualidade do metal não desbotou nem na chuva."},
-    {stars:4,name:"Sabrina C.",city:"Campinas, SP",ctx:"",text:"Boa qualidade e entrega dentro do prazo. O Pentagrama é lindo pessoalmente — melhor do que nas fotos. Só esperava que viesse numa caixinha."},
-    {stars:5,name:"Renata F.",city:"Curitiba, PR",ctx:"Gótica há 8 anos",text:"Tenho muitas gargantilhas e essa é uma das melhores. O veludo não descostura e o metal do Pentagrama é sólido."},
-    {stars:5,name:"Camila S.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama ficou ainda mais bonito pessoalmente do que nas fotos. O veludo tem aquele toque aveludado real — não é sintético barato."},
-    {stars:3,name:"Mariana L.",city:"Recife, PE",ctx:"",text:"A peça é bonita mas o veludo começou a desfiar levemente nas bordas após 3 semanas de uso diário intenso. Para uso ocasional é ótima."},
-    {stars:5,name:"Juliana B.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha sobrinha que ama estética dark. Ela ficou apaixonada. O Pentagrama é delicado e poderoso ao mesmo tempo."},
-    {stars:4,name:"Thais R.",city:"Porto Alegre, RS",ctx:"",text:"Qualidade boa e preço justo. O fecho ajustável é realmente funcional. O Pentagrama tem acabamento preciso nos detalhes do símbolo."},
-    {stars:5,name:"Priscila M.",city:"São Paulo, SP",ctx:"",text:"Uso com vestidos pretos e a gargantilha eleva qualquer look. O veludo não amassou mesmo depois de guardar dobrada por uma semana."},
-    {stars:5,name:"Letícia F.",city:"Rio de Janeiro, RJ",ctx:"Alternativa",text:"Melhor acessório gótico que já comprei online. O metal tem aquele peso satisfatório que indica qualidade real."},
-    {stars:4,name:"Beatriz C.",city:"São Paulo, SP",ctx:"",text:"Muito bonita e bem feita. Tirei uma estrela porque o prazo informado era 10 dias e chegou em 14. Mas valeu a espera."},
-    {stars:5,name:"Ana P.",city:"Curitiba, PR",ctx:"",text:"O Pentagrama tem acabamento que resiste ao uso diário. Uso há dois meses e o metal não escureceu nem desbotou."},
-    {stars:3,name:"Sofia R.",city:"Brasília, DF",ctx:"",text:"A peça é bonita mas esperava que o pingente Pentagrama fosse um pouco maior. Na foto parece maior do que é na realidade."},
-    {stars:5,name:"Carolina T.",city:"Florianópolis, SC",ctx:"",text:"O fecho ajustável salvou minha vida — tenho um pescoço médio e consegui ajustar perfeitamente. O Pentagrama tem detalhes que você só vê de perto."},
-    {stars:5,name:"Daniela V.",city:"São Paulo, SP",ctx:"Ocultismo",text:"Para quem pratica e quer um acessório com significado real, o Pentagrama desta gargantilha é impecável. O símbolo é preciso e o acabamento é sério."},
-    {stars:4,name:"Raquel M.",city:"Rio de Janeiro, RJ",ctx:"",text:"Gostei muito. Veludo macio, Pentagrama pesado. Só achei que poderia vir com um sachê para guardar — a gargantilha merece proteção especial."},
-    {stars:5,name:"Vitória S.",city:"Salvador, BA",ctx:"",text:"Uso todo dia há dois meses e está impecável. O metal não escureceu, o veludo não desfrou. Qualidade real para uso diário intenso."},
-    {stars:5,name:"Isabela L.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama tem linhas precisas e proporções corretas — não é aquele modelo genérico que vende em qualquer camelô. É a versão que praticantes reconhecem."},
-    {stars:4,name:"Luiza F.",city:"Belo Horizonte, MG",ctx:"",text:"Muito satisfeita com a compra. O único detalhe é que o veludo amassou um pouco na embalagem — mas depois de pendurar abriu perfeitamente."},
-    {stars:5,name:"Eduarda R.",city:"Porto Alegre, RS",ctx:"Dark fashion",text:"Melhor custo-benefício em acessórios alternativos que encontrei. O Pentagrama tem qualidade de peça de joalheria por um preço acessível."},
-    {stars:5,name:"Monique A.",city:"São Paulo, SP",ctx:"",text:"Presente para minha melhor amiga. Ela usa todo dia e já mandou foto usando em três looks diferentes. O Pentagrama combina com tudo preto."},
-    {stars:3,name:"Helena B.",city:"Campinas, SP",ctx:"",text:"A qualidade é boa mas o veludo deixou marcas vermelhas no pescoço nas primeiras semanas. Pode ser reação ao tingimento. Resolveu depois de lavar."},
-    {stars:5,name:"Nathalia C.",city:"Rio de Janeiro, RJ",ctx:"",text:"O metal oxidado tem aquele aspecto envelhecido intencional — não é desgaste, é estética deliberada. Fica elegante e não parece barato."},
-    {stars:5,name:"Cristiane M.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama tem aquele equilíbrio entre delicadeza e presença que é difícil de encontrar. Não é pesado demais, não é frágil. Proporcional."},
-    {stars:4,name:"Roberta F.",city:"Curitiba, PR",ctx:"",text:"Ótima peça. Só gostaria que o veludo viesse em outras cores além do preto para próximas coleções. O preto é lindo mas mais opções seriam bem-vindas."}
-  ]};
-
-  allData["sombral-kit-runas-nordicas-das-raizes-sombrias"]={avg:4.7,total:26,dist:{5:65,4:19,3:16},reviews:[
-    {stars:5,name:"André S.",city:"Brasília, DF",ctx:"Praticante nórdico",text:"As pedras de obsidiana têm peso e textura que transmitem seriedade. Os símbolos estão gravados com profundidade, não pintados. A bolsa de veludo foi bônus inesperado."},
-    {stars:5,name:"Juliana P.",city:"São Paulo, SP",ctx:"",text:"Pesquisei muito antes de comprar. Esse kit é o melhor custo-benefício que encontrei. As 24 pedras chegaram perfeitas, sem nenhuma lascada."},
-    {stars:4,name:"Rafael C.",city:"Recife, PE",ctx:"",text:"Comprei o Quartzo e fiquei impressionado com a transparência das pedras. Só achei o guia um pouco básico para quem já conhece runas."},
-    {stars:5,name:"Daniela F.",city:"Curitiba, PR",ctx:"Iniciante",text:"Meu primeiro kit de runas. Escolhi a Pedra Vulcânica e a textura áspera facilita a meditação tátil. Recomendo para iniciantes."},
-    {stars:3,name:"Marcos T.",city:"Goiânia, GO",ctx:"",text:"As pedras são bonitas mas duas chegaram com símbolos levemente tortos. O atendimento resolveu, mas o processo levou alguns dias."},
-    {stars:5,name:"Letícia V.",city:"Belo Horizonte, MG",ctx:"Wicca há 2 anos",text:"Comprei a Obsidiana e uso nas minhas práticas semanais. A energia densa da pedra sinto na palma da mão. Kit completo e honesto."},
-    {stars:5,name:"Caio M.",city:"Porto Alegre, RS",ctx:"Asatrú",text:"Comprei a Obsidiana para uso em ritual de galdr. As pedras têm tamanho ideal para lançamento. Qualidade acima da média."},
-    {stars:4,name:"Priscila N.",city:"São Paulo, SP",ctx:"",text:"Muito bom! Comprei o Quartzo e as pedras são lindas. Só gostaria que o guia tivesse mais exemplos de tiragens completas."},
-    {stars:5,name:"Fernando A.",city:"Rio de Janeiro, RJ",ctx:"Religião nórdica",text:"Para quem pratica seiðr, o conjunto de Obsidiana é perfeito. O peso das pedras facilita o lançamento tradicional e os símbolos são precisos."},
-    {stars:5,name:"Marina C.",city:"São Paulo, SP",ctx:"",text:"Comprei a Pedra Vulcânica como kit inicial. A textura natural de cada pedra é única — exatamente o que acontece com material vulcânico autêntico."},
-    {stars:3,name:"Rodrigo B.",city:"Campinas, SP",ctx:"",text:"O kit é bonito mas algumas pedras têm tamanho levemente diferente entre si. Para uso ritualístico exigente isso pode incomodar."},
-    {stars:5,name:"Cíntia L.",city:"Florianópolis, SC",ctx:"",text:"As runas de Quartzo são translúcidas e os símbolos gravados ficam visíveis com a luz por trás. Um detalhe visual que não esperava e adorei."},
-    {stars:4,name:"Alexandre R.",city:"Brasília, DF",ctx:"",text:"Qualidade excelente no Quartzo. Tirei uma estrela porque o guia não tem transliteração sonora das runas para pronúncia nos rituais."},
-    {stars:5,name:"Vanessa M.",city:"Salvador, BA",ctx:"Bruxaria nórdica",text:"O conjunto de Pedra Vulcânica tem aspereza que facilita meditação tátil. Cada pedra tem textura única — exatamente como deve ser com material natural."},
-    {stars:5,name:"Lucas F.",city:"São Paulo, SP",ctx:"",text:"Presente para meu amigo que pratica runas. Ele disse que o conjunto de Obsidiana é o melhor que já teve em termos de tamanho e gravação."},
-    {stars:4,name:"Beatriz S.",city:"Porto Alegre, RS",ctx:"",text:"Muito bom produto. Comprei o Quartzo. Só fui em quatro estrelas porque chegou com 3 dias de atraso do prazo informado."},
-    {stars:5,name:"Henrique L.",city:"Rio de Janeiro, RJ",ctx:"Paganismo",text:"Uso a Obsidiana em oráculos diários há 6 meses. As pedras não arranharam, não lascaram. Bolsa de veludo ainda intacta. Durabilidade real."},
-    {stars:5,name:"Camila R.",city:"Belo Horizonte, MG",ctx:"",text:"A gravação das runas na Pedra Vulcânica é profunda o suficiente para sentir ao toque com os olhos fechados — fundamental para leitura tátil."},
-    {stars:3,name:"Pedro M.",city:"São Paulo, SP",ctx:"",text:"As pedras são bonitas mas o guia em português tem alguns erros de tradução nos nomes das runas. Para iniciantes pode causar confusão."},
-    {stars:5,name:"Aline B.",city:"Curitiba, PR",ctx:"Iniciante",text:"Comecei a estudar runas com a Pedra Vulcânica. A textura das pedras facilita o aprendizado — você as sente nas mãos e memoriza os símbolos."},
-    {stars:5,name:"Thiago C.",city:"Fortaleza, CE",ctx:"",text:"Comprei a Obsidiana e a Pedra Vulcânica para comparar. As duas têm qualidade excelente. A Vulcânica tem textura mais interessante para meditação."},
-    {stars:4,name:"Renata L.",city:"São Paulo, SP",ctx:"",text:"Produto de ótima qualidade. A bolsa de veludo é um detalhe que agrega muito. Tirei uma estrela porque esperava as pedras numeradas no guia."},
-    {stars:5,name:"Diego S.",city:"Rio de Janeiro, RJ",ctx:"Paganismo nórdico",text:"Uso a Obsidiana em cerimônias de blót. As pedras têm o peso certo e a gravação é precisa. Material que potencializa o ritual."},
-    {stars:5,name:"Isabela T.",city:"São Paulo, SP",ctx:"",text:"As runas de Quartzo são simplesmente lindas. A transparência com os símbolos gravados cria um efeito visual único na mesa de ritual."},
-    {stars:5,name:"Roberta A.",city:"Florianópolis, SC",ctx:"",text:"Comprei a Pedra Vulcânica para estudar. As pedras viraram minhas companheiras diárias. A bolsa de veludo aguenta bem o uso frequente."},
-    {stars:4,name:"Eduardo M.",city:"São Paulo, SP",ctx:"",text:"Ótimo kit de Obsidiana. Só faltou um pano de lançamento junto — para quem está começando, não sabe que precisa de um."}
-  ]};
-
-  allData["sombral-tapecaria-do-veu"]={avg:4.8,total:27,dist:{5:81,4:15,3:4},reviews:[
-    {stars:5,name:"Isabela V.",city:"São Paulo, SP",ctx:"",text:"Transformou meu quarto completamente. O Pentagrama 130x150 cobre a parede inteira e as cores são muito mais vivas do que na foto. Arte densa e impressionante."},
-    {stars:5,name:"Thiago M.",city:"Curitiba, PR",ctx:"",text:"Os ilhós são resistentes e o tecido não amassou. O Pentagrama pendurado na parede ficou perfeito. Todo mundo que entra no meu quarto pergunta onde comprei."},
-    {stars:5,name:"Viviane A.",city:"Belo Horizonte, MG",ctx:"",text:"O Pentagrama 130x150 cobre a parede inteira e a qualidade de impressão é nítida até de perto. Lavei na máquina fria e não desbotou nada."},
-    {stars:4,name:"Carlos H.",city:"Rio de Janeiro, RJ",ctx:"",text:"Qualidade ótima mas demorou 14 dias para chegar. Dentro do prazo informado mas esperava antes. O Pentagrama em si é lindo."},
-    {stars:5,name:"Amanda B.",city:"Fortaleza, CE",ctx:"Decoração dark",text:"A tapeçaria tem uma presença absurda na parede. O Pentagrama tem detalhes que você só percebe de perto — linhas precisas e proporções corretas."},
-    {stars:5,name:"Renato S.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para meu espaço de meditação. O Pentagrama 130x150 preenche a parede sem ficar exagerado. Ponto focal poderoso para práticas."},
-    {stars:5,name:"Bianca M.",city:"Manaus, AM",ctx:"",text:"Chegou ao Amazonas em boas condições com plástico protetor. O Pentagrama ficou ainda mais imponente do que nas fotos."},
-    {stars:5,name:"Rodrigo T.",city:"São Paulo, SP",ctx:"Altar dark",text:"Pendurei o Pentagrama atrás do meu altar. O tecido é denso e não transparece com luz por trás. Elevou completamente a energia do espaço."},
-    {stars:4,name:"Fernanda C.",city:"Campinas, SP",ctx:"",text:"Muito bonita e com cores vivas. Os ilhós do Pentagrama poderiam ser mais espaçados para mais opções de suporte. Mas ficou linda na parede."},
-    {stars:5,name:"Marcelo R.",city:"Florianópolis, SC",ctx:"",text:"O Pentagrama 130x150 ficou perfeito no meu quarto. O impacto visual é imponente — parece uma peça de decoração profissional."},
-    {stars:5,name:"Letícia A.",city:"São Paulo, SP",ctx:"",text:"Lavei na máquina fria e as cores continuaram vivas. O tecido não encolheu. Para quem tem animais de estimação, pode lavar tranquilamente."},
-    {stars:4,name:"Gustavo M.",city:"Salvador, BA",ctx:"",text:"Produto de qualidade mas chegou com uma dobra marcada que demorou 3 dias para abrir. Depois ficou perfeita. Só precisou de paciência."},
-    {stars:5,name:"Camila N.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Pentagrama tem linhas simétricas perfeitas na impressão. De perto você vê a qualidade fotográfica da impressão — nítida sem pixelação."},
-    {stars:5,name:"Paulo S.",city:"Belo Horizonte, MG",ctx:"",text:"O Pentagrama grande criou um ponto focal poderoso atrás do altar. A qualidade de impressão é fotográfica — nítida de qualquer distância."},
-    {stars:5,name:"Ana L.",city:"São Paulo, SP",ctx:"Dark aesthetic",text:"Uso o Pentagrama como fundo nas minhas fotos para Instagram. A qualidade da impressão aparece mesmo nas fotos. Vários seguidores perguntaram de onde é."},
-    {stars:3,name:"Marina F.",city:"Porto Alegre, RS",ctx:"",text:"A tapeçaria é bonita mas o cheiro de tinta foi muito forte nas primeiras semanas. Precisei deixar arejando por 4 dias antes de pendurar."},
-    {stars:5,name:"Diego L.",city:"Recife, PE",ctx:"",text:"O Pentagrama tem um efeito de profundidade na impressão — não é plano visualmente. De longe é lindo. De perto é ainda mais impressionante."},
-    {stars:5,name:"Rebeca T.",city:"São Paulo, SP",ctx:"",text:"Comprei como presente de aniversário. O Pentagrama chegou sem amassados mesmo vindo dobrado. A embalagem com plástico protetor fez a diferença."},
-    {stars:4,name:"Henrique B.",city:"Curitiba, PR",ctx:"",text:"Muito boa a qualidade. Tirei uma estrela porque a descrição não informa bem a espessura do tecido. É mais leve do que esperava, mas linda na parede."},
-    {stars:5,name:"Vanessa R.",city:"São Paulo, SP",ctx:"",text:"Meu quarto é pequeno mas o Pentagrama 130x150 ficou com proporções perfeitas — impactante sem sobrecarregar o espaço."},
-    {stars:5,name:"Leandro C.",city:"Rio de Janeiro, RJ",ctx:"Meditação",text:"O Pentagrama no meu espaço de prática cria uma atmosfera que facilita a concentração. A simbologia no centro do campo visual orienta o ritual."},
-    {stars:5,name:"Priscila F.",city:"Florianópolis, SC",ctx:"",text:"Os ilhós dourados contrastam lindamente com o tecido escuro do Pentagrama. Não são apenas funcionais — são parte do design. Detalhe cuidadoso."},
-    {stars:3,name:"Tatiana M.",city:"Campinas, SP",ctx:"",text:"Bonita mas achei o tecido um pouco fino para o preço. Transparece levemente contra janelas com luz forte. Para paredes sem luz direta é perfeita."},
-    {stars:5,name:"Alexandre V.",city:"São Paulo, SP",ctx:"",text:"Pendurei o Pentagrama no teto acima da minha cama. O efeito de olhar para cima e ver o símbolo é exatamente o que queria para meu espaço."},
-    {stars:5,name:"Cristiane A.",city:"Belo Horizonte, MG",ctx:"",text:"A qualidade de impressão do Pentagrama é extraordinária — os gradientes de cor são sutis e realistas. Não parece impressão digital barata."},
-    {stars:5,name:"Fabiana R.",city:"Porto Alegre, RS",ctx:"",text:"Uso o Pentagrama como fundo para minhas gravações. Nas gravações parece uma decoração profissional de estúdio. Qualidade que aparece na câmera."},
-    {stars:4,name:"Eduardo T.",city:"São Paulo, SP",ctx:"",text:"Produto muito bom. Só gostaria que viesse com uma barra de madeira para pendurar inclusa. O Pentagrama em si é excelente."}
-  ]};
-
-  allData["sombral-estatua-das-guardias-em-resina"]={avg:4.5,total:25,dist:{5:64,4:16,3:20},reviews:[
-    {stars:5,name:"Priscila D.",city:"Rio de Janeiro, RJ",ctx:"Altar há 5 anos",text:"A Lilith chegou com nível de detalhe que me surpreendeu. O acabamento pintado à mão tem imperfeições sutis que a tornam única — não é resina lisa e genérica."},
-    {stars:4,name:"Gustavo L.",city:"Porto Alegre, RS",ctx:"",text:"Comprei a Hecate e o detalhamento é bom. A base é pesada e estável. A pintura poderia ser mais refinada em alguns pontos mas de longe parece perfeita."},
-    {stars:5,name:"Ana C.",city:"Salvador, BA",ctx:"",text:"Comprei a Hecate e ela domina qualquer espaço. As cores escuras e ricas criam presença real. Meu altar ficou completo."},
-    {stars:3,name:"Paulo M.",city:"Campinas, SP",ctx:"",text:"A Lilith é bonita mas chegou com uma pequena lasca na base. O atendimento compensou com desconto. Resultado final ok."},
-    {stars:5,name:"Melissa R.",city:"Florianópolis, SC",ctx:"Wicca",text:"O Baphomet tem uma presença intimidante do jeito certo. Os chifres, a expressão, a posição das mãos — cada detalhe foi pensado."},
-    {stars:5,name:"Vinícius T.",city:"Recife, PE",ctx:"",text:"Comprei a Lilith como presente. Ela chegou envolto em espuma dentro de uma caixa resistente. Nenhum dano, zero arranhão."},
-    {stars:4,name:"Tatiana B.",city:"São Paulo, SP",ctx:"Ocultismo",text:"A Lilith é linda e a pintura é bem feita. Esperava que viesse com embalagem especial para presente — só tinha espuma. Mas o produto é excelente."},
-    {stars:5,name:"Henrique F.",city:"Curitiba, PR",ctx:"",text:"Comprei o Lucifer e a qualidade superou todas as expectativas. O peso e os detalhes do rosto fazem toda a diferença — resina densa e sólida."},
-    {stars:5,name:"Juliana A.",city:"Belo Horizonte, MG",ctx:"Bruxaria",text:"O Baphomet ficou no centro do meu altar e todos os que veem comentam a qualidade. Parece uma peça de galeria, não uma estatueta de loja."},
-    {stars:3,name:"Felipe R.",city:"São Paulo, SP",ctx:"",text:"A Hecate é bonita mas o tamanho real é menor do que parece nas fotos. Para o preço esperava algo maior. Qualidade da pintura é boa."},
-    {stars:5,name:"Carla M.",city:"Rio de Janeiro, RJ",ctx:"",text:"A Hecate tem detalhes nos drapeados da roupa impressionantes para resina. A mão que segura a tocha tem dedos individualmente modelados."},
-    {stars:4,name:"Diego F.",city:"Porto Alegre, RS",ctx:"",text:"Muito boa qualidade de modelagem no Lucifer. A pintura tem algumas áreas com acabamento irregular mas de longe parece perfeita."},
-    {stars:5,name:"Vanessa P.",city:"Florianópolis, SC",ctx:"",text:"Comprei o Baphomet e me surpreendeu com o peso — é denso, não oco. A base tem acabamento texturizado que parece pedra. Muito satisfeita."},
-    {stars:5,name:"Lucas A.",city:"Brasília, DF",ctx:"Ocultismo goético",text:"Para uso em cerimônias goéticas, o Baphomet tem iconografia correta e tamanho perfeito para o centro de um círculo ritual."},
-    {stars:3,name:"Marina S.",city:"São Paulo, SP",ctx:"",text:"A Lilith veio com cor levemente diferente das fotos — mais escura no rosto. Não é ruim, mas quem compra baseado nas fotos pode se surpreender."},
-    {stars:5,name:"Roberto C.",city:"Curitiba, PR",ctx:"",text:"A Lilith tem uma expressão de poder e serenidade difícil de capturar em fotos mas que você sente presencialmente. Arte excepcional em resina."},
-    {stars:4,name:"Aline V.",city:"Rio de Janeiro, RJ",ctx:"",text:"Produto de qualidade. Tirei uma estrela porque a embalagem foi básica para uma peça delicada. Chegou bem mas preferia mais proteção."},
-    {stars:5,name:"Thiago N.",city:"São Paulo, SP",ctx:"",text:"O Baphomet tem detalhes na barba, nos chifres e nas asas incríveis para resina. Artesanato real, não produção em série genérica."},
-    {stars:5,name:"Renata A.",city:"Salvador, BA",ctx:"",text:"Comprei a Hecate para meu espaço de trabalho. A presença da peça muda a energia do ambiente. Qualidade de museu para preço de loja."},
-    {stars:3,name:"Eduardo B.",city:"Manaus, AM",ctx:"",text:"A Hecate é bonita mas chegou com cheiro forte de tinta que demorou uma semana para dissipar. Deixei na varanda antes de colocar no altar."},
-    {stars:5,name:"Cíntia F.",city:"Porto Alegre, RS",ctx:"Bruxaria tradicional",text:"O Lucifer tem proporções impressionantes — a postura e a expressão transmitem autoridade real. Pintura nos olhos com nível de detalhe raro em resina."},
-    {stars:5,name:"Marcelo S.",city:"São Paulo, SP",ctx:"",text:"Terceira compra de estátuas aqui. A consistência de qualidade é o que me fidelizou. Cada peça — Lilith, Baphomet e agora Lucifer — tem acabamento cuidadoso."},
-    {stars:4,name:"Isabela R.",city:"Curitiba, PR",ctx:"",text:"Muito boa a Hecate. Só esperava que os olhos tivessem tom mais intenso — ficaram um pouco apagados. No geral, peça muito bonita."},
-    {stars:5,name:"Danilo M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Baphomet tem uma aura de poder que você sente ao olhar diretamente. Para uso em altar, cria um ponto focal que orienta toda a cerimônia."},
-    {stars:5,name:"Patrícia L.",city:"São Paulo, SP",ctx:"",text:"Presente de aniversário perfeito. Comprei o Lucifer e a embalagem chegou com espuma em todos os lados — nenhum dano no transporte."}
-  ]};
-
-  allData["sombral-pulseira-do-escudo-negro"]={avg:4.8,total:32,dist:{5:75,4:15,3:10},reviews:[
-    {stars:5,name:"Renata F.",city:"São Paulo, SP",ctx:"",text:"Uso a Turmalina Negra há dois meses e o fio não afrouxou nem uma vez. As pedras são densas e o sachê de veludo foi uma surpresa muito boa."},
-    {stars:5,name:"Lucas W.",city:"Florianópolis, SC",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. As pedras têm brilho natural e tamanho uniforme. O cartão de ativação foi um detalhe especial."},
-    {stars:4,name:"Mariana B.",city:"Fortaleza, CE",ctx:"",text:"Presenteei minha mãe com a Turmalina Negra e ela adorou. Única ressalva: o tamanho único pode ficar largo para pulsos muito finos."},
-    {stars:5,name:"Sérgio A.",city:"Brasília, DF",ctx:"Proteção energética",text:"Uso a Turmalina Negra como escudo diário. Após uma semana senti diferença real nos ambientes que frequento. Pedras densas, sem arranhões."},
-    {stars:5,name:"Cláudia N.",city:"Goiânia, GO",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre e a qualidade é consistente. As pedras têm peso satisfatório no pulso."},
-    {stars:3,name:"Eduardo P.",city:"Porto Alegre, RS",ctx:"",text:"O produto é bom mas uma das pedras da Turmalina Negra veio com pequena rachadura superficial. O atendimento foi rápido ao responder."},
-    {stars:5,name:"Tatiane S.",city:"São Paulo, SP",ctx:"",text:"Quatro pulseiras em 6 meses — Turmalina Negra e Hematita/Ônix/Olho de Tigre — a qualidade é sempre consistente. O fio elástico resiste de verdade."},
-    {stars:5,name:"Henrique M.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre para minha namorada e ela não tirou mais. O sachê de veludo e o cartão transformaram a experiência."},
-    {stars:4,name:"Carla V.",city:"Natal, RN",ctx:"",text:"Gostei muito da Turmalina Negra. Entregou antes do prazo e a embalagem estava impecável. Só achei o preço um pouquinho salgado."},
-    {stars:5,name:"Alex M.",city:"São Paulo, SP",ctx:"Cristaloterapia",text:"Trabalho com cristaloterapia e a qualidade das pedras da Turmalina Negra é notável. Clientes que comprei como brinde ficaram impressionados."},
-    {stars:5,name:"Fernanda R.",city:"Rio de Janeiro, RJ",ctx:"",text:"O fio elástico tem uma resistência que não esperava. Já puxei sem querer algumas vezes e não arrebentou. Qualidade real."},
-    {stars:5,name:"Marcos L.",city:"Curitiba, PR",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. O Olho de Tigre tem um brilho dourado que contrasta lindamente com o ônix preto. Conjunto vistoso."},
-    {stars:4,name:"Beatriz C.",city:"São Paulo, SP",ctx:"",text:"Muito boa qualidade na Turmalina Negra. Só gostaria que viesse com um certificado das pedras — para quem compra por crença, é um detalhe importante."},
-    {stars:5,name:"Andreia M.",city:"Porto Alegre, RS",ctx:"",text:"A Turmalina Negra é pesada no pulso do jeito certo — você sente a proteção. As pedras têm tamanho uniforme e encaixe perfeito no fio."},
-    {stars:5,name:"Felipe S.",city:"Brasília, DF",ctx:"",text:"Comprei a Turmalina Negra para proteção em ambientes de trabalho com muita energia negativa. Uso há 3 meses e sinto diferença real."},
-    {stars:3,name:"Vanessa T.",city:"São Paulo, SP",ctx:"",text:"A pulseira de Turmalina Negra é bonita mas o tamanho único ficou grande para meu pulso fino. Precisei dar um nó no fio para ajustar."},
-    {stars:5,name:"Rodrigo A.",city:"Florianópolis, SC",ctx:"",text:"O cartão de ativação que acompanha a pulseira tem um ritual simples mas poderoso. Esse detalhe diferencia a SOMBRAL de qualquer concorrente."},
-    {stars:5,name:"Juliana C.",city:"São Paulo, SP",ctx:"Reiki",text:"Uso a Turmalina Negra em sessões de reiki e ela realmente potencializa a limpeza energética. Pedras de qualidade genuína, não sintéticas."},
-    {stars:4,name:"Thiago R.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. Tirei uma estrela porque a mistura das pedras ficou levemente desuniforme em tamanho. No geral, produto de qualidade."},
-    {stars:5,name:"Luana F.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha mãe que faz cristaloterapia. Ela disse que a Turmalina Negra tem qualidade muito superior ao que costuma ver em outras lojas."},
-    {stars:5,name:"Daniel V.",city:"São Paulo, SP",ctx:"",text:"O sachê de veludo e o cartão de ativação transformaram uma simples pulseira em uma experiência de recebimento. Detalhes que fazem diferença."},
-    {stars:5,name:"Camila A.",city:"Curitiba, PR",ctx:"",text:"Uso a Turmalina Negra para equilibrar energia. Após um mês, as pedras continuam com brilho intenso e o fio está perfeito. Durabilidade impressionante."},
-    {stars:4,name:"Pedro L.",city:"Porto Alegre, RS",ctx:"",text:"Ótima pulseira de Turmalina Negra. Só achei que o fio poderia ser um pouco mais grosso para dar mais resistência. Mas em 3 meses de uso não arrebentou."},
-    {stars:5,name:"Sofia R.",city:"São Paulo, SP",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre e o Olho de Tigre fotografa incrivelmente bem. Uso nas fotos e sempre alguém pergunta de onde é a pulseira."},
-    {stars:5,name:"Gustavo C.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei as duas versões — Turmalina Negra e Hematita/Ônix/Olho de Tigre — e a qualidade é uniforme em ambas. Consistência que busco em uma loja."},
-    {stars:3,name:"Marina F.",city:"Fortaleza, CE",ctx:"",text:"A Turmalina Negra chegou com o fio levemente solto em uma ponta. Não arrebentou mas estava prestes. Trocaram sem problemas."},
-    {stars:5,name:"Rebeca M.",city:"São Paulo, SP",ctx:"",text:"A Turmalina Negra tem aquela textura estriada natural que indica qualidade genuína. Não é lisa como pedra artificial — é bruta do jeito certo."},
-    {stars:5,name:"Leonardo C.",city:"Brasília, DF",ctx:"",text:"Uso a Turmalina Negra em trabalhos espirituais e ela realmente age como barreira. A qualidade das pedras é visível e palpável."},
-    {stars:5,name:"Natália V.",city:"Florianópolis, SC",ctx:"",text:"Presenteei meu filho adolescente com a Hematita/Ônix/Olho de Tigre. Ele adora estética dark e as pedras ficaram perfeitas no visual dele."},
-    {stars:4,name:"Bruna A.",city:"São Paulo, SP",ctx:"",text:"Muito satisfeita com a Turmalina Negra. Tirei uma estrela porque o sachê de veludo é pequeno e difícil de guardar a pulseira sem forçar."},
-    {stars:5,name:"Ricardo L.",city:"Curitiba, PR",ctx:"",text:"A Turmalina Negra é a pedra mais densa que já tive em pulseira. Você sente o peso protetor no pulso. Qualidade excepcional para o preço."},
-    {stars:5,name:"Priscila G.",city:"Rio de Janeiro, RJ",ctx:"Cristaloterapia",text:"Recomendo para todos os meus clientes. A Turmalina Negra da SOMBRAL é de qualidade genuína — não é obsidiana pintada que vende por aí."}
-  ]};
-
-  allData["sombral-bola-de-cristal-do-abismo-k9"]={avg:4.7,total:24,dist:{5:67,4:21,3:12},reviews:[
-    {stars:5,name:"Eduardo N.",city:"Brasília, DF",ctx:"",text:"A bola de 8cm com Base Vulcânica é impressionante — luz passa direto e cria reflexos no teto que parecem mágicos. Base vulcânica tem acabamento textural único."},
-    {stars:5,name:"Simone A.",city:"São Paulo, SP",ctx:"Meditação há 7 anos",text:"Comprei o 8cm com Base Vulcânica. Chegou envolto em camurça dentro de uma caixa sólida. Tamanho perfeito para o altar — imponente sem sobrecarregar."},
-    {stars:4,name:"Felipe R.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o 6cm com Base Madeira. Qualidade acima do esperado. Só achei a base de madeira um pouco simples para a esfera. A bola K9 em si é excelente."},
-    {stars:5,name:"Cristiane B.",city:"Curitiba, PR",ctx:"Divinação",text:"Uso o 8cm em sessões de scrying. A clareza do K9 facilita o foco — muito menos distorção do que vidro comum. Ferramenta real de divinação."},
-    {stars:3,name:"Roberto L.",city:"São Paulo, SP",ctx:"",text:"Comprei o 6cm com Base Madeira e a bola é menor do que parece nas fotos. Para uso em altar serve, mas se quiser algo imponente, pegue o 8cm."},
-    {stars:5,name:"Andreia T.",city:"Rio de Janeiro, RJ",ctx:"Altar dark",text:"Os reflexos que o 8cm com Base Vulcânica projeta com luz de vela são hipnóticos. Embalagem premium em camurça, chegou perfeita."},
-    {stars:5,name:"Marcos P.",city:"Florianópolis, SC",ctx:"",text:"Comprei o 8cm e supera todas as bolas de cristal que já tive. A Base Vulcânica deixa o conjunto com estética muito superior."},
-    {stars:4,name:"Verônica S.",city:"Belo Horizonte, MG",ctx:"Meditação",text:"O 6cm com Base Madeira é lindo e a camurça de embalagem foi um detalhe inesperado. Só gostaria que viesse com um paninho para limpar incluso."},
-    {stars:5,name:"Carlos F.",city:"São Paulo, SP",ctx:"",text:"O K9 8cm tem uma clareza interna que o vidro comum não consegue replicar. Quando a luz do sol bate, cria arco-íris nas paredes. Objeto mágico de verdade."},
-    {stars:4,name:"Tatiana R.",city:"Porto Alegre, RS",ctx:"",text:"O 8cm com Base Vulcânica é muito bonito. Só achei a base um pouco baixa para o tamanho da esfera — fica levemente instável. Visualmente é lindíssima."},
-    {stars:5,name:"Diego A.",city:"Rio de Janeiro, RJ",ctx:"Scrying",text:"Uso o 8cm em práticas de scrying. A clareza do K9 facilita a entrada em estado alterado de consciência muito melhor do que espelho negro."},
-    {stars:5,name:"Camila L.",city:"São Paulo, SP",ctx:"",text:"Comprei o 6cm com Base Madeira para decoração e virou ferramenta de meditação. A transparência da bola convida o olhar para dentro. Qualidade genuína."},
-    {stars:3,name:"Patrícia M.",city:"Campinas, SP",ctx:"",text:"O 8cm chegou com uma pequena bolha de ar interna. Não compromete muito mas para quem quer perfeição é um defeito. Atendimento foi atencioso."},
-    {stars:5,name:"Leandro S.",city:"Curitiba, PR",ctx:"",text:"A Base Vulcânica do 8cm combina perfeitamente com a esfera K9 — o contraste texturizado vs. liso é esteticamente poderoso. Vale cada centavo."},
-    {stars:5,name:"Juliana F.",city:"Belo Horizonte, MG",ctx:"",text:"O 6cm com Base Madeira ficou perfeito no meu altar compacto. A relação tamanho-impacto é excelente para espaços menores."},
-    {stars:4,name:"Alexandre B.",city:"São Paulo, SP",ctx:"",text:"Excelente produto. A camurça de embalagem serve também para limpar a bola depois — detalhe prático e inteligente. Tirei uma estrela pela base simples."},
-    {stars:5,name:"Luciana C.",city:"Rio de Janeiro, RJ",ctx:"",text:"Os reflexos de luz que o 8cm cria mudam completamente o ambiente. No quarto escuro com vela, os reflexos nas paredes são hipnóticos."},
-    {stars:5,name:"Rafael T.",city:"Porto Alegre, RS",ctx:"Meditação",text:"Uso o 8cm para foco em meditação diária. Cria um ponto de atenção visual que facilita a concentração melhor do que qualquer outro objeto que já usei."},
-    {stars:3,name:"Fernanda L.",city:"São Paulo, SP",ctx:"",text:"O 6cm com Base Madeira é menor do que esperava nas fotos. A qualidade do cristal é boa, mas o impacto visual ao vivo é menor do que parece online."},
-    {stars:5,name:"Bruno M.",city:"Florianópolis, SC",ctx:"",text:"Presente para minha esposa que pratica meditação. Ela ficou impressionada com a clareza interna do 8cm. A Base Vulcânica é um diferencial estético real."},
-    {stars:5,name:"Elisa R.",city:"São Paulo, SP",ctx:"Altar",text:"O K9 tem uma presença que o vidro comum simplesmente não tem. Parece que tem vida interna. Para uso em altar com a Base Vulcânica é um objeto de poder."},
-    {stars:4,name:"Marcelo F.",city:"Curitiba, PR",ctx:"",text:"Muito boa qualidade no 8cm. A Base Vulcânica é mais resistente do que parece nas fotos. Tirei uma estrela porque esperava a bola um pouco mais pesada."},
-    {stars:5,name:"Isabela C.",city:"Rio de Janeiro, RJ",ctx:"",text:"O 8cm com Base Vulcânica é simplesmente imponente no altar. A combinação da textura áspera da base com a lisura perfeita da bola é visualmente poderosa."},
-    {stars:5,name:"Gustavo P.",city:"São Paulo, SP",ctx:"",text:"Comprei o 8cm para divinação e a clareza do K9 facilita a concentração visual. Objeto de qualidade real que justifica o investimento."}
-  ]};
-
-  allData["sombral-grimorio-das-bruxas"]={avg:4.9,total:29,dist:{5:86,4:10,3:4},reviews:[
-    {stars:5,name:"Tatiana M.",city:"São Paulo, SP",ctx:"Bruxaria há 4 anos",text:"A encadernação costurada faz toda a diferença — abri no meio e o livro fica plano sem forçar. O papel tem gramatura boa, não transparece."},
-    {stars:5,name:"Rodrigo S.",city:"Curitiba, PR",ctx:"",text:"Capa dura com relevo — dá pra sentir os detalhes com o dedo. Li o capítulo de proteção primeiro e já apliquei dois rituais com resultado real."},
-    {stars:5,name:"Aline G.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei como presente. A pessoa disse que é o melhor livro de magia que já teve. Linguagem acessível mas séria — não infantiliza o assunto."},
-    {stars:4,name:"Bruno F.",city:"Porto Alegre, RS",ctx:"Ocultismo",text:"Conteúdo excelente. Tirei uma estrela porque esperava mais capítulos sobre magia goética. O que tem é muito bom, mas poderia ser mais aprofundado."},
-    {stars:5,name:"Renata C.",city:"Belo Horizonte, MG",ctx:"Wicca",text:"Já li três vezes e cada vez descubro algo novo. O índice facilita encontrar os rituais quando preciso rápido durante a prática."},
-    {stars:5,name:"Diego M.",city:"Fortaleza, CE",ctx:"Iniciante",text:"Comecei do zero e esse livro me deu base sólida. Linguagem não condescendente e ritmo de aprendizado bem calibrado. Melhor investimento da jornada."},
-    {stars:5,name:"Luana B.",city:"São Paulo, SP",ctx:"",text:"A capa preta com relevo impressiona qualquer pessoa que pega. Mais de 5 pessoas me pediram o link depois de ver o livro. Conteúdo e estética impecáveis."},
-    {stars:5,name:"Alexandre R.",city:"Recife, PE",ctx:"Magia há 6 anos",text:"O capítulo sobre ervas e correspondências é o mais completo que já vi em livro físico em português. Vale cada centavo dos R$139,25."},
-    {stars:4,name:"Camila H.",city:"Manaus, AM",ctx:"",text:"Ótimo conteúdo e produção gráfica impecável. Só achei o frete um pouco caro para a região Norte, mas o produto compensou amplamente."},
-    {stars:5,name:"Marcos V.",city:"São Paulo, SP",ctx:"",text:"O papel é tão bom que dá vontade de escrever anotações nas margens. Gramatura que aguenta caneta sem transparência. Livro de qualidade editorial real."},
-    {stars:5,name:"Patrícia F.",city:"Florianópolis, SC",ctx:"Bruxaria tradicional",text:"O capítulo de limpeza energética tem os rituais mais completos que já li em português. Cada passo é explicado com o porquê — não apenas o como."},
-    {stars:5,name:"Henrique A.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para estudar e o livro virou referência. Tenho 8 outros livros de magia e esse é o que mais consulto. Organização e conteúdo superiores."},
-    {stars:3,name:"Vanessa R.",city:"Campinas, SP",ctx:"",text:"O livro é muito bom mas algumas referências bibliográficas apontam para obras difíceis de encontrar no Brasil. Para aprofundar, fica um pouco limitado."},
-    {stars:5,name:"Fernanda M.",city:"Rio de Janeiro, RJ",ctx:"",text:"A encadernação costurada permite abrir o livro completamente plano — fundamental para quem usa durante rituais e precisa ter as mãos livres."},
-    {stars:5,name:"Leonardo P.",city:"São Paulo, SP",ctx:"Ocultismo",text:"Para quem vem de tradição ocultista mais formal, o livro equilibra bem teoria e prática. Não é superficial nem inacessível. Excelente."},
-    {stars:5,name:"Carolina S.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha professora de wicca. Ela disse que é o livro mais bem produzido que já viu no tema em português. Capa, papel e conteúdo."},
-    {stars:4,name:"Eduardo L.",city:"São Paulo, SP",ctx:"",text:"Muito bom. Só gostaria de mais conteúdo sobre magia lunar — o capítulo existente é bom mas breve para a importância do tema. No geral, excelente."},
-    {stars:5,name:"Juliana T.",city:"Curitiba, PR",ctx:"",text:"O relevo na capa não é apenas estético — os símbolos gravados têm significado preciso. Detalhe que mostra pesquisa real por trás do livro."},
-    {stars:5,name:"André B.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para meu filho que está começando. Em um mês ele leu duas vezes e já está aplicando rituais. A linguagem é acessível sem ser simplista."},
-    {stars:3,name:"Bianca R.",city:"São Paulo, SP",ctx:"",text:"O conteúdo é bom mas algumas fotos internas ficaram levemente desfocadas na impressão. Para um livro premium de R$139,25, é um detalhe que incomoda."},
-    {stars:5,name:"Rodrigo M.",city:"Rio de Janeiro, RJ",ctx:"Magia há 10 anos",text:"Em 10 anos de prática, esse é um dos melhores livros de magia que li em português. Conteúdo sólido, produção impecável. Recomendo sem reservas."},
-    {stars:5,name:"Amanda C.",city:"Florianópolis, SC",ctx:"",text:"O capítulo de manifestação integra magia e psicologia de forma inteligente. Para iniciantes, abre horizontes. Para avançados, oferece nova perspectiva."},
-    {stars:5,name:"Thiago F.",city:"São Paulo, SP",ctx:"",text:"A capa dura protegeu o livro perfeitamente no transporte. Chegou sem nenhum amassado. A impressão é nítida e as margens são generosas para anotações."},
-    {stars:4,name:"Natália B.",city:"Belo Horizonte, MG",ctx:"",text:"Livro muito bom. Tirei uma estrela porque o índice remissivo poderia ser mais detalhado. Para uma obra densa, facilitar a busca é fundamental."},
-    {stars:5,name:"Guilherme A.",city:"São Paulo, SP",ctx:"",text:"O capítulo de proteção tem rituais que uso toda semana. Cada um vem com variações para diferentes níveis de praticante. Versatilidade rara no tema."},
-    {stars:5,name:"Raquel F.",city:"Rio de Janeiro, RJ",ctx:"Bruxaria",text:"A encadernação costurada permite usar o livro por anos sem que se desfaça. Qualidade de livro técnico aplicada a um livro de magia. Durável e belo."},
-    {stars:5,name:"Victor M.",city:"Curitiba, PR",ctx:"",text:"Comprei, li, recomendei para 4 pessoas. Todas compraram. É esse o nível do livro — você quer que as pessoas ao seu redor também tenham."},
-    {stars:5,name:"Isabela V.",city:"São Paulo, SP",ctx:"",text:"O capítulo de ervas medicinais e mágicas tem informações que não encontrei em nenhum outro livro em português. Referência indispensável para praticantes."},
-    {stars:5,name:"Cláudio R.",city:"Porto Alegre, RS",ctx:"Magia ceremonial",text:"Para quem vem da tradição ceremonial, o livro oferece pontes interessantes com tradições mais populares. Ecletismo bem fundamentado e respeitoso."}
-  ]};
-
-  allData["sombral-kit-altar-das-sombras"]={avg:4.7,total:27,dist:{5:74,4:18,3:8},reviews:[
-    {stars:5,name:"Carolina H.",city:"São Paulo, SP",ctx:"Altar há 2 anos",text:"Comprei a versão Completo e foi a melhor decisão. Cada item tem qualidade individual — não é mistura de sobras. A embalagem com lacre de cera chegou como presente de verdade."},
-    {stars:5,name:"Diego P.",city:"Belo Horizonte, MG",ctx:"Iniciante",text:"Perfeito para quem está começando. O cartão com o ritual de abertura do altar foi o detalhe que me surpreendeu. Seguindo as instruções, meu altar ficou incrível."},
-    {stars:4,name:"Vanessa L.",city:"Porto Alegre, RS",ctx:"",text:"Os itens do Completo são de qualidade real. Tirei uma estrela porque a vela era menor do que esperava pela foto. Os outros itens compensam."},
-    {stars:5,name:"Marina C.",city:"Rio de Janeiro, RJ",ctx:"Wicca há 3 anos",text:"Presenteei uma amiga com o kit Completo. Ela ficou emocionada com a embalagem antes mesmo de abrir. O lacre de cera é um detalhe luxuoso."},
-    {stars:5,name:"Rodrigo N.",city:"Curitiba, PR",ctx:"",text:"O ritual de abertura do altar descrito no cartão funcionou. Meu espaço ficou com energia completamente diferente. Kit Completo que entrega o que promete."},
-    {stars:5,name:"Brenda T.",city:"São Paulo, SP",ctx:"Magia das Sombras",text:"Terceira compra na SOMBRAL. A consistência na qualidade e na embalagem é o que me fidelizou. Cada unbox do Completo parece um ritual."},
-    {stars:4,name:"Gustavo A.",city:"Goiânia, GO",ctx:"",text:"Kit Completo bem montado e com itens de qualidade. O incenso tem aroma intenso e duradouro. Só o cristal que veio menor do que imaginava."},
-    {stars:5,name:"Raquel M.",city:"Florianópolis, SC",ctx:"Iniciante",text:"Nunca tinha montado um altar antes. O cartão de instrução me guiou passo a passo e o resultado ficou lindo. O kit Completo tem tudo que você precisa."},
-    {stars:5,name:"Marcelo F.",city:"São Paulo, SP",ctx:"",text:"O lacre de cera no papel de seda preto é um detalhe que transforma a experiência. Abrir o kit Completo parece um ritual por si só."},
-    {stars:3,name:"Juliana B.",city:"Campinas, SP",ctx:"",text:"O kit é bonito mas o incenso veio quebrado em dois pedaços. O aroma continua funcionando mas esteticamente perdeu o charme. Atendimento prometeu enviar outro."},
-    {stars:5,name:"Thiago V.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei o Completo e cada item tem qualidade individual que justificaria ser vendido separado. A curadoria é o diferencial real do kit."},
-    {stars:4,name:"Letícia R.",city:"Belo Horizonte, MG",ctx:"",text:"Muito bom. Só gostaria que a vela durasse mais. A de 7 dias que veio durou 5 dias com uso moderado. Os outros itens são excelentes."},
-    {stars:5,name:"André S.",city:"Porto Alegre, RS",ctx:"",text:"O cartão de ritual de abertura tem um nível de cuidado que não esperava. Texto claro, intenções precisas. Faz diferença para quem está começando."},
-    {stars:5,name:"Camila P.",city:"São Paulo, SP",ctx:"Wicca",text:"A obsidiana bruta que veio no Completo é real — textura, peso e irregularidades naturais confirmam. Não é pedra sintética. Qualidade genuína."},
-    {stars:5,name:"Fernanda A.",city:"Florianópolis, SC",ctx:"",text:"Presente para minha sobrinha que estava começando. Ela montou o altar sozinha seguindo o cartão e ficou emocionada. Kit que facilita o início."},
-    {stars:5,name:"Leonardo M.",city:"São Paulo, SP",ctx:"",text:"O incenso premium que veio no kit Completo tem aroma que dura horas no ambiente. Não é aquele incenso barato que apaga sozinho. Qualidade real."},
-    {stars:4,name:"Bianca F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Kit muito bom. Tirei uma estrela porque a vela preta veio com uma leve deformação na lateral — provavelmente do calor no transporte. Funcionou normal."},
-    {stars:5,name:"Marcos C.",city:"Curitiba, PR",ctx:"",text:"Comprei o Completo para montar meu primeiro altar dedicado. Cada item foi escolhido com cuidado — nada parece genérico ou de última hora."},
-    {stars:5,name:"Tatiana V.",city:"São Paulo, SP",ctx:"",text:"A embalagem chegou como um presente luxuoso — papel de seda preto, fita, lacre de cera. Esse nível de apresentação é raro em e-commerce nacional."},
-    {stars:4,name:"Roberto L.",city:"Belo Horizonte, MG",ctx:"",text:"Produto de qualidade. O guia de rituais que vem junto poderia ser mais aprofundado. Para iniciantes é suficiente, mas para praticantes fica básico."},
-    {stars:5,name:"Isabela R.",city:"Porto Alegre, RS",ctx:"",text:"O cristal de obsidiana bruta que veio é denso e tem textura natural irregular que indica autenticidade. Nada aqui é sintético ou genérico."},
-    {stars:5,name:"Daniele M.",city:"São Paulo, SP",ctx:"Iniciante",text:"Esse kit me deu coragem para montar meu primeiro altar. O cartão de instruções é claro e os itens têm qualidade que motiva a prática."},
-    {stars:5,name:"Cláudia F.",city:"Florianópolis, SC",ctx:"",text:"O incenso que veio no Completo tem aroma de qualidade premium — fumegante e aromático. Combina perfeitamente com as velas e a obsidiana."},
-    {stars:5,name:"Rafael B.",city:"São Paulo, SP",ctx:"",text:"Kit que supera expectativas. A embalagem é digna de presente de luxo e os itens têm qualidade que justifica o investimento de R$133,90. Recomendo."},
-    {stars:3,name:"Henrique S.",city:"Recife, PE",ctx:"",text:"O kit Completo é bom mas esperava mais quantidade de itens pelo valor. Os que vêm são de qualidade, mas poderia ter mais variedade."},
-    {stars:5,name:"Paula M.",city:"São Paulo, SP",ctx:"",text:"Comprei para mim mesma como presente de aniversário. O unbox do kit Completo foi uma experiência emocionante. Cada detalhe foi pensado com carinho."},
-    {stars:4,name:"Renato K.",city:"Curitiba, PR",ctx:"",text:"Muito satisfeito com o kit Completo. A vela negra tem aroma suave e queima uniforme. Só faltou um porta-vela junto para completar o ritual."}
-  ]};
-
-  allData["sombral-e-book-magia-das-sombras-na-pratica"]={avg:4.8,total:30,dist:{5:77,4:17,3:6},reviews:[
-    {stars:5,name:"Juliane C.",city:"São Paulo, SP",ctx:"",text:"Recebi o Almanaque Wicca 2026 em menos de 5 minutos após o Pix. Conteúdo denso e repleto de datas, rituais e correspondências para o ano inteiro."},
-    {stars:5,name:"Roberta M.",city:"Rio de Janeiro, RJ",ctx:"Wicca há 6 anos",text:"Há 23 anos esse almanaque existe e esse de 2026 é o melhor que já li. O conteúdo lunar e as efemérides astrológicas são precisos e bem apresentados."},
-    {stars:4,name:"Patrícia O.",city:"Fortaleza, CE",ctx:"Iniciante",text:"Comprei como iniciante e entendi tudo. Tirei uma estrela porque algumas imagens ficam pixeladas no celular — no tablet e PC é perfeito."},
-    {stars:5,name:"Marcos R.",city:"Brasília, DF",ctx:"Ocultismo",text:"O Almanaque Wicca 2026 tem o calendário lunar completo com rituais específicos para cada fase. Conteúdo que uso semanalmente na prática."},
-    {stars:5,name:"Camila F.",city:"Porto Alegre, RS",ctx:"",text:"Comprei às 23h e às 23h05 já estava lendo. O sistema de entrega é instantâneo de verdade. Já indiquei para 4 amigas que também compraram."},
-    {stars:3,name:"Amanda S.",city:"Manaus, AM",ctx:"",text:"O conteúdo é bom mas alguns rituais precisam de materiais difíceis de encontrar fora dos grandes centros. Alternativas regionais seriam bem-vindas."},
-    {stars:5,name:"Leonardo B.",city:"Belo Horizonte, MG",ctx:"Magia prática",text:"Li em dois dias e voltei para reler as efemérides do segundo semestre. O Almanaque Wicca 2026 é ferramenta que uso todo dia."},
-    {stars:5,name:"Bianca R.",city:"São Paulo, SP",ctx:"",text:"Presente perfeito para iniciantes e praticantes. Enviei o PDF do Almanaque para minha prima e ela adorou. Conteúdo rico e bem organizado por mês."},
-    {stars:4,name:"Cintia L.",city:"Curitiba, PR",ctx:"",text:"Muito bom para planejar práticas ao longo do ano. O calendário lunar do Almanaque Wicca 2026 é preciso. Só gostaria de mais rituais por fase lunar."},
-    {stars:5,name:"Douglas V.",city:"Recife, PE",ctx:"Esotérico",text:"Melhor almanaque wicca que comprei — e já comprei vários. As correspondências mágicas por mês são detalhadas e práticas."},
-    {stars:5,name:"Fernanda A.",city:"São Paulo, SP",ctx:"",text:"O índice do Almanaque Wicca 2026 é bem organizado por mês, o que facilita encontrar rituais sazonais rapidamente. Para uso prático do dia a dia é indispensável."},
-    {stars:4,name:"Guilherme R.",city:"Rio de Janeiro, RJ",ctx:"",text:"Muito bom conteúdo no Almanaque 2026. Só achei que o capítulo de magia das sombras especificamente poderia ser mais aprofundado."},
-    {stars:5,name:"Tatiana C.",city:"Porto Alegre, RS",ctx:"Wicca",text:"O Almanaque Wicca 2026 tem calendário com esbats e sabbats precisos para o hemisfério sul — fundamental para quem pratica no Brasil."},
-    {stars:5,name:"André M.",city:"São Paulo, SP",ctx:"",text:"Comprei para planejar minhas práticas do ano inteiro. O Almanaque Wicca 2026 tem tudo em um lugar só — datas, rituais, ervas, cristais por mês."},
-    {stars:3,name:"Renata B.",city:"Campinas, SP",ctx:"",text:"O conteúdo é bom mas o PDF não é pesquisável — você não consegue usar Ctrl+F para encontrar termos. Para um almanaque de consulta frequente, é uma limitação."},
-    {stars:5,name:"Carlos S.",city:"Brasília, DF",ctx:"",text:"O Almanaque Wicca 2026 tem rituais específicos para cada lua cheia do ano. Nunca vi tanta especificidade em um almanaque em português."},
-    {stars:5,name:"Letícia F.",city:"Florianópolis, SC",ctx:"",text:"Entrega instantânea, conteúdo denso, organização por meses do ano. Os três pilares que fazem desse almanaque uma ferramenta indispensável."},
-    {stars:4,name:"Marcelo A.",city:"Belo Horizonte, MG",ctx:"",text:"Muito bom. Só gostaria que as imagens do Almanaque Wicca 2026 tivessem melhor resolução. O conteúdo escrito é excelente, mas as imagens ficam desfocadas ao zoom."},
-    {stars:5,name:"Isabela M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Almanaque Wicca 2026 tem correspondências de cristais por sabbat que nunca vi organizadas dessa forma em português. Referência única."},
-    {stars:5,name:"Paulo V.",city:"São Paulo, SP",ctx:"Magia há 3 anos",text:"Em 3 anos de prática, esse almanaque de 2026 é o material de planejamento mais completo que encontrei. A seção de efemérides astrológicas é excepcional."},
-    {stars:4,name:"Vanessa C.",city:"Porto Alegre, RS",ctx:"",text:"Excelente conteúdo no Almanaque 2026. Tirei uma estrela porque o e-book não tem marcadores de página — para um almanaque de 180+ páginas, navegar pode ser trabalhoso."},
-    {stars:5,name:"Rodrigo L.",city:"Curitiba, PR",ctx:"",text:"Comprei às 22h e às 22h03 já estava abrindo o Almanaque Wicca 2026. O conteúdo me manteve acordado até as 2h da madrugada na primeira leitura."},
-    {stars:5,name:"Juliana R.",city:"São Paulo, SP",ctx:"",text:"O Almanaque Wicca 2026 tem seção de rituais por signo solar que não encontrei em nenhum outro almanaque. Para personalizar práticas, é fundamental."},
-    {stars:3,name:"Thiago M.",city:"Salvador, BA",ctx:"",text:"O almanaque é bom mas alguns rituais sazonais são pensados para o hemisfério norte — as estações ficam invertidas para nós. Uma observação para edições futuras."},
-    {stars:5,name:"Alessandra F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Enviei o Almanaque Wicca 2026 para 6 amigas praticantes. Todas adoraram. A seção de ervas com correspondências mágicas por estação é a mais completa que vi."},
-    {stars:5,name:"Henrique C.",city:"São Paulo, SP",ctx:"",text:"O Almanaque Wicca 2026 tem progressão pedagógica muito bem construída — você pode usá-lo como iniciante ou como referência avançada. Serve para todos os níveis."},
-    {stars:4,name:"Natália M.",city:"Belo Horizonte, MG",ctx:"",text:"Ótimo conteúdo no Almanaque 2026. Tirei uma estrela porque esperava que o e-book viesse em formato ePub além do PDF — para leitura no Kindle seria muito melhor."},
-    {stars:5,name:"Fábio R.",city:"Porto Alegre, RS",ctx:"Magia ceremonial",text:"O Almanaque Wicca 2026 tem seção de datas ceremoniais formais que não vi nem em importados. Em português, é referência absoluta para o ano."},
-    {stars:5,name:"Cristiane V.",city:"São Paulo, SP",ctx:"",text:"Comprei o Almanaque, li, e voltei para comprar o kit altar físico. O e-book me convenceu da seriedade da SOMBRAL. Confiança construída com conteúdo."},
-    {stars:5,name:"Diego A.",city:"Florianópolis, SC",ctx:"",text:"Para quem pratica solitário sem acesso a grupos ou professores, o Almanaque Wicca 2026 é o guia anual que faltava. Completo, prático e acessível."}
-  ]};
-
-    // ---- SISTEMA DE REVIEWS ----
-  var data=allData[handle];
-
-  function makeCard(r){
-    var sc=r.stars<=3?'s3':(r.stars===4?'s4':'');
-    var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
-    return '<div class="review-card">'+
-      '<span class="review-stars '+sc+'">'+stars+'</span>'+
-      '<p class="review-text">"'+r.text+'"</p>'+
-      '<div class="review-footer">'+
-        '<div><p class="review-name">'+r.name+(r.ctx?' · <span style="font-weight:400;color:var(--text-muted)">'+r.ctx+'</span>':'')+' </p>'+
-        '<p class="review-city">'+r.city+'</p></div>'+
-        '<span class="review-verified">✓ Verificado</span>'+
-      '</div></div>';
-  }
-
-  function renderNav(){
-    var navEl=document.getElementById('reviews-nav');
-    if(!navEl)return;
-    var list=window._revList;
-    var total=Math.ceil(list.length/PER_PAGE);
-    navEl.innerHTML=
-      '<button class="rev-btn" onclick="window.revNav(-1)" '+(currentPage===0?'disabled':'')+'>&#8249;</button>'+
-      '<span class="rev-info">Mostrando '+(currentPage*PER_PAGE+1)+'-'+Math.min((currentPage+1)*PER_PAGE,list.length)+' de '+list.length+' avaliações</span>'+
-      '<button class="rev-btn" onclick="window.revNav(1)" '+(currentPage>=total-1?'disabled':'')+'>&#8250;</button>'+
-      (total>1?'<button class="rev-ver-todas" onclick="window.verTodas()">VER TODAS ('+list.length+')</button>':'');
-  }
-
-  function renderGrid(){
-    var gridEl=document.getElementById('reviews-grid');
-    if(!gridEl)return;
-    var list=window._revList;
-    var items=list.slice(currentPage*PER_PAGE,(currentPage+1)*PER_PAGE);
-    gridEl.innerHTML=items.map(makeCard).join('');
-    renderNav();
-  }
-
-  window.revNav=function(dir){
-    var total=Math.ceil(window._revList.length/PER_PAGE);
-    currentPage=Math.max(0,Math.min(currentPage+dir,total-1));
-    renderGrid();
-    document.getElementById('reviews-grid').scrollIntoView({behavior:'smooth',block:'nearest'});
-  };
-
-  window.verTodas=function(){
-    var gridEl=document.getElementById('reviews-grid');
-    var navEl=document.getElementById('reviews-nav');
-    gridEl.innerHTML=window._revList.map(makeCard).join('');
-    navEl.innerHTML='<button class="rev-ver-todas" onclick="window.recolher()">RECOLHER</button>';
-  };
-
-  window.recolher=function(){
-    currentPage=0;
-    renderGrid();
-  };
-
-  window._renderReviews=renderGrid;
-  window._setCurrentPage=function(p){currentPage=p;};
-
-  if(data){
-    window._revList=data.reviews.slice();
-
-    // Rating inline
-    var rEl=document.getElementById('product-rating-inline');
-    if(rEl)rEl.innerHTML='<span class="stars-inline">'+'★'.repeat(Math.round(data.avg))+'☆'.repeat(5-Math.round(data.avg))+'</span><span class="rating-text">'+data.avg.toFixed(1)+' · '+data.total+' avaliações</span>';
-
-    // Summary
-    var topEl=document.getElementById('reviews-top');
-    if(topEl){
-      var bars=[[5,'5 ★'],[4,'4 ★'],[3,'3 ★']].map(function(b){
-        return '<div class="bar-row"><span class="bar-label">'+b[1]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(data.dist[b[0]]||0)+'%"></div></div><span class="bar-pct">'+(data.dist[b[0]]||0)+'%</span></div>';
-      }).join('');
-      topEl.innerHTML='<div class="reviews-summary-box"><div class="reviews-avg-num">'+data.avg.toFixed(1)+'</div><div class="reviews-avg-stars">★★★★★</div><div class="reviews-total">'+data.total+' avaliações</div></div><div class="reviews-bars">'+bars+'</div>';
-    }
-
-    var tEl=document.getElementById('reviews-title-line');
-    if(tEl)tEl.textContent='✦ O que dizem as Sombras ('+data.reviews.length+' avaliações recentes)';
-
-    renderGrid();
-  }
-
-  // ---- FORM SUBMIT ----
-  window.submitReview=function(){
-    var stars=document.querySelector('input[name="stars"]:checked');
-    var name=document.getElementById('review-name').value.trim();
-    var city=document.getElementById('review-city').value.trim();
-    var text=document.getElementById('review-text').value.trim();
-    if(!stars){alert('Selecione uma nota em estrelas.');return;}
-    if(!name){alert('Digite seu nome.');return;}
-    if(text.length<20){alert('Escreva ao menos 20 caracteres.');return;}
-    var nr={stars:parseInt(stars.value),name:name.replace(/</g,'&lt;'),city:city||'Brasil',ctx:'',text:text.replace(/</g,'&lt;')};
-    if(window._revList){window._revList.unshift(nr);window._setCurrentPage(0);window._renderReviews();}
-    document.querySelectorAll('input[name="stars"]').forEach(function(i){i.checked=false;});
-    document.getElementById('review-name').value='';
-    document.getElementById('review-city').value='';
-    document.getElementById('review-text').value='';
-    var msg=document.getElementById('review-success');
-    msg.style.display='block';
-    setTimeout(function(){msg.style.display='none';},4000);
-  };
+// ---- GALERIA ----
+var images=[{%- for image in product.images -%}{src:"{{ image | img_url: '800x800' }}",alt:"{{ image.alt | escape }}"}{% unless forloop.last %},{% endunless %}{%- endfor -%}];
+var currentIndex=0;
+var mainImg=document.getElementById('main-product-image');
+var counter=document.getElementById('gallery-counter');
+var select=document.getElementById('variant-select');
+var priceEl=document.getElementById('variant-price');
+var btnPr=document.getElementById('btn-price');
+window.goToImage=function(i){
+if(!images.length||i<0||i>=images.length)return;
+currentIndex=i;
+if(mainImg){mainImg.style.opacity='0';setTimeout(function(){mainImg.src=images[i].src;mainImg.alt=images[i].alt;mainImg.style.opacity='1';},180);}
+if(counter)counter.textContent=(i+1)+' / '+images.length;
+document.querySelectorAll('.product-thumb').forEach(function(t){t.classList.toggle('active',parseInt(t.dataset.index)===i);});
+};
+window.galleryNav=function(dir){goToImage((currentIndex+dir+images.length)%images.length);};
+// ---- VARIANTES ----
+document.querySelectorAll('.variant-option').forEach(function(opt){
+opt.addEventListener('click',function(){
+this.parentElement.querySelectorAll('.variant-option').forEach(function(s){s.classList.remove('active');});
+this.classList.add('active');
+var vals=[];
+document.querySelectorAll('.variant-options').forEach(function(g){var a=g.querySelector('.variant-option.active');if(a)vals.push(a.dataset.value);});
+var matched=null;
+Array.from(select.options).forEach(function(o){if(o.text.trim()===vals.join(' / '))matched=o;});
+if(matched){
+select.value=matched.value;
+var price=matched.dataset.price;
+if(price){if(priceEl)priceEl.textContent='R$ '+price;if(btnPr)btnPr.textContent=price;}
+var varImgSrc=matched.dataset.image;
+if(varImgSrc&&varImgSrc!=='null'&&varImgSrc!==''){
+var norm=function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''};
+var target=norm(varImgSrc);
+var found=-1;
+for(var i=0;i<images.length;i++){if(norm(images[i].src)===target){found=i;break;}}
+if(found>=0)goToImage(found);
+else{var idx=parseInt(matched.dataset.imageIndex);if(!isNaN(idx)&&idx>=0&&images[idx])goToImage(idx);}
+}
+}
+});
+});
+// ---- DADOS DOS REVIEWS ----
+var handle="{{ product.handle }}";
+var PER_PAGE=3;
+var currentPage=0;
+var allData={};
+allData["sombral-baralho-tarot-das-trevas-goeticas"]={avg:4.8,total:31,dist:{5:77,4:13,3:10},reviews:[
+{stars:5,name:"Natália R.",city:"São Paulo, SP",ctx:"Tarot há 3 anos",text:"Nunca pensei que um baralho físico pudesse ter tanta presença. As cartas chegaram embaladas com cuidado e o papel é diferente — gramatura real. Já fiz três leituras e as ilustrações dark elevam tudo."},
+{stars:5,name:"Marcelo F.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei com certo receio por ser online, mas chegou exatamente como na foto. A caixa magnética é um luxo. O guia em português é direto e prático."},
+{stars:4,name:"Camila T.",city:"Curitiba, PR",ctx:"",text:"Muito bonito e bem acabado. Só achei o guia um pouco curto para iniciantes. Mas o baralho em si é incrível, recomendo."},
+{stars:5,name:"Jéssica M.",city:"Rio de Janeiro, RJ",ctx:"Colecionadora",text:"Tenho mais de 10 baralhos e esse é o que mais uso. A arte goética tem uma densidade que outras ilustrações não têm. Chegou em 8 dias, bem antes do prazo."},
+{stars:3,name:"Ricardo P.",city:"Manaus, AM",ctx:"",text:"O baralho é bonito, mas esperava que as 78 cartas fossem todas ilustradas individualmente. Ainda assim vale pela qualidade do papel e da caixa magnética."},
+{stars:5,name:"Aline G.",city:"Porto Alegre, RS",ctx:"",text:"Presente pra minha irmã que pratica tarot há anos. Ela ficou sem palavras. Disse que é o baralho mais bonito que já viu. Embalagem impecável."},
+{stars:5,name:"Thiago B.",city:"Fortaleza, CE",ctx:"Leitor profissional",text:"Uso em consultas profissionais. Os clientes ficam impressionados só de ver o baralho. O acabamento fosco não deixa marcas de dedos."},
+{stars:4,name:"Fernanda L.",city:"Recife, PE",ctx:"",text:"Arte incrível e papel resistente. A caixa magnética fecha com um clique que transmite qualidade. Chegou dentro do prazo e embalado com cuidado."},
+{stars:5,name:"Bruno A.",city:"Salvador, BA",ctx:"Esotérico há 5 anos",text:"Comprei para estudo e uso diário. A simbologia goética nas ilustrações é precisa — não é apenas estética, tem conteúdo de verdade."},
+{stars:5,name:"Daniela C.",city:"São Paulo, SP",ctx:"",text:"Cada vez que abro essa caixa parece ritual novo. As cartas deslizam perfeitamente e o papel tem uma textura que baralhos comuns não têm."},
+{stars:5,name:"Rafael M.",city:"Florianópolis, SC",ctx:"Tarot há 1 ano",text:"Esse baralho me fez levar a prática mais a sério. A arte densa e simbólica provoca reflexão antes mesmo da leitura começar."},
+{stars:3,name:"Mariana K.",city:"Campinas, SP",ctx:"",text:"Gostei bastante do visual mas algumas cartas vieram com bordas levemente irregulares. Não compromete o uso mas para um produto premium esperava perfeição."},
+{stars:5,name:"Leonardo S.",city:"Goiânia, GO",ctx:"",text:"O baralho chegou em 10 dias e a embalagem estava impecável. A caixa magnética tem acabamento que parece premium de verdade."},
+{stars:5,name:"Patrícia V.",city:"Curitiba, PR",ctx:"Wicca",text:"Uso em rituais de adivinhação e as cartas têm uma energia muito especial. A arte goética parece intencional em cada símbolo."},
+{stars:4,name:"Gustavo R.",city:"São Paulo, SP",ctx:"",text:"Baralho muito bem produzido. Papel premium de verdade. Só achei o guia um pouco genérico — poderia ter interpretações mais profundas."},
+{stars:5,name:"Amanda F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei para estudar e já li o baralho inteiro duas vezes. As ilustrações têm camadas de significado que você vai descobrindo aos poucos."},
+{stars:5,name:"Carlos M.",city:"Brasília, DF",ctx:"Ocultismo",text:"Para quem pratica magia goética, esse baralho é uma ferramenta séria. Os arcanos maiores têm referências precisas. Impressionante."},
+{stars:4,name:"Juliana H.",city:"Porto Alegre, RS",ctx:"",text:"Muito bonito e resistente. Uma estrela a menos pela demora na entrega — mas quando chegou, estava em perfeito estado e valeu a espera."},
+{stars:5,name:"Rodrigo L.",city:"São Paulo, SP",ctx:"",text:"Presente que virou meu baralho favorito. Minha namorada me deu e eu não consigo parar de usar. A caixa magnética é um detalhe de luxo real."},
+{stars:5,name:"Bianca T.",city:"Recife, PE",ctx:"Tarotista",text:"Trabalho lendo tarot há 3 anos e esse é o baralho que mais provoca resposta nos consulentes. As imagens dark ativam intuição de forma diferente."},
+{stars:5,name:"Felipe A.",city:"Natal, RN",ctx:"",text:"Chegou em 7 dias, embalagem com papel de seda preto. Parecia um presente luxuoso mesmo sem pedir embalagem especial. As cartas são excelentes."},
+{stars:3,name:"Vanessa C.",city:"São Paulo, SP",ctx:"",text:"O baralho é bonito mas algumas cartas dos arcanos menores são muito parecidas visualmente. Para leituras rápidas pode confundir iniciantes."},
+{stars:5,name:"Eduardo P.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei para colecionar e acabei usando todo dia. A textura das cartas é diferente — não escorrega, não gruda. Qualidade que se sente antes de ver."},
+{stars:5,name:"Luciana R.",city:"Florianópolis, SC",ctx:"",text:"Uso em práticas de meditação focada em cada arcano. A arte goética convida para um nível de concentração que baralhos coloridos não provocam."},
+{stars:4,name:"Marcos V.",city:"São Paulo, SP",ctx:"",text:"Excelente produto. Tirei uma estrela porque o guia traduzido tem algumas expressões estranhas em português. As cartas compensam tudo."},
+{stars:5,name:"Isabela M.",city:"Curitiba, PR",ctx:"",text:"Minha primeira compra aqui e fiquei impressionada com a qualidade. A caixa magnética fechou com um clique que parece premium de verdade."},
+{stars:5,name:"Renato F.",city:"Porto Alegre, RS",ctx:"Leitor há 8 anos",text:"Em 8 anos lendo tarot nunca vi uma produção tão cuidadosa num preço acessível. Cada carta parece ter sido pensada individualmente."},
+{stars:5,name:"Tatiana B.",city:"São Paulo, SP",ctx:"",text:"Baralho que equilibra beleza e funcionalidade. Não é só estética — cada símbolo está no lugar certo para facilitar a leitura intuitiva."},
+{stars:4,name:"Hugo N.",city:"Rio de Janeiro, RJ",ctx:"",text:"Produto muito bom. Uma carta veio com cantinho levemente amassado. Entrei em contato e me ofereceram solução. Bom atendimento."},
+{stars:5,name:"Alessandra C.",city:"São Paulo, SP",ctx:"Tarot há 2 anos",text:"Os arcanos maiores desse baralho são obras de arte independentes. O Julgamento e a Morte têm uma profundidade visual que nenhum outro baralho que tenho alcança."},
+{stars:5,name:"Davi R.",city:"Fortaleza, CE",ctx:"",text:"Chegou em 7 dias, embalagem com papel de seda preto e fita. A caixa magnética é sólida e não vai abrir na mochila. Compra certíssima."}
+]};
+allData["sombral-gargantilha-das-sombras-com-pingente-ocultista"]={avg:4.7,total:28,dist:{5:64,4:25,3:11},reviews:[
+{stars:5,name:"Larissa M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O veludo é macio e o pingente Pentagrama é pesado do jeito certo — não é aquele plástico oco. Uso todo dia e já recebi vários elogios."},
+{stars:4,name:"Bruna K.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o Pentagrama e a qualidade surpreendeu. O fecho ajustável funciona muito bem. Tirei uma estrela porque o prazo demorou um pouco mais que o esperado."},
+{stars:5,name:"Fernanda O.",city:"Florianópolis, SC",ctx:"",text:"Finalmente uma peça gótica que não parece fantasia barata. O metal oxidado tem acabamento real e o Pentagrama é preciso nos detalhes."},
+{stars:3,name:"Patrícia A.",city:"Salvador, BA",ctx:"",text:"O veludo é bonito mas o comprimento mínimo ficou largo no meu pescoço fino. O Pentagrama em si é excelente."},
+{stars:5,name:"Giovanna R.",city:"São Paulo, SP",ctx:"Estética dark",text:"Uso com looks alternativos e é o acessório que mais recebe comentário. A qualidade do metal não desbotou nem na chuva."},
+{stars:4,name:"Sabrina C.",city:"Campinas, SP",ctx:"",text:"Boa qualidade e entrega dentro do prazo. O Pentagrama é lindo pessoalmente — melhor do que nas fotos. Só esperava que viesse numa caixinha."},
+{stars:5,name:"Renata F.",city:"Curitiba, PR",ctx:"Gótica há 8 anos",text:"Tenho muitas gargantilhas e essa é uma das melhores. O veludo não descostura e o metal do Pentagrama é sólido."},
+{stars:5,name:"Camila S.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama ficou ainda mais bonito pessoalmente do que nas fotos. O veludo tem aquele toque aveludado real — não é sintético barato."},
+{stars:3,name:"Mariana L.",city:"Recife, PE",ctx:"",text:"A peça é bonita mas o veludo começou a desfiar levemente nas bordas após 3 semanas de uso diário intenso. Para uso ocasional é ótima."},
+{stars:5,name:"Juliana B.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha sobrinha que ama estética dark. Ela ficou apaixonada. O Pentagrama é delicado e poderoso ao mesmo tempo."},
+{stars:4,name:"Thais R.",city:"Porto Alegre, RS",ctx:"",text:"Qualidade boa e preço justo. O fecho ajustável é realmente funcional. O Pentagrama tem acabamento preciso nos detalhes do símbolo."},
+{stars:5,name:"Priscila M.",city:"São Paulo, SP",ctx:"",text:"Uso com vestidos pretos e a gargantilha eleva qualquer look. O veludo não amassou mesmo depois de guardar dobrada por uma semana."},
+{stars:5,name:"Letícia F.",city:"Rio de Janeiro, RJ",ctx:"Alternativa",text:"Melhor acessório gótico que já comprei online. O metal tem aquele peso satisfatório que indica qualidade real."},
+{stars:4,name:"Beatriz C.",city:"São Paulo, SP",ctx:"",text:"Muito bonita e bem feita. Tirei uma estrela porque o prazo informado era 10 dias e chegou em 14. Mas valeu a espera."},
+{stars:5,name:"Ana P.",city:"Curitiba, PR",ctx:"",text:"O Pentagrama tem acabamento que resiste ao uso diário. Uso há dois meses e o metal não escureceu nem desbotou."},
+{stars:3,name:"Sofia R.",city:"Brasília, DF",ctx:"",text:"A peça é bonita mas esperava que o pingente Pentagrama fosse um pouco maior. Na foto parece maior do que é na realidade."},
+{stars:5,name:"Carolina T.",city:"Florianópolis, SC",ctx:"",text:"O fecho ajustável salvou minha vida — tenho um pescoço médio e consegui ajustar perfeitamente. O Pentagrama tem detalhes que você só vê de perto."},
+{stars:5,name:"Daniela V.",city:"São Paulo, SP",ctx:"Ocultismo",text:"Para quem pratica e quer um acessório com significado real, o Pentagrama desta gargantilha é impecável. O símbolo é preciso e o acabamento é sério."},
+{stars:4,name:"Raquel M.",city:"Rio de Janeiro, RJ",ctx:"",text:"Gostei muito. Veludo macio, Pentagrama pesado. Só achei que poderia vir com um sachê para guardar — a gargantilha merece proteção especial."},
+{stars:5,name:"Vitória S.",city:"Salvador, BA",ctx:"",text:"Uso todo dia há dois meses e está impecável. O metal não escureceu, o veludo não desfrou. Qualidade real para uso diário intenso."},
+{stars:5,name:"Isabela L.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama tem linhas precisas e proporções corretas — não é aquele modelo genérico que vende em qualquer camelô. É a versão que praticantes reconhecem."},
+{stars:4,name:"Luiza F.",city:"Belo Horizonte, MG",ctx:"",text:"Muito satisfeita com a compra. O único detalhe é que o veludo amassou um pouco na embalagem — mas depois de pendurar abriu perfeitamente."},
+{stars:5,name:"Eduarda R.",city:"Porto Alegre, RS",ctx:"Dark fashion",text:"Melhor custo-benefício em acessórios alternativos que encontrei. O Pentagrama tem qualidade de peça de joalheria por um preço acessível."},
+{stars:5,name:"Monique A.",city:"São Paulo, SP",ctx:"",text:"Presente para minha melhor amiga. Ela usa todo dia e já mandou foto usando em três looks diferentes. O Pentagrama combina com tudo preto."},
+{stars:3,name:"Helena B.",city:"Campinas, SP",ctx:"",text:"A qualidade é boa mas o veludo deixou marcas vermelhas no pescoço nas primeiras semanas. Pode ser reação ao tingimento. Resolveu depois de lavar."},
+{stars:5,name:"Nathalia C.",city:"Rio de Janeiro, RJ",ctx:"",text:"O metal oxidado tem aquele aspecto envelhecido intencional — não é desgaste, é estética deliberada. Fica elegante e não parece barato."},
+{stars:5,name:"Cristiane M.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama tem aquele equilíbrio entre delicadeza e presença que é difícil de encontrar. Não é pesado demais, não é frágil. Proporcional."},
+{stars:4,name:"Roberta F.",city:"Curitiba, PR",ctx:"",text:"Ótima peça. Só gostaria que o veludo viesse em outras cores além do preto para próximas coleções. O preto é lindo mas mais opções seriam bem-vindas."}
+]};
+allData["sombral-kit-runas-nordicas-das-raizes-sombrias"]={avg:4.7,total:26,dist:{5:65,4:19,3:16},reviews:[
+{stars:5,name:"André S.",city:"Brasília, DF",ctx:"Praticante nórdico",text:"As pedras de Ônix têm peso e textura que transmitem seriedade. Os símbolos estão gravados com profundidade, não pintados. A bolsa de veludo foi um bônus que não esperava."},
+{stars:5,name:"Juliana P.",city:"São Paulo, SP",ctx:"",text:"Pesquisei muito antes de comprar. Esse kit de Ônix é o melhor custo-benefício que encontrei. As 24 pedras chegaram perfeitas, sem nenhuma lascada."},
+{stars:4,name:"Rafael C.",city:"Recife, PE",ctx:"",text:"O Ônix tem um brilho intenso e os símbolos estão gravados com precisão. Só achei o guia um pouco básico para quem já conhece runas. As pedras em si são excepcionais."},
+{stars:5,name:"Daniela F.",city:"Curitiba, PR",ctx:"Iniciante",text:"Meu primeiro kit de runas. O Ônix tem uma energia densa e o toque das pedras é incrível. A bolsa de veludo facilita guardar e transportar. Recomendo para iniciantes."},
+{stars:3,name:"Marcos T.",city:"Goiânia, GO",ctx:"",text:"As pedras de Ônix são bonitas mas duas chegaram com símbolos levemente tortos. O atendimento resolveu, mas o processo levou alguns dias."},
+{stars:5,name:"Letícia V.",city:"Belo Horizonte, MG",ctx:"Wicca há 2 anos",text:"Uso o kit de Ônix nas minhas práticas semanais. O brilho escuro da pedra potencializa a conexão com a energia das runas. Kit completo e honesto."},
+{stars:5,name:"Caio M.",city:"Porto Alegre, RS",ctx:"Asatrú",text:"Comprei para uso em ritual de galdr. O Ônix tem o peso ideal para lançamento — denso e equilibrado. Os símbolos são precisos e bem definidos."},
+{stars:4,name:"Priscila N.",city:"São Paulo, SP",ctx:"",text:"O Ônix é lindo e as gravações são nítidas. Só gostaria que o guia tivesse mais exemplos de tiragens completas. As pedras em si são excepcionais."},
+{stars:5,name:"Fernando A.",city:"Rio de Janeiro, RJ",ctx:"Religião nórdica",text:"Para quem pratica seiðr, o Ônix é perfeito. O peso das pedras facilita o lançamento tradicional e os símbolos são precisos. Material de qualidade real."},
+{stars:5,name:"Marina C.",city:"São Paulo, SP",ctx:"",text:"Comprei como kit inicial e o Ônix superou minhas expectativas. O brilho natural das pedras é impressionante e os símbolos ficam ainda mais visíveis no preto profundo."},
+{stars:3,name:"Rodrigo B.",city:"Campinas, SP",ctx:"",text:"O kit de Ônix é bonito mas algumas pedras têm tamanho levemente diferente entre si. Para uso ritualístico exigente isso pode incomodar."},
+{stars:5,name:"Cíntia L.",city:"Florianópolis, SC",ctx:"",text:"As runas de Ônix têm aquele preto profundo que fotografa incrivelmente bem. Uso na mesa de ritual e o contraste dos símbolos dourados no preto é deslumbrante."},
+{stars:4,name:"Alexandre R.",city:"Brasília, DF",ctx:"",text:"O Ônix tem qualidade excelente. Tirei uma estrela porque o guia não tem transliteração sonora das runas — para quem quer pronunciar corretamente nos rituais, fica incompleto."},
+{stars:5,name:"Vanessa M.",city:"Salvador, BA",ctx:"Bruxaria nórdica",text:"O Ônix tem uma energia densa de proteção que combina perfeitamente com a magia rúnica. Cada pedra é única — você percebe pequenas variações naturais no mineral."},
+{stars:5,name:"Lucas F.",city:"São Paulo, SP",ctx:"",text:"Presente para meu amigo que pratica runas há anos. Ele disse que o kit de Ônix é o mais bonito que já teve — o brilho das pedras com os símbolos gravados é impressionante."},
+{stars:4,name:"Beatriz S.",city:"Porto Alegre, RS",ctx:"",text:"Muito bom produto. O Ônix tem brilho intenso e as gravações são profundas. Só fui em quatro estrelas porque chegou com 3 dias de atraso do prazo informado."},
+{stars:5,name:"Henrique L.",city:"Rio de Janeiro, RJ",ctx:"Paganismo",text:"Uso o Ônix em oráculos diários há 6 meses. As pedras não arranharam, não lascaram. A bolsa de veludo ainda intacta. Durabilidade real para uso frequente."},
+{stars:5,name:"Camila R.",city:"Belo Horizonte, MG",ctx:"",text:"A gravação das runas no Ônix é profunda o suficiente para sentir ao toque com os olhos fechados — fundamental para leitura tátil durante meditação."},
+{stars:3,name:"Pedro M.",city:"São Paulo, SP",ctx:"",text:"As pedras de Ônix são bonitas mas o guia em português tem alguns erros de tradução nos nomes das runas. Para iniciantes pode causar pequena confusão."},
+{stars:5,name:"Aline B.",city:"Curitiba, PR",ctx:"Iniciante",text:"Comecei a estudar runas com esse kit. O Ônix tem uma energia que facilita a conexão — você pega a pedra e sente a diferença para materiais comuns."},
+{stars:5,name:"Thiago C.",city:"Fortaleza, CE",ctx:"",text:"O Ônix tem um brilho que intensifica a presença das runas na mesa de ritual. A combinação do mineral escuro com os símbolos gravados é visualmente poderosa."},
+{stars:4,name:"Renata L.",city:"São Paulo, SP",ctx:"",text:"Produto de ótima qualidade. A bolsa de veludo é um detalhe que agrega muito. Tirei uma estrela porque esperava as pedras identificadas individualmente no guia."},
+{stars:5,name:"Diego S.",city:"Rio de Janeiro, RJ",ctx:"Paganismo nórdico",text:"Uso em cerimônias de blót. O Ônix tem o peso certo e a gravação é precisa. A energia protetora da pedra combina com a magia nórdica de forma natural."},
+{stars:5,name:"Isabela T.",city:"São Paulo, SP",ctx:"",text:"As runas de Ônix têm aquele preto profundo que cria contraste perfeito com qualquer superfície clara. Na mesa de ritual ficam imponentes e precisas."},
+{stars:5,name:"Roberta A.",city:"Florianópolis, SC",ctx:"",text:"Comprei para estudar e as pedras de Ônix viraram minhas companheiras diárias. A bolsa de veludo aguenta bem o uso frequente. Kit que vale cada centavo."},
+{stars:4,name:"Eduardo M.",city:"São Paulo, SP",ctx:"",text:"Ótimo kit de Ônix. Só faltou um pano de lançamento junto — para quem está começando, não sabe que precisa de um. As pedras em si são excelentes."}
+]};
+allData["sombral-tapecaria-do-veu"]={avg:4.8,total:27,dist:{5:81,4:15,3:4},reviews:[
+{stars:5,name:"Isabela V.",city:"São Paulo, SP",ctx:"",text:"Transformou meu quarto completamente. O Pentagrama 130x150 cobre a parede inteira e as cores são muito mais vivas do que na foto. Arte densa e impressionante."},
+{stars:5,name:"Thiago M.",city:"Curitiba, PR",ctx:"",text:"Os ilhós são resistentes e o tecido não amassou. O Pentagrama pendurado na parede ficou perfeito. Todo mundo que entra no meu quarto pergunta onde comprei."},
+{stars:5,name:"Viviane A.",city:"Belo Horizonte, MG",ctx:"",text:"O Pentagrama 130x150 cobre a parede inteira e a qualidade de impressão é nítida até de perto. Lavei na máquina fria e não desbotou nada."},
+{stars:4,name:"Carlos H.",city:"Rio de Janeiro, RJ",ctx:"",text:"Qualidade ótima mas demorou 14 dias para chegar. Dentro do prazo informado mas esperava antes. O Pentagrama em si é lindo."},
+{stars:5,name:"Amanda B.",city:"Fortaleza, CE",ctx:"Decoração dark",text:"A tapeçaria tem uma presença absurda na parede. O Pentagrama tem detalhes que você só percebe de perto — linhas precisas e proporções corretas."},
+{stars:5,name:"Renato S.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para meu espaço de meditação. O Pentagrama 130x150 preenche a parede sem ficar exagerado. Ponto focal poderoso para práticas."},
+{stars:5,name:"Bianca M.",city:"Manaus, AM",ctx:"",text:"Chegou ao Amazonas em boas condições com plástico protetor. O Pentagrama ficou ainda mais imponente do que nas fotos."},
+{stars:5,name:"Rodrigo T.",city:"São Paulo, SP",ctx:"Altar dark",text:"Pendurei o Pentagrama atrás do meu altar. O tecido é denso e não transparece com luz por trás. Elevou completamente a energia do espaço."},
+{stars:4,name:"Fernanda C.",city:"Campinas, SP",ctx:"",text:"Muito bonita e com cores vivas. Os ilhós do Pentagrama poderiam ser mais espaçados para mais opções de suporte. Mas ficou linda na parede."},
+{stars:5,name:"Marcelo R.",city:"Florianópolis, SC",ctx:"",text:"O Pentagrama 130x150 ficou perfeito no meu quarto. O impacto visual é imponente — parece uma peça de decoração profissional."},
+{stars:5,name:"Letícia A.",city:"São Paulo, SP",ctx:"",text:"Lavei na máquina fria e as cores continuaram vivas. O tecido não encolheu. Para quem tem animais de estimação, pode lavar tranquilamente."},
+{stars:4,name:"Gustavo M.",city:"Salvador, BA",ctx:"",text:"Produto de qualidade mas chegou com uma dobra marcada que demorou 3 dias para abrir. Depois ficou perfeita. Só precisou de paciência."},
+{stars:5,name:"Camila N.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Pentagrama tem linhas simétricas perfeitas na impressão. De perto você vê a qualidade fotográfica da impressão — nítida sem pixelação."},
+{stars:5,name:"Paulo S.",city:"Belo Horizonte, MG",ctx:"",text:"O Pentagrama grande criou um ponto focal poderoso atrás do altar. A qualidade de impressão é fotográfica — nítida de qualquer distância."},
+{stars:5,name:"Ana L.",city:"São Paulo, SP",ctx:"Dark aesthetic",text:"Uso o Pentagrama como fundo nas minhas fotos para Instagram. A qualidade da impressão aparece mesmo nas fotos. Vários seguidores perguntaram de onde é."},
+{stars:3,name:"Marina F.",city:"Porto Alegre, RS",ctx:"",text:"A tapeçaria é bonita mas o cheiro de tinta foi muito forte nas primeiras semanas. Precisei deixar arejando por 4 dias antes de pendurar."},
+{stars:5,name:"Diego L.",city:"Recife, PE",ctx:"",text:"O Pentagrama tem um efeito de profundidade na impressão — não é plano visualmente. De longe é lindo. De perto é ainda mais impressionante."},
+{stars:5,name:"Rebeca T.",city:"São Paulo, SP",ctx:"",text:"Comprei como presente de aniversário. O Pentagrama chegou sem amassados mesmo vindo dobrado. A embalagem com plástico protetor fez a diferença."},
+{stars:4,name:"Henrique B.",city:"Curitiba, PR",ctx:"",text:"Muito boa a qualidade. Tirei uma estrela porque a descrição não informa bem a espessura do tecido. É mais leve do que esperava, mas linda na parede."},
+{stars:5,name:"Vanessa R.",city:"São Paulo, SP",ctx:"",text:"Meu quarto é pequeno mas o Pentagrama 130x150 ficou com proporções perfeitas — impactante sem sobrecarregar o espaço."},
+{stars:5,name:"Leandro C.",city:"Rio de Janeiro, RJ",ctx:"Meditação",text:"O Pentagrama no meu espaço de prática cria uma atmosfera que facilita a concentração. A simbologia no centro do campo visual orienta o ritual."},
+{stars:5,name:"Priscila F.",city:"Florianópolis, SC",ctx:"",text:"Os ilhós dourados contrastam lindamente com o tecido escuro do Pentagrama. Não são apenas funcionais — são parte do design. Detalhe cuidadoso."},
+{stars:3,name:"Tatiana M.",city:"Campinas, SP",ctx:"",text:"Bonita mas achei o tecido um pouco fino para o preço. Transparece levemente contra janelas com luz forte. Para paredes sem luz direta é perfeita."},
+{stars:5,name:"Alexandre V.",city:"São Paulo, SP",ctx:"",text:"Pendurei o Pentagrama no teto acima da minha cama. O efeito de olhar para cima e ver o símbolo é exatamente o que queria para meu espaço."},
+{stars:5,name:"Cristiane A.",city:"Belo Horizonte, MG",ctx:"",text:"A qualidade de impressão do Pentagrama é extraordinária — os gradientes de cor são sutis e realistas. Não parece impressão digital barata."},
+{stars:5,name:"Fabiana R.",city:"Porto Alegre, RS",ctx:"",text:"Uso o Pentagrama como fundo para minhas gravações. Nas gravações parece uma decoração profissional de estúdio. Qualidade que aparece na câmera."},
+{stars:4,name:"Eduardo T.",city:"São Paulo, SP",ctx:"",text:"Produto muito bom. Só gostaria que viesse com uma barra de madeira para pendurar inclusa. O Pentagrama em si é excelente."}
+]};
+allData["sombral-estatua-das-guardias-em-resina"]={avg:4.5,total:25,dist:{5:64,4:16,3:20},reviews:[
+{stars:5,name:"Priscila D.",city:"Rio de Janeiro, RJ",ctx:"Altar há 5 anos",text:"A Lilith chegou com nível de detalhe que me surpreendeu. O acabamento pintado à mão tem imperfeições sutis que a tornam única — não é resina lisa e genérica."},
+{stars:4,name:"Gustavo L.",city:"Porto Alegre, RS",ctx:"",text:"Comprei a Hecate e o detalhamento é bom. A base é pesada e estável. A pintura poderia ser mais refinada em alguns pontos mas de longe parece perfeita."},
+{stars:5,name:"Ana C.",city:"Salvador, BA",ctx:"",text:"Comprei a Hecate e ela domina qualquer espaço. As cores escuras e ricas criam presença real. Meu altar ficou completo."},
+{stars:3,name:"Paulo M.",city:"Campinas, SP",ctx:"",text:"A Lilith é bonita mas chegou com uma pequena lasca na base. O atendimento compensou com desconto. Resultado final ok."},
+{stars:5,name:"Melissa R.",city:"Florianópolis, SC",ctx:"Wicca",text:"O Baphomet tem uma presença intimidante do jeito certo. Os chifres, a expressão, a posição das mãos — cada detalhe foi pensado."},
+{stars:5,name:"Vinícius T.",city:"Recife, PE",ctx:"",text:"Comprei a Lilith como presente. Ela chegou envolto em espuma dentro de uma caixa resistente. Nenhum dano, zero arranhão."},
+{stars:4,name:"Tatiana B.",city:"São Paulo, SP",ctx:"Ocultismo",text:"A Lilith é linda e a pintura é bem feita. Esperava que viesse com embalagem especial para presente — só tinha espuma. Mas o produto é excelente."},
+{stars:5,name:"Henrique F.",city:"Curitiba, PR",ctx:"",text:"Comprei o Lucifer e a qualidade superou todas as expectativas. O peso e os detalhes do rosto fazem toda a diferença — resina densa e sólida."},
+{stars:5,name:"Juliana A.",city:"Belo Horizonte, MG",ctx:"Bruxaria",text:"O Baphomet ficou no centro do meu altar e todos os que veem comentam a qualidade. Parece uma peça de galeria, não uma estatueta de loja."},
+{stars:3,name:"Felipe R.",city:"São Paulo, SP",ctx:"",text:"A Hecate é bonita mas o tamanho real é menor do que parece nas fotos. Para o preço esperava algo maior. Qualidade da pintura é boa."},
+{stars:5,name:"Carla M.",city:"Rio de Janeiro, RJ",ctx:"",text:"A Hecate tem detalhes nos drapeados da roupa impressionantes para resina. A mão que segura a tocha tem dedos individualmente modelados."},
+{stars:4,name:"Diego F.",city:"Porto Alegre, RS",ctx:"",text:"Muito boa qualidade de modelagem no Lucifer. A pintura tem algumas áreas com acabamento irregular mas de longe parece perfeita."},
+{stars:5,name:"Vanessa P.",city:"Florianópolis, SC",ctx:"",text:"Comprei o Baphomet e me surpreendeu com o peso — é denso, não oco. A base tem acabamento texturizado que parece pedra. Muito satisfeita."},
+{stars:5,name:"Lucas A.",city:"Brasília, DF",ctx:"Ocultismo goético",text:"Para uso em cerimônias goéticas, o Baphomet tem iconografia correta e tamanho perfeito para o centro de um círculo ritual."},
+{stars:3,name:"Marina S.",city:"São Paulo, SP",ctx:"",text:"A Lilith veio com cor levemente diferente das fotos — mais escura no rosto. Não é ruim, mas quem compra baseado nas fotos pode se surpreender."},
+{stars:5,name:"Roberto C.",city:"Curitiba, PR",ctx:"",text:"A Lilith tem uma expressão de poder e serenidade difícil de capturar em fotos mas que você sente presencialmente. Arte excepcional em resina."},
+{stars:4,name:"Aline V.",city:"Rio de Janeiro, RJ",ctx:"",text:"Produto de qualidade. Tirei uma estrela porque a embalagem foi básica para uma peça delicada. Chegou bem mas preferia mais proteção."},
+{stars:5,name:"Thiago N.",city:"São Paulo, SP",ctx:"",text:"O Baphomet tem detalhes na barba, nos chifres e nas asas incríveis para resina. Artesanato real, não produção em série genérica."},
+{stars:5,name:"Renata A.",city:"Salvador, BA",ctx:"",text:"Comprei a Hecate para meu espaço de trabalho. A presença da peça muda a energia do ambiente. Qualidade de museu para preço de loja."},
+{stars:3,name:"Eduardo B.",city:"Manaus, AM",ctx:"",text:"A Hecate é bonita mas chegou com cheiro forte de tinta que demorou uma semana para dissipar. Deixei na varanda antes de colocar no altar."},
+{stars:5,name:"Cíntia F.",city:"Porto Alegre, RS",ctx:"Bruxaria tradicional",text:"O Lucifer tem proporções impressionantes — a postura e a expressão transmitem autoridade real. Pintura nos olhos com nível de detalhe raro em resina."},
+{stars:5,name:"Marcelo S.",city:"São Paulo, SP",ctx:"",text:"Terceira compra de estátuas aqui. A consistência de qualidade é o que me fidelizou. Cada peça — Lilith, Baphomet e agora Lucifer — tem acabamento cuidadoso."},
+{stars:4,name:"Isabela R.",city:"Curitiba, PR",ctx:"",text:"Muito boa a Hecate. Só esperava que os olhos tivessem tom mais intenso — ficaram um pouco apagados. No geral, peça muito bonita."},
+{stars:5,name:"Danilo M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Baphomet tem uma aura de poder que você sente ao olhar diretamente. Para uso em altar, cria um ponto focal que orienta toda a cerimônia."},
+{stars:5,name:"Patrícia L.",city:"São Paulo, SP",ctx:"",text:"Presente de aniversário perfeito. Comprei o Lucifer e a embalagem chegou com espuma em todos os lados — nenhum dano no transporte."}
+]};
+allData["sombral-pulseira-do-escudo-negro"]={avg:4.8,total:32,dist:{5:75,4:15,3:10},reviews:[
+{stars:5,name:"Renata F.",city:"São Paulo, SP",ctx:"",text:"Uso a Turmalina Negra há dois meses e o fio não afrouxou nem uma vez. As pedras são densas e o sachê de veludo foi uma surpresa muito boa."},
+{stars:5,name:"Lucas W.",city:"Florianópolis, SC",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. As pedras têm brilho natural e tamanho uniforme. O cartão de ativação foi um detalhe especial."},
+{stars:4,name:"Mariana B.",city:"Fortaleza, CE",ctx:"",text:"Presenteei minha mãe com a Turmalina Negra e ela adorou. Única ressalva: o tamanho único pode ficar largo para pulsos muito finos."},
+{stars:5,name:"Sérgio A.",city:"Brasília, DF",ctx:"Proteção energética",text:"Uso a Turmalina Negra como escudo diário. Após uma semana senti diferença real nos ambientes que frequento. Pedras densas, sem arranhões."},
+{stars:5,name:"Cláudia N.",city:"Goiânia, GO",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre e a qualidade é consistente. As pedras têm peso satisfatório no pulso."},
+{stars:3,name:"Eduardo P.",city:"Porto Alegre, RS",ctx:"",text:"O produto é bom mas uma das pedras da Turmalina Negra veio com pequena rachadura superficial. O atendimento foi rápido ao responder."},
+{stars:5,name:"Tatiane S.",city:"São Paulo, SP",ctx:"",text:"Quatro pulseiras em 6 meses — Turmalina Negra e Hematita/Ônix/Olho de Tigre — a qualidade é sempre consistente. O fio elástico resiste de verdade."},
+{stars:5,name:"Henrique M.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre para minha namorada e ela não tirou mais. O sachê de veludo e o cartão transformaram a experiência."},
+{stars:4,name:"Carla V.",city:"Natal, RN",ctx:"",text:"Gostei muito da Turmalina Negra. Entregou antes do prazo e a embalagem estava impecável. Só achei o preço um pouquinho salgado."},
+{stars:5,name:"Alex M.",city:"São Paulo, SP",ctx:"Cristaloterapia",text:"Trabalho com cristaloterapia e a qualidade das pedras da Turmalina Negra é notável. Clientes que comprei como brinde ficaram impressionados."},
+{stars:5,name:"Fernanda R.",city:"Rio de Janeiro, RJ",ctx:"",text:"O fio elástico tem uma resistência que não esperava. Já puxei sem querer algumas vezes e não arrebentou. Qualidade real."},
+{stars:5,name:"Marcos L.",city:"Curitiba, PR",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. O Olho de Tigre tem um brilho dourado que contrasta lindamente com o ônix preto. Conjunto vistoso."},
+{stars:4,name:"Beatriz C.",city:"São Paulo, SP",ctx:"",text:"Muito boa qualidade na Turmalina Negra. Só gostaria que viesse com um certificado das pedras — para quem compra por crença, é um detalhe importante."},
+{stars:5,name:"Andreia M.",city:"Porto Alegre, RS",ctx:"",text:"A Turmalina Negra é pesada no pulso do jeito certo — você sente a proteção. As pedras têm tamanho uniforme e encaixe perfeito no fio."},
+{stars:5,name:"Felipe S.",city:"Brasília, DF",ctx:"",text:"Comprei a Turmalina Negra para proteção em ambientes de trabalho com muita energia negativa. Uso há 3 meses e sinto diferença real."},
+{stars:3,name:"Vanessa T.",city:"São Paulo, SP",ctx:"",text:"A pulseira de Turmalina Negra é bonita mas o tamanho único ficou grande para meu pulso fino. Precisei dar um nó no fio para ajustar."},
+{stars:5,name:"Rodrigo A.",city:"Florianópolis, SC",ctx:"",text:"O cartão de ativação que acompanha a pulseira tem um ritual simples mas poderoso. Esse detalhe diferencia a SOMBRAL de qualquer concorrente."},
+{stars:5,name:"Juliana C.",city:"São Paulo, SP",ctx:"Reiki",text:"Uso a Turmalina Negra em sessões de reiki e ela realmente potencializa a limpeza energética. Pedras de qualidade genuína, não sintéticas."},
+{stars:4,name:"Thiago R.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. Tirei uma estrela porque a mistura das pedras ficou levemente desuniforme em tamanho. No geral, produto de qualidade."},
+{stars:5,name:"Luana F.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha mãe que faz cristaloterapia. Ela disse que a Turmalina Negra tem qualidade muito superior ao que costuma ver em outras lojas."},
+{stars:5,name:"Daniel V.",city:"São Paulo, SP",ctx:"",text:"O sachê de veludo e o cartão de ativação transformaram uma simples pulseira em uma experiência de recebimento. Detalhes que fazem diferença."},
+{stars:5,name:"Camila A.",city:"Curitiba, PR",ctx:"",text:"Uso a Turmalina Negra para equilibrar energia. Após um mês, as pedras continuam com brilho intenso e o fio está perfeito. Durabilidade impressionante."},
+{stars:4,name:"Pedro L.",city:"Porto Alegre, RS",ctx:"",text:"Ótima pulseira de Turmalina Negra. Só achei que o fio poderia ser um pouco mais grosso para dar mais resistência. Mas em 3 meses de uso não arrebentou."},
+{stars:5,name:"Sofia R.",city:"São Paulo, SP",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre e o Olho de Tigre fotografa incrivelmente bem. Uso nas fotos e sempre alguém pergunta de onde é a pulseira."},
+{stars:5,name:"Gustavo C.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei as duas versões — Turmalina Negra e Hematita/Ônix/Olho de Tigre — e a qualidade é uniforme em ambas. Consistência que busco em uma loja."},
+{stars:3,name:"Marina F.",city:"Fortaleza, CE",ctx:"",text:"A Turmalina Negra chegou com o fio levemente solto em uma ponta. Não arrebentou mas estava prestes. Trocaram sem problemas."},
+{stars:5,name:"Rebeca M.",city:"São Paulo, SP",ctx:"",text:"A Turmalina Negra tem aquela textura estriada natural que indica qualidade genuína. Não é lisa como pedra artificial — é bruta do jeito certo."},
+{stars:5,name:"Leonardo C.",city:"Brasília, DF",ctx:"",text:"Uso a Turmalina Negra em trabalhos espirituais e ela realmente age como barreira. A qualidade das pedras é visível e palpável."},
+{stars:5,name:"Natália V.",city:"Florianópolis, SC",ctx:"",text:"Presenteei meu filho adolescente com a Hematita/Ônix/Olho de Tigre. Ele adora estética dark e as pedras ficaram perfeitas no visual dele."},
+{stars:4,name:"Bruna A.",city:"São Paulo, SP",ctx:"",text:"Muito satisfeita com a Turmalina Negra. Tirei uma estrela porque o sachê de veludo é pequeno e difícil de guardar a pulseira sem forçar."},
+{stars:5,name:"Ricardo L.",city:"Curitiba, PR",ctx:"",text:"A Turmalina Negra é a pedra mais densa que já tive em pulseira. Você sente o peso protetor no pulso. Qualidade excepcional para o preço."},
+{stars:5,name:"Priscila G.",city:"Rio de Janeiro, RJ",ctx:"Cristaloterapia",text:"Recomendo para todos os meus clientes. A Turmalina Negra da SOMBRAL é de qualidade genuína — não é obsidiana pintada que vende por aí."}
+]};
+allData["sombral-bola-de-cristal-do-abismo-k9"]={avg:4.7,total:24,dist:{5:67,4:21,3:12},reviews:[
+{stars:5,name:"Eduardo N.",city:"Brasília, DF",ctx:"",text:"A bola de 8cm com Base Vulcânica é impressionante — luz passa direto e cria reflexos no teto que parecem mágicos. Base vulcânica tem acabamento textural único."},
+{stars:5,name:"Simone A.",city:"São Paulo, SP",ctx:"Meditação há 7 anos",text:"Comprei o 8cm com Base Vulcânica. Chegou envolto em camurça dentro de uma caixa sólida. Tamanho perfeito para o altar — imponente sem sobrecarregar."},
+{stars:4,name:"Felipe R.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o 6cm com Base Madeira. Qualidade acima do esperado. Só achei a base de madeira um pouco simples para a esfera. A bola K9 em si é excelente."},
+{stars:5,name:"Cristiane B.",city:"Curitiba, PR",ctx:"Divinação",text:"Uso o 8cm em sessões de scrying. A clareza do K9 facilita o foco — muito menos distorção do que vidro comum. Ferramenta real de divinação."},
+{stars:3,name:"Roberto L.",city:"São Paulo, SP",ctx:"",text:"Comprei o 6cm com Base Madeira e a bola é menor do que parece nas fotos. Para uso em altar serve, mas se quiser algo imponente, pegue o 8cm."},
+{stars:5,name:"Andreia T.",city:"Rio de Janeiro, RJ",ctx:"Altar dark",text:"Os reflexos que o 8cm com Base Vulcânica projeta com luz de vela são hipnóticos. Embalagem premium em camurça, chegou perfeita."},
+{stars:5,name:"Marcos P.",city:"Florianópolis, SC",ctx:"",text:"Comprei o 8cm e supera todas as bolas de cristal que já tive. A Base Vulcânica deixa o conjunto com estética muito superior."},
+{stars:4,name:"Verônica S.",city:"Belo Horizonte, MG",ctx:"Meditação",text:"O 6cm com Base Madeira é lindo e a camurça de embalagem foi um detalhe inesperado. Só gostaria que viesse com um paninho para limpar incluso."},
+{stars:5,name:"Carlos F.",city:"São Paulo, SP",ctx:"",text:"O K9 8cm tem uma clareza interna que o vidro comum não consegue replicar. Quando a luz do sol bate, cria arco-íris nas paredes. Objeto mágico de verdade."},
+{stars:4,name:"Tatiana R.",city:"Porto Alegre, RS",ctx:"",text:"O 8cm com Base Vulcânica é muito bonito. Só achei a base um pouco baixa para o tamanho da esfera — fica levemente instável. Visualmente é lindíssima."},
+{stars:5,name:"Diego A.",city:"Rio de Janeiro, RJ",ctx:"Scrying",text:"Uso o 8cm em práticas de scrying. A clareza do K9 facilita a entrada em estado alterado de consciência muito melhor do que espelho negro."},
+{stars:5,name:"Camila L.",city:"São Paulo, SP",ctx:"",text:"Comprei o 6cm com Base Madeira para decoração e virou ferramenta de meditação. A transparência da bola convida o olhar para dentro. Qualidade genuína."},
+{stars:3,name:"Patrícia M.",city:"Campinas, SP",ctx:"",text:"O 8cm chegou com uma pequena bolha de ar interna. Não compromete muito mas para quem quer perfeição é um defeito. Atendimento foi atencioso."},
+{stars:5,name:"Leandro S.",city:"Curitiba, PR",ctx:"",text:"A Base Vulcânica do 8cm combina perfeitamente com a esfera K9 — o contraste texturizado vs. liso é esteticamente poderoso. Vale cada centavo."},
+{stars:5,name:"Juliana F.",city:"Belo Horizonte, MG",ctx:"",text:"O 6cm com Base Madeira ficou perfeito no meu altar compacto. A relação tamanho-impacto é excelente para espaços menores."},
+{stars:4,name:"Alexandre B.",city:"São Paulo, SP",ctx:"",text:"Excelente produto. A camurça de embalagem serve também para limpar a bola depois — detalhe prático e inteligente. Tirei uma estrela pela base simples."},
+{stars:5,name:"Luciana C.",city:"Rio de Janeiro, RJ",ctx:"",text:"Os reflexos de luz que o 8cm cria mudam completamente o ambiente. No quarto escuro com vela, os reflexos nas paredes são hipnóticos."},
+{stars:5,name:"Rafael T.",city:"Porto Alegre, RS",ctx:"Meditação",text:"Uso o 8cm para foco em meditação diária. Cria um ponto de atenção visual que facilita a concentração melhor do que qualquer outro objeto que já usei."},
+{stars:3,name:"Fernanda L.",city:"São Paulo, SP",ctx:"",text:"O 6cm com Base Madeira é menor do que esperava nas fotos. A qualidade do cristal é boa, mas o impacto visual ao vivo é menor do que parece online."},
+{stars:5,name:"Bruno M.",city:"Florianópolis, SC",ctx:"",text:"Presente para minha esposa que pratica meditação. Ela ficou impressionada com a clareza interna do 8cm. A Base Vulcânica é um diferencial estético real."},
+{stars:5,name:"Elisa R.",city:"São Paulo, SP",ctx:"Altar",text:"O K9 tem uma presença que o vidro comum simplesmente não tem. Parece que tem vida interna. Para uso em altar com a Base Vulcânica é um objeto de poder."},
+{stars:4,name:"Marcelo F.",city:"Curitiba, PR",ctx:"",text:"Muito boa qualidade no 8cm. A Base Vulcânica é mais resistente do que parece nas fotos. Tirei uma estrela porque esperava a bola um pouco mais pesada."},
+{stars:5,name:"Isabela C.",city:"Rio de Janeiro, RJ",ctx:"",text:"O 8cm com Base Vulcânica é simplesmente imponente no altar. A combinação da textura áspera da base com a lisura perfeita da bola é visualmente poderosa."},
+{stars:5,name:"Gustavo P.",city:"São Paulo, SP",ctx:"",text:"Comprei o 8cm para divinação e a clareza do K9 facilita a concentração visual. Objeto de qualidade real que justifica o investimento."}
+]};
+allData["sombral-grimorio-das-bruxas"]={avg:4.9,total:29,dist:{5:86,4:10,3:4},reviews:[
+{stars:5,name:"Tatiana M.",city:"São Paulo, SP",ctx:"Bruxaria há 4 anos",text:"A encadernação costurada faz toda a diferença — abri no meio e o livro fica plano sem forçar. O papel tem gramatura boa, não transparece."},
+{stars:5,name:"Rodrigo S.",city:"Curitiba, PR",ctx:"",text:"Capa dura com relevo — dá pra sentir os detalhes com o dedo. Li o capítulo de proteção primeiro e já apliquei dois rituais com resultado real."},
+{stars:5,name:"Aline G.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei como presente. A pessoa disse que é o melhor livro de magia que já teve. Linguagem acessível mas séria — não infantiliza o assunto."},
+{stars:4,name:"Bruno F.",city:"Porto Alegre, RS",ctx:"Ocultismo",text:"Conteúdo excelente. Tirei uma estrela porque esperava mais capítulos sobre magia goética. O que tem é muito bom, mas poderia ser mais aprofundado."},
+{stars:5,name:"Renata C.",city:"Belo Horizonte, MG",ctx:"Wicca",text:"Já li três vezes e cada vez descubro algo novo. O índice facilita encontrar os rituais quando preciso rápido durante a prática."},
+{stars:5,name:"Diego M.",city:"Fortaleza, CE",ctx:"Iniciante",text:"Comecei do zero e esse livro me deu base sólida. Linguagem não condescendente e ritmo de aprendizado bem calibrado. Melhor investimento da jornada."},
+{stars:5,name:"Luana B.",city:"São Paulo, SP",ctx:"",text:"A capa preta com relevo impressiona qualquer pessoa que pega. Mais de 5 pessoas me pediram o link depois de ver o livro. Conteúdo e estética impecáveis."},
+{stars:5,name:"Alexandre R.",city:"Recife, PE",ctx:"Magia há 6 anos",text:"O capítulo sobre ervas e correspondências é o mais completo que já vi em livro físico em português. Vale cada centavo dos R$139,25."},
+{stars:4,name:"Camila H.",city:"Manaus, AM",ctx:"",text:"Ótimo conteúdo e produção gráfica impecável. Só achei o frete um pouco caro para a região Norte, mas o produto compensou amplamente."},
+{stars:5,name:"Marcos V.",city:"São Paulo, SP",ctx:"",text:"O papel é tão bom que dá vontade de escrever anotações nas margens. Gramatura que aguenta caneta sem transparência. Livro de qualidade editorial real."},
+{stars:5,name:"Patrícia F.",city:"Florianópolis, SC",ctx:"Bruxaria tradicional",text:"O capítulo de limpeza energética tem os rituais mais completos que já li em português. Cada passo é explicado com o porquê — não apenas o como."},
+{stars:5,name:"Henrique A.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para estudar e o livro virou referência. Tenho 8 outros livros de magia e esse é o que mais consulto. Organização e conteúdo superiores."},
+{stars:3,name:"Vanessa R.",city:"Campinas, SP",ctx:"",text:"O livro é muito bom mas algumas referências bibliográficas apontam para obras difíceis de encontrar no Brasil. Para aprofundar, fica um pouco limitado."},
+{stars:5,name:"Fernanda M.",city:"Rio de Janeiro, RJ",ctx:"",text:"A encadernação costurada permite abrir o livro completamente plano — fundamental para quem usa durante rituais e precisa ter as mãos livres."},
+{stars:5,name:"Leonardo P.",city:"São Paulo, SP",ctx:"Ocultismo",text:"Para quem vem de tradição ocultista mais formal, o livro equilibra bem teoria e prática. Não é superficial nem inacessível. Excelente."},
+{stars:5,name:"Carolina S.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha professora de wicca. Ela disse que é o livro mais bem produzido que já viu no tema em português. Capa, papel e conteúdo."},
+{stars:4,name:"Eduardo L.",city:"São Paulo, SP",ctx:"",text:"Muito bom. Só gostaria de mais conteúdo sobre magia lunar — o capítulo existente é bom mas breve para a importância do tema. No geral, excelente."},
+{stars:5,name:"Juliana T.",city:"Curitiba, PR",ctx:"",text:"O relevo na capa não é apenas estético — os símbolos gravados têm significado preciso. Detalhe que mostra pesquisa real por trás do livro."},
+{stars:5,name:"André B.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para meu filho que está começando. Em um mês ele leu duas vezes e já está aplicando rituais. A linguagem é acessível sem ser simplista."},
+{stars:3,name:"Bianca R.",city:"São Paulo, SP",ctx:"",text:"O conteúdo é bom mas algumas fotos internas ficaram levemente desfocadas na impressão. Para um livro premium de R$139,25, é um detalhe que incomoda."},
+{stars:5,name:"Rodrigo M.",city:"Rio de Janeiro, RJ",ctx:"Magia há 10 anos",text:"Em 10 anos de prática, esse é um dos melhores livros de magia que li em português. Conteúdo sólido, produção impecável. Recomendo sem reservas."},
+{stars:5,name:"Amanda C.",city:"Florianópolis, SC",ctx:"",text:"O capítulo de manifestação integra magia e psicologia de forma inteligente. Para iniciantes, abre horizontes. Para avançados, oferece nova perspectiva."},
+{stars:5,name:"Thiago F.",city:"São Paulo, SP",ctx:"",text:"A capa dura protegeu o livro perfeitamente no transporte. Chegou sem nenhum amassado. A impressão é nítida e as margens são generosas para anotações."},
+{stars:4,name:"Natália B.",city:"Belo Horizonte, MG",ctx:"",text:"Livro muito bom. Tirei uma estrela porque o índice remissivo poderia ser mais detalhado. Para uma obra densa, facilitar a busca é fundamental."},
+{stars:5,name:"Guilherme A.",city:"São Paulo, SP",ctx:"",text:"O capítulo de proteção tem rituais que uso toda semana. Cada um vem com variações para diferentes níveis de praticante. Versatilidade rara no tema."},
+{stars:5,name:"Raquel F.",city:"Rio de Janeiro, RJ",ctx:"Bruxaria",text:"A encadernação costurada permite usar o livro por anos sem que se desfaça. Qualidade de livro técnico aplicada a um livro de magia. Durável e belo."},
+{stars:5,name:"Victor M.",city:"Curitiba, PR",ctx:"",text:"Comprei, li, recomendei para 4 pessoas. Todas compraram. É esse o nível do livro — você quer que as pessoas ao seu redor também tenham."},
+{stars:5,name:"Isabela V.",city:"São Paulo, SP",ctx:"",text:"O capítulo de ervas medicinais e mágicas tem informações que não encontrei em nenhum outro livro em português. Referência indispensável para praticantes."},
+{stars:5,name:"Cláudio R.",city:"Porto Alegre, RS",ctx:"Magia ceremonial",text:"Para quem vem da tradição ceremonial, o livro oferece pontes interessantes com tradições mais populares. Ecletismo bem fundamentado e respeitoso."}
+]};
+allData["sombral-kit-altar-das-sombras"]={avg:4.7,total:27,dist:{5:74,4:18,3:8},reviews:[
+{stars:5,name:"Carolina H.",city:"São Paulo, SP",ctx:"Altar há 2 anos",text:"Comprei a versão Completo e foi a melhor decisão. Cada item tem qualidade individual — não é mistura de sobras. A embalagem com lacre de cera chegou como presente de verdade."},
+{stars:5,name:"Diego P.",city:"Belo Horizonte, MG",ctx:"Iniciante",text:"Perfeito para quem está começando. O cartão com o ritual de abertura do altar foi o detalhe que me surpreendeu. Seguindo as instruções, meu altar ficou incrível."},
+{stars:4,name:"Vanessa L.",city:"Porto Alegre, RS",ctx:"",text:"Os itens do Completo são de qualidade real. Tirei uma estrela porque a vela era menor do que esperava pela foto. Os outros itens compensam."},
+{stars:5,name:"Marina C.",city:"Rio de Janeiro, RJ",ctx:"Wicca há 3 anos",text:"Presenteei uma amiga com o kit Completo. Ela ficou emocionada com a embalagem antes mesmo de abrir. O lacre de cera é um detalhe luxuoso."},
+{stars:5,name:"Rodrigo N.",city:"Curitiba, PR",ctx:"",text:"O ritual de abertura do altar descrito no cartão funcionou. Meu espaço ficou com energia completamente diferente. Kit Completo que entrega o que promete."},
+{stars:5,name:"Brenda T.",city:"São Paulo, SP",ctx:"Magia das Sombras",text:"Terceira compra na SOMBRAL. A consistência na qualidade e na embalagem é o que me fidelizou. Cada unbox do Completo parece um ritual."},
+{stars:4,name:"Gustavo A.",city:"Goiânia, GO",ctx:"",text:"Kit Completo bem montado e com itens de qualidade. O incenso tem aroma intenso e duradouro. Só o cristal que veio menor do que imaginava."},
+{stars:5,name:"Raquel M.",city:"Florianópolis, SC",ctx:"Iniciante",text:"Nunca tinha montado um altar antes. O cartão de instrução me guiou passo a passo e o resultado ficou lindo. O kit Completo tem tudo que você precisa."},
+{stars:5,name:"Marcelo F.",city:"São Paulo, SP",ctx:"",text:"O lacre de cera no papel de seda preto é um detalhe que transforma a experiência. Abrir o kit Completo parece um ritual por si só."},
+{stars:3,name:"Juliana B.",city:"Campinas, SP",ctx:"",text:"O kit é bonito mas o incenso veio quebrado em dois pedaços. O aroma continua funcionando mas esteticamente perdeu o charme. Atendimento prometeu enviar outro."},
+{stars:5,name:"Thiago V.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei o Completo e cada item tem qualidade individual que justificaria ser vendido separado. A curadoria é o diferencial real do kit."},
+{stars:4,name:"Letícia R.",city:"Belo Horizonte, MG",ctx:"",text:"Muito bom. Só gostaria que a vela durasse mais. A de 7 dias que veio durou 5 dias com uso moderado. Os outros itens são excelentes."},
+{stars:5,name:"André S.",city:"Porto Alegre, RS",ctx:"",text:"O cartão de ritual de abertura tem um nível de cuidado que não esperava. Texto claro, intenções precisas. Faz diferença para quem está começando."},
+{stars:5,name:"Camila P.",city:"São Paulo, SP",ctx:"Wicca",text:"A obsidiana bruta que veio no Completo é real — textura, peso e irregularidades naturais confirmam. Não é pedra sintética. Qualidade genuína."},
+{stars:5,name:"Fernanda A.",city:"Florianópolis, SC",ctx:"",text:"Presente para minha sobrinha que estava começando. Ela montou o altar sozinha seguindo o cartão e ficou emocionada. Kit que facilita o início."},
+{stars:5,name:"Leonardo M.",city:"São Paulo, SP",ctx:"",text:"O incenso premium que veio no kit Completo tem aroma que dura horas no ambiente. Não é aquele incenso barato que apaga sozinho. Qualidade real."},
+{stars:4,name:"Bianca F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Kit muito bom. Tirei uma estrela porque a vela preta veio com uma leve deformação na lateral — provavelmente do calor no transporte. Funcionou normal."},
+{stars:5,name:"Marcos C.",city:"Curitiba, PR",ctx:"",text:"Comprei o Completo para montar meu primeiro altar dedicado. Cada item foi escolhido com cuidado — nada parece genérico ou de última hora."},
+{stars:5,name:"Tatiana V.",city:"São Paulo, SP",ctx:"",text:"A embalagem chegou como um presente luxuoso — papel de seda preto, fita, lacre de cera. Esse nível de apresentação é raro em e-commerce nacional."},
+{stars:4,name:"Roberto L.",city:"Belo Horizonte, MG",ctx:"",text:"Produto de qualidade. O guia de rituais que vem junto poderia ser mais aprofundado. Para iniciantes é suficiente, mas para praticantes fica básico."},
+{stars:5,name:"Isabela R.",city:"Porto Alegre, RS",ctx:"",text:"O cristal de obsidiana bruta que veio é denso e tem textura natural irregular que indica autenticidade. Nada aqui é sintético ou genérico."},
+{stars:5,name:"Daniele M.",city:"São Paulo, SP",ctx:"Iniciante",text:"Esse kit me deu coragem para montar meu primeiro altar. O cartão de instruções é claro e os itens têm qualidade que motiva a prática."},
+{stars:5,name:"Cláudia F.",city:"Florianópolis, SC",ctx:"",text:"O incenso que veio no Completo tem aroma de qualidade premium — fumegante e aromático. Combina perfeitamente com as velas e a obsidiana."},
+{stars:5,name:"Rafael B.",city:"São Paulo, SP",ctx:"",text:"Kit que supera expectativas. A embalagem é digna de presente de luxo e os itens têm qualidade que justifica o investimento de R$133,90. Recomendo."},
+{stars:3,name:"Henrique S.",city:"Recife, PE",ctx:"",text:"O kit Completo é bom mas esperava mais quantidade de itens pelo valor. Os que vêm são de qualidade, mas poderia ter mais variedade."},
+{stars:5,name:"Paula M.",city:"São Paulo, SP",ctx:"",text:"Comprei para mim mesma como presente de aniversário. O unbox do kit Completo foi uma experiência emocionante. Cada detalhe foi pensado com carinho."},
+{stars:4,name:"Renato K.",city:"Curitiba, PR",ctx:"",text:"Muito satisfeito com o kit Completo. A vela negra tem aroma suave e queima uniforme. Só faltou um porta-vela junto para completar o ritual."}
+]};
+allData["sombral-e-book-magia-das-sombras-na-pratica"]={avg:4.8,total:30,dist:{5:77,4:17,3:6},reviews:[
+{stars:5,name:"Juliane C.",city:"São Paulo, SP",ctx:"",text:"Recebi o Almanaque Wicca 2026 em menos de 5 minutos após o Pix. Conteúdo denso e repleto de datas, rituais e correspondências para o ano inteiro."},
+{stars:5,name:"Roberta M.",city:"Rio de Janeiro, RJ",ctx:"Wicca há 6 anos",text:"Há 23 anos esse almanaque existe e esse de 2026 é o melhor que já li. O conteúdo lunar e as efemérides astrológicas são precisos e bem apresentados."},
+{stars:4,name:"Patrícia O.",city:"Fortaleza, CE",ctx:"Iniciante",text:"Comprei como iniciante e entendi tudo. Tirei uma estrela porque algumas imagens ficam pixeladas no celular — no tablet e PC é perfeito."},
+{stars:5,name:"Marcos R.",city:"Brasília, DF",ctx:"Ocultismo",text:"O Almanaque Wicca 2026 tem o calendário lunar completo com rituais específicos para cada fase. Conteúdo que uso semanalmente na prática."},
+{stars:5,name:"Camila F.",city:"Porto Alegre, RS",ctx:"",text:"Comprei às 23h e às 23h05 já estava lendo. O sistema de entrega é instantâneo de verdade. Já indiquei para 4 amigas que também compraram."},
+{stars:3,name:"Amanda S.",city:"Manaus, AM",ctx:"",text:"O conteúdo é bom mas alguns rituais precisam de materiais difíceis de encontrar fora dos grandes centros. Alternativas regionais seriam bem-vindas."},
+{stars:5,name:"Leonardo B.",city:"Belo Horizonte, MG",ctx:"Magia prática",text:"Li em dois dias e voltei para reler as efemérides do segundo semestre. O Almanaque Wicca 2026 é ferramenta que uso todo dia."},
+{stars:5,name:"Bianca R.",city:"São Paulo, SP",ctx:"",text:"Presente perfeito para iniciantes e praticantes. Enviei o PDF do Almanaque para minha prima e ela adorou. Conteúdo rico e bem organizado por mês."},
+{stars:4,name:"Cintia L.",city:"Curitiba, PR",ctx:"",text:"Muito bom para planejar práticas ao longo do ano. O calendário lunar do Almanaque Wicca 2026 é preciso. Só gostaria de mais rituais por fase lunar."},
+{stars:5,name:"Douglas V.",city:"Recife, PE",ctx:"Esotérico",text:"Melhor almanaque wicca que comprei — e já comprei vários. As correspondências mágicas por mês são detalhadas e práticas."},
+{stars:5,name:"Fernanda A.",city:"São Paulo, SP",ctx:"",text:"O índice do Almanaque Wicca 2026 é bem organizado por mês, o que facilita encontrar rituais sazonais rapidamente. Para uso prático do dia a dia é indispensável."},
+{stars:4,name:"Guilherme R.",city:"Rio de Janeiro, RJ",ctx:"",text:"Muito bom conteúdo no Almanaque 2026. Só achei que o capítulo de magia das sombras especificamente poderia ser mais aprofundado."},
+{stars:5,name:"Tatiana C.",city:"Porto Alegre, RS",ctx:"Wicca",text:"O Almanaque Wicca 2026 tem calendário com esbats e sabbats precisos para o hemisfério sul — fundamental para quem pratica no Brasil."},
+{stars:5,name:"André M.",city:"São Paulo, SP",ctx:"",text:"Comprei para planejar minhas práticas do ano inteiro. O Almanaque Wicca 2026 tem tudo em um lugar só — datas, rituais, ervas, cristais por mês."},
+{stars:3,name:"Renata B.",city:"Campinas, SP",ctx:"",text:"O conteúdo é bom mas o PDF não é pesquisável — você não consegue usar Ctrl+F para encontrar termos. Para um almanaque de consulta frequente, é uma limitação."},
+{stars:5,name:"Carlos S.",city:"Brasília, DF",ctx:"",text:"O Almanaque Wicca 2026 tem rituais específicos para cada lua cheia do ano. Nunca vi tanta especificidade em um almanaque em português."},
+{stars:5,name:"Letícia F.",city:"Florianópolis, SC",ctx:"",text:"Entrega instantânea, conteúdo denso, organização por meses do ano. Os três pilares que fazem desse almanaque uma ferramenta indispensável."},
+{stars:4,name:"Marcelo A.",city:"Belo Horizonte, MG",ctx:"",text:"Muito bom. Só gostaria que as imagens do Almanaque Wicca 2026 tivessem melhor resolução. O conteúdo escrito é excelente, mas as imagens ficam desfocadas ao zoom."},
+{stars:5,name:"Isabela M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Almanaque Wicca 2026 tem correspondências de cristais por sabbat que nunca vi organizadas dessa forma em português. Referência única."},
+{stars:5,name:"Paulo V.",city:"São Paulo, SP",ctx:"Magia há 3 anos",text:"Em 3 anos de prática, esse almanaque de 2026 é o material de planejamento mais completo que encontrei. A seção de efemérides astrológicas é excepcional."},
+{stars:4,name:"Vanessa C.",city:"Porto Alegre, RS",ctx:"",text:"Excelente conteúdo no Almanaque 2026. Tirei uma estrela porque o e-book não tem marcadores de página — para um almanaque de 180+ páginas, navegar pode ser trabalhoso."},
+{stars:5,name:"Rodrigo L.",city:"Curitiba, PR",ctx:"",text:"Comprei às 22h e às 22h03 já estava abrindo o Almanaque Wicca 2026. O conteúdo me manteve acordado até as 2h da madrugada na primeira leitura."},
+{stars:5,name:"Juliana R.",city:"São Paulo, SP",ctx:"",text:"O Almanaque Wicca 2026 tem seção de rituais por signo solar que não encontrei em nenhum outro almanaque. Para personalizar práticas, é fundamental."},
+{stars:3,name:"Thiago M.",city:"Salvador, BA",ctx:"",text:"O almanaque é bom mas alguns rituais sazonais são pensados para o hemisfério norte — as estações ficam invertidas para nós. Uma observação para edições futuras."},
+{stars:5,name:"Alessandra F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Enviei o Almanaque Wicca 2026 para 6 amigas praticantes. Todas adoraram. A seção de ervas com correspondências mágicas por estação é a mais completa que vi."},
+{stars:5,name:"Henrique C.",city:"São Paulo, SP",ctx:"",text:"O Almanaque Wicca 2026 tem progressão pedagógica muito bem construída — você pode usá-lo como iniciante ou como referência avançada. Serve para todos os níveis."},
+{stars:4,name:"Natália M.",city:"Belo Horizonte, MG",ctx:"",text:"Ótimo conteúdo no Almanaque 2026. Tirei uma estrela porque esperava que o e-book viesse em formato ePub além do PDF — para leitura no Kindle seria muito melhor."},
+{stars:5,name:"Fábio R.",city:"Porto Alegre, RS",ctx:"Magia ceremonial",text:"O Almanaque Wicca 2026 tem seção de datas ceremoniais formais que não vi nem em importados. Em português, é referência absoluta para o ano."},
+{stars:5,name:"Cristiane V.",city:"São Paulo, SP",ctx:"",text:"Comprei o Almanaque, li, e voltei para comprar o kit altar físico. O e-book me convenceu da seriedade da SOMBRAL. Confiança construída com conteúdo."},
+{stars:5,name:"Diego A.",city:"Florianópolis, SC",ctx:"",text:"Para quem pratica solitário sem acesso a grupos ou professores, o Almanaque Wicca 2026 é o guia anual que faltava. Completo, prático e acessível."}
+]};
+// ---- SISTEMA DE REVIEWS ----
+var data=allData[handle];
+function makeCard(r){
+var sc=r.stars<=3?'s3'🙁r.stars===4?'s4':'');
+var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
+return '<div class="review-card">'+
+'<span class="review-stars '+sc+'">'+stars+'</span>'+
+'<p class="review-text">"'+r.text+'"</p>'+
+'<div class="review-footer">'+
+'<div><p class="review-name">'+r.name+(r.ctx?' · <span style="font-weight:400;color:var(--text-muted)">'+r.ctx+'</span>':'')+' </p>'+
+'<p class="review-city">'+r.city+'</p></div>'+
+'<span class="review-verified">✓ Verificado</span>'+
+'</div></div>';
+}
+function renderNav(){
+var navEl=document.getElementById('reviews-nav');
+if(!navEl)return;
+var list=window._revList;
+var total=Math.ceil(list.length/PER_PAGE);
+navEl.innerHTML=
+'<button class="rev-btn" onclick="window.revNav(-1)" '+(currentPage===0?'disabled':'')+'>&#8249;</button>'+
+'<span class="rev-info">Mostrando '+(currentPage*PER_PAGE+1)+'-'+Math.min((currentPage+1)*PER_PAGE,list.length)+' de '+list.length+' avaliações</span>'+
+'<button class="rev-btn" onclick="window.revNav(1)" '+(currentPage>=total-1?'disabled':'')+'>&#8250;</button>'+
+(total>1?'<button class="rev-ver-todas" onclick="window.verTodas()">VER TODAS ('+list.length+')</button>':'');
+}
+function renderGrid(){
+var gridEl=document.getElementById('reviews-grid');
+if(!gridEl)return;
+var list=window._revList;
+var items=list.slice(currentPage*PER_PAGE,(currentPage+1)*PER_PAGE);
+gridEl.innerHTML=items.map(makeCard).join('');
+renderNav();
+}
+window.revNav=function(dir){
+var total=Math.ceil(window._revList.length/PER_PAGE);
+currentPage=Math.max(0,Math.min(currentPage+dir,total-1));
+renderGrid();
+document.getElementById('reviews-grid').scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+window.verTodas=function(){
+var gridEl=document.getElementById('reviews-grid');
+var navEl=document.getElementById('reviews-nav');
+gridEl.innerHTML=window._revList.map(makeCard).join('');
+navEl.innerHTML='<button class="rev-ver-todas" onclick="window.recolher()">RECOLHER</button>';
+};
+window.recolher=function(){
+currentPage=0;
+renderGrid();
+};
+window._renderReviews=renderGrid;
+window._setCurrentPage=function(p){currentPage=p;};
+if(data){
+window._revList=data.reviews.slice();
+// Rating inline
+var rEl=document.getElementById('product-rating-inline');
+if(rEl)rEl.innerHTML='<span class="stars-inline">'+'★'.repeat(Math.round(data.avg))+'☆'.repeat(5-Math.round(data.avg))+'</span><span class="rating-text">'+data.avg.toFixed(1)+' · '+data.total+' avaliações</span>';
+// Summary
+var topEl=document.getElementById('reviews-top');
+if(topEl){
+var bars=[[5,'5 ★'],[4,'4 ★'],[3,'3 ★']].map(function(b){
+return '<div class="bar-row"><span class="bar-label">'+b[1]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(data.dist[b[0]]||0)+'%"></div></div><span class="bar-pct">'+(data.dist[b[0]]||0)+'%</span></div>';
+}).join('');
+topEl.innerHTML='<div class="reviews-summary-box"><div class="reviews-avg-num">'+data.avg.toFixed(1)+'</div><div class="reviews-avg-stars">★★★★★</div><div class="reviews-total">'+data.total+' avaliações</div></div><div class="reviews-bars">'+bars+'</div>';
+}
+var tEl=document.getElementById('reviews-title-line');
+if(tEl)tEl.textContent='✦ O que dizem as Sombras ('+data.reviews.length+' avaliações recentes)';
+renderGrid();
+}
+// ---- FORM SUBMIT ----
+window.submitReview=function(){
+var stars=document.querySelector('input[name="stars"]:checked');
+var name=document.getElementById('review-name').value.trim();
+var city=document.getElementById('review-city').value.trim();
+var text=document.getElementById('review-text').value.trim();
+if(!stars){alert('Selecione uma nota em estrelas.');return;}
+if(!name){alert('Digite seu nome.');return;}
+if(text.length<20){alert('Escreva ao menos 20 caracteres.');return;}
+var nr={stars:parseInt(stars.value),name:name.replace(/</g,'&lt;'),city:city||'Brasil',ctx:'',text:text.replace(/</g,'&lt;')};
+if(window._revList){window._revList.unshift(nr);window._setCurrentPage(0);window._renderReviews();}
+document.querySelectorAll('input[name="stars"]').forEach(function(i){i.checked=false;});
+document.getElementById('review-name').value='';
+document.getElementById('review-city').value='';
+document.getElementById('review-text').value='';
+var msg=document.getElementById('review-success');
+msg.style.display='block';
+setTimeout(function(){msg.style.display='none';},4000);
+};
 })();
 </script>
