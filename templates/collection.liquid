@@ -1,15 +1,203 @@
+<style>
+.collection-page {
+max-width: 1280px;
+margin: 0 auto;
+padding: 8rem 2rem 5rem;
+}
+.collection-header {
+text-align: center;
+margin-bottom: 3rem;
+padding-bottom: 2rem;
+border-bottom: 1px solid var(--border);
+}
+.collection-eyebrow {
+font-family: 'Crimson Text', serif;
+font-style: italic;
+color: var(--gold);
+font-size: 0.95rem;
+letter-spacing: 0.15em;
+margin-bottom: 0.5rem;
+}
+.collection-title {
+font-family: 'Cinzel', serif;
+font-size: clamp(1.8rem, 4vw, 3rem);
+font-weight: 700;
+background: linear-gradient(135deg, #E8E0F0 0%, #c9a84c 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 1rem;
+}
+.collection-desc {
+color: var(--text-muted);
+font-size: 0.95rem;
+max-width: 520px;
+margin: 0 auto;
+font-family: 'Crimson Text', serif;
+font-style: italic;
+}
+.collection-count {
+font-family: 'Cinzel', serif;
+font-size: 0.72rem;
+color: var(--text-muted);
+letter-spacing: 0.1em;
+margin-top: 0.8rem;
+}
+.products-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+gap: 1.5rem;
+}
+.product-card {
+background: var(--bg-card);
+border: 1px solid var(--border);
+overflow: hidden;
+transition: all 0.3s ease;
+position: relative;
+}
+.product-card::before {
+content: '';
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, rgba(123,47,190,0.05), transparent);
+opacity: 0;
+transition: opacity 0.3s;
+}
+.product-card:hover {
+border-color: var(--accent);
+transform: translateY(-4px);
+box-shadow: 0 8px 30px rgba(123,47,190,0.2);
+}
+.product-card:hover::before { opacity: 1; }
+.product-card-image {
+aspect-ratio: 1;
+overflow: visible;
+background: transparent;
+}
+.product-card-image img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+transition: transform 0.4s ease;
+background: transparent;
+mix-blend-mode: multiply;
+}
+.product-card:hover .product-card-image img { transform: scale(1.05); }
+.product-card-placeholder {
+width: 100%; height: 100%;
+display: flex; align-items: center; justify-content: center;
+font-size: 3rem; color: var(--accent);
+background: radial-gradient(ellipse at center, rgba(123,47,190,0.1), transparent);
+}
+.product-card-info {
+padding: 1.2rem;
+display: flex;
+flex-direction: column;
+gap: 0.7rem;
+}
+.product-card-title {
+font-family: 'Cinzel', serif;
+font-size: 0.85rem;
+font-weight: 600;
+letter-spacing: 0.05em;
+line-height: 1.4;
+color: var(--text);
+}
+.product-card-price {
+display: flex;
+align-items: center;
+gap: 0.6rem;
+}
+.price-old {
+color: var(--text-muted);
+text-decoration: line-through;
+font-size: 0.8rem;
+}
+.price-current {
+color: var(--gold);
+font-family: 'Cinzel', serif;
+font-weight: 700;
+font-size: 1rem;
+}
+.btn-invocar {
+display: inline-block;
+background: linear-gradient(135deg, #8b0050, var(--cta));
+color: #fff;
+font-family: 'Cinzel', serif;
+font-size: 0.78rem;
+font-weight: 700;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+padding: 0.65rem 1.4rem;
+border: none;
+cursor: pointer;
+clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+transition: all 0.3s ease;
+box-shadow: 0 0 12px rgba(196,30,138,0.3);
+text-decoration: none;
+text-align: center;
+}
+.btn-invocar:hover {
+transform: translateY(-2px);
+box-shadow: 0 0 22px rgba(196,30,138,0.5);
+}
+.collection-empty {
+text-align: center;
+padding: 5rem 2rem;
+color: var(--text-muted);
+font-family: 'Crimson Text', serif;
+font-style: italic;
+font-size: 1.2rem;
+}
+@media (max-width: 768px) {
+.collection-page { padding: 6rem 1.2rem 3rem; }
+.products-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+}
+@media (max-width: 480px) {
+.products-grid { grid-template-columns: 1fr; }
+}
+</style>
 <div class="collection-page">
-  <div class="collection-header">
-    <h1 class="collection-title">{{ collection.title }}</h1>
-    {%- if collection.description != blank -%}
-      <div class="collection-description">{{ collection.description }}</div>
-    {%- endif -%}
-  </div>
-  <div class="products-grid">
-    {%- for product in collection.products -%}
-      {%- render 'product-card', product: product -%}
-    {%- else -%}
-      <p class="empty">Nenhum produto encontrado.</p>
-    {%- endfor -%}
-  </div>
+<div class="collection-header">
+<div class="collection-eyebrow">✦ SOMBRAL ✦</div>
+<h1 class="collection-title">{{ collection.title }}</h1>
+{%- if collection.description != blank -%}
+<div class="collection-desc">{{ collection.description }}</div>
+{%- endif -%}
+<p class="collection-count">{{ collection.products_count }} produto{% if collection.products_count != 1 %}s{% endif %} encontrado{% if collection.products_count != 1 %}s{% endif %}</p>
+</div>
+{%- if collection.products_count > 0 -%}
+<div class="products-grid">
+{%- for product in collection.products -%}
+<div class="product-card">
+<a href="{{ product.url }}" style="text-decoration:none;color:inherit;">
+<div class="product-card-image">
+{%- if product.featured_image -%}
+<img src="{{ product.featured_image | img_url: '400x400' }}"
+alt="{{ product.title | escape }}"
+loading="lazy">
+{%- else -%}
+<div class="product-card-placeholder"><span>✦</span></div>
+{%- endif -%}
+</div>
+<div class="product-card-info">
+<h3 class="product-card-title">{{ product.title }}</h3>
+<div class="product-card-price">
+{%- if product.compare_at_price > product.price -%}
+<span class="price-old">{{ product.compare_at_price | money }}</span>
+{%- endif -%}
+<span class="price-current">{{ product.price | money }}</span>
+</div>
+<a href="{{ product.url }}" class="btn-invocar">Invocar</a>
+</div>
+</a>
+</div>
+{%- endfor -%}
+</div>
+{%- else -%}
+<div class="collection-empty">
+<p>Nenhum produto encontrado nesta coleção.</p>
+<a href="/collections/all" style="color:var(--cta);font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.1em;">← Ver Arsenal Completo</a>
+</div>
+{%- endif -%}
 </div>
