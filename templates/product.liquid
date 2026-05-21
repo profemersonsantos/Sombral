@@ -34,8 +34,6 @@
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
-
-/* REVIEWS */
 .reviews-section{max-width:1100px;margin:0 auto;padding:3rem 2rem 4rem;}
 .reviews-top{display:flex;align-items:flex-start;gap:3rem;margin-bottom:2.5rem;flex-wrap:wrap;}
 .reviews-summary-box{background:var(--bg-card);border:1px solid var(--border);padding:1.5rem 2rem;text-align:center;min-width:160px;}
@@ -59,8 +57,6 @@
 .review-name{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;}
 .review-city{font-size:0.68rem;color:var(--text-muted);margin-top:0.1rem;}
 .review-verified{font-size:0.62rem;color:#25d366;font-family:'Cinzel',serif;}
-
-/* NAV REVIEWS */
 .reviews-nav{display:flex;align-items:center;justify-content:center;gap:0.8rem;margin-bottom:2rem;flex-wrap:wrap;}
 .rev-btn{background:var(--bg-card);border:1px solid var(--accent);color:var(--gold);width:42px;height:42px;font-size:1.3rem;cursor:pointer;transition:all 0.2s;font-family:serif;display:flex;align-items:center;justify-content:center;}
 .rev-btn:hover:not(:disabled){background:rgba(123,47,190,0.2);}
@@ -68,8 +64,6 @@
 .rev-info{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.08em;text-align:center;min-width:160px;}
 .rev-ver-todas{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.08em;padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;}
 .rev-ver-todas:hover{border-color:var(--accent);color:var(--text);}
-
-/* FORM AVALIACAO */
 .review-form-section{background:var(--bg-card);border:1px solid var(--border);padding:2rem;margin-top:0.5rem;}
 .review-form-title{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;letter-spacing:0.08em;margin-bottom:1.5rem;}
 .star-picker{display:flex;gap:0.4rem;margin-bottom:1.2rem;flex-direction:row-reverse;justify-content:flex-end;}
@@ -85,7 +79,6 @@
 .btn-review-submit{background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:0.85rem 2rem;border:none;cursor:pointer;transition:all 0.3s;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
 .btn-review-submit:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(196,30,138,0.4);}
 .review-success{display:none;background:rgba(37,211,102,0.1);border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.8rem;padding:1rem;letter-spacing:0.06em;margin-top:1rem;}
-
 @media(max-width:768px){
   .product-page{grid-template-columns:1fr;padding:6rem 1.2rem 3rem;gap:1.5rem;}
   .product-gallery{position:static;}
@@ -166,10 +159,9 @@
   <p class="reviews-title-line" id="reviews-title-line"></p>
   <div class="reviews-grid" id="reviews-grid"></div>
   <div class="reviews-nav" id="reviews-nav"></div>
-
   <div class="review-form-section">
     <p class="review-form-title">✦ Deixe sua avaliação</p>
-    <div class="star-picker" id="star-picker">
+    <div class="star-picker">
       <input type="radio" id="s5" name="stars" value="5"><label for="s5">★</label>
       <input type="radio" id="s4" name="stars" value="4"><label for="s4">★</label>
       <input type="radio" id="s3" name="stars" value="3"><label for="s3">★</label>
@@ -182,219 +174,73 @@
     </div>
     <div class="review-form-group"><label>Sua avaliação</label><textarea id="review-text" placeholder="Conte sua experiência com o produto..." maxlength="500"></textarea></div>
     <button class="btn-review-submit" onclick="submitReview()">Enviar Avaliação</button>
-    <div class="review-success" id="review-success">✦ Avaliação enviada! Obrigado por compartilhar sua experiência.</div>
+    <div class="review-success" id="review-success">✦ Avaliação enviada! Será publicada após aprovação.</div>
   </div>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyB79ZNV2Jp1YLFhBl2S1UBUF-IcgbVyPwU",
   authDomain: "sombral-reviews.firebaseapp.com",
   projectId: "sombral-reviews",
   storageBucket: "sombral-reviews.firebasestorage.app",
   messagingSenderId: "991244592502",
   appId: "1:991244592502:web:93e02a1e936679e6174657"
-};
-
-const app = initializeApp(firebaseConfig);
+});
 const db = getFirestore(app);
 
-// Dados hardcoded originais (serão migrados para o Firebase)
 const HANDLE = "{{ product.handle }}";
 const PER_PAGE = 3;
-var currentPage = 0;
+let currentPage = 0;
+let allReviews = [];
 
-// ---- DADOS ORIGINAIS (fallback e migração) ----
-var allData = {};
-
-allData["sombral-baralho-tarot-das-trevas-goeticas"]={avg:4.8,total:32,dist:{5:78,4:16,3:6},reviews:[
-  {stars:5,name:"Aline M.",city:"São Paulo, SP",ctx:"Tarólogo há 8 anos",text:"As cartas chegaram envoltas em papel de seda preto dentro de uma caixa magnética — melhor embalagem de baralho que já recebi. Qualidade de impressão impecável."},
-  {stars:5,name:"Bruno F.",city:"Curitiba, PR",ctx:"",text:"Comprei para uso em leituras profissionais. As cartas têm gramatura excelente — não dobram nem amassam com manuseio frequente."},
-  {stars:5,name:"Carolina R.",city:"Rio de Janeiro, RJ",ctx:"Wicca",text:"Já tinha baralho de Tarot mas esse é de outro nível. Os detalhes góticos de cada arcano são únicos — dá para ver a diferença de qualquer outro."},
-  {stars:4,name:"Daniel S.",city:"Belo Horizonte, MG",ctx:"",text:"Ótima qualidade de impressão e embalagem diferenciada. Tirei uma estrela porque esperava um livreto mais detalhado sobre os arcanos."},
-  {stars:5,name:"Eduarda L.",city:"Porto Alegre, RS",ctx:"Ocultismo",text:"O acabamento fosco das cartas é perfeito para quem pratica leituras — sem reflexo, sem escorregamento. Material de qualidade real."},
-  {stars:5,name:"Felipe A.",city:"Salvador, BA",ctx:"",text:"Comprei como presente para minha irmã. Ela ficou em lágrimas ao abrir — a caixa magnética e o papel de seda criaram uma experiência de presente incomparável."},
-  {stars:4,name:"Gabriela N.",city:"Recife, PE",ctx:"",text:"Cartas bonitas e bem feitas. A embalagem é luxuosa. Só achei o baralho um pouco maior do que esperava — dificulta para mãos pequenas."},
-  {stars:5,name:"Henrique B.",city:"São Paulo, SP",ctx:"Tarólogo",text:"Uso profissionalmente há 3 meses e as cartas não apresentaram nenhum desgaste. O acabamento fosco resiste ao uso diário com consulentes."},
-  {stars:5,name:"Isabela C.",city:"Florianópolis, SC",ctx:"Dark aesthetic",text:"O design de cada carta é uma obra de arte. Cada arcano tem detalhes únicos que você só percebe de perto. Qualidade de colecionador."},
-  {stars:3,name:"João M.",city:"São Paulo, SP",ctx:"",text:"Produto bonito mas chegou com duas cartas com leve defeito de impressão nas bordas. O atendimento foi responsivo mas a troca demorou."},
-  {stars:5,name:"Karen S.",city:"Campinas, SP",ctx:"Magia das sombras",text:"O baralho captura a energia dark sem cair no clichê. Os arcanos maiores têm composições que respeitam a simbologia tradicional com estética sombria."},
-  {stars:5,name:"Lucas V.",city:"Manaus, AM",ctx:"",text:"Chegou ao Amazonas em perfeito estado. A embalagem protegeu completamente durante o transporte longo. As cartas são extraordinárias."},
-  {stars:5,name:"Mariana K.",city:"São Paulo, SP",ctx:"Terapeuta holística",text:"Uso em sessões de terapia com cartas. A energia que o baralho transmite facilita a abertura dos consulentes. Qualidade que se sente ao tocar."},
-  {stars:4,name:"Nicolás A.",city:"Porto Alegre, RS",ctx:"",text:"Design impecável e embalagem premium. Só esperava que viesse com saquinho de proteção para guardar fora da caixa. As cartas em si são excelentes."},
-  {stars:5,name:"Olivia F.",city:"Rio de Janeiro, RJ",ctx:"Bruxaria",text:"Comprei três baralhos aqui ao longo de um ano — a consistência de qualidade é o que me fidelizou. Esse Tarot das Trevas é o melhor da coleção."},
-  {stars:5,name:"Pedro L.",city:"São Paulo, SP",ctx:"",text:"A caixa magnética sozinha já vale o preço. Mas as cartas são o que realmente impressiona — detalhes que você descobre a cada leitura."},
-  {stars:3,name:"Queli R.",city:"Goiânia, GO",ctx:"",text:"Produto bonito mas o prazo de entrega foi 5 dias além do prometido. Para quem tem urgência, considere isso. A qualidade das cartas é boa."},
-  {stars:5,name:"Rafael C.",city:"Belo Horizonte, MG",ctx:"Ocultismo há 5 anos",text:"O acabamento fosco com detalhes dourados nos arcanos é extraordinário. Cada carta parece um portal para o arquétipo que representa."},
-  {stars:5,name:"Sabrina M.",city:"São Paulo, SP",ctx:"",text:"Presente de aniversário que virou item favorito da minha amiga. Ela usa todo dia e as cartas continuam impecáveis após 4 meses."},
-  {stars:4,name:"Tiago B.",city:"Curitiba, PR",ctx:"",text:"Muito bom produto. Tirei uma estrela pelo prazo — chegou 3 dias depois do estimado. As cartas em si são excepcionais."},
-  {stars:5,name:"Úrsula N.",city:"São Paulo, SP",ctx:"Tarólogo profissional",text:"Em 10 anos lendo tarô, esse é o baralho com maior poder de leitura que já usei. A iconografia sombria acessa camadas que baralhos convencionais não acessam."},
-  {stars:5,name:"Vitor A.",city:"Rio de Janeiro, RJ",ctx:"",text:"A gramatura das cartas é perfeita para embaralhar — nem finas demais nem grossas. O toque físico transmite qualidade antes de você ver as imagens."},
-  {stars:5,name:"Wandessa T.",city:"São Paulo, SP",ctx:"Magia das sombras",text:"Cada sessão com esse baralho revela um detalhe novo nos arcanos. O nível de detalhe artístico é o que separa esse baralho de qualquer outro."},
-  {stars:5,name:"Xavier M.",city:"Florianópolis, SC",ctx:"",text:"Comprei para colecionar mas acabei usando para leituras. A qualidade impressa é tão boa que parece impressão artesanal."},
-  {stars:4,name:"Yasmin L.",city:"São Paulo, SP",ctx:"",text:"Muito satisfeita com o baralho. Só gostaria que viesse com guia de interpretação mais extenso. As cartas em si são perfeitas."},
-  {stars:5,name:"Zara F.",city:"Recife, PE",ctx:"Bruxaria tradicional",text:"Uso profissionalmente e o feedback dos consulentes sobre as imagens é unânime: as cartas têm uma presença visual que facilita a leitura intuitiva."},
-  {stars:5,name:"André S.",city:"São Paulo, SP",ctx:"",text:"A caixa magnética tem aquele clique satisfatório ao fechar. Detalhe pequeno mas que mostra cuidado com toda a experiência do produto."},
-  {stars:5,name:"Beatriz R.",city:"Porto Alegre, RS",ctx:"Tarô há 3 anos",text:"Os arcanos menores têm ilustrações únicas — não é o baralho genérico com símbolos repetidos. Cada carta conta uma história visual completa."},
-  {stars:3,name:"Caio M.",city:"São Paulo, SP",ctx:"",text:"O baralho é bonito mas duas cartas vieram com bordas levemente descentralizadas. Para colecionador é um problema. Para uso diário, não interfere."},
-  {stars:5,name:"Daniela V.",city:"Belo Horizonte, MG",ctx:"",text:"Uso em práticas de shadow work. A iconografia sombria dos arcanos facilita o trabalho com aspectos que outros baralhos suavizam demais."},
-  {stars:5,name:"Erick N.",city:"São Paulo, SP",ctx:"",text:"Quarta compra na SOMBRAL e a embalagem continua sendo a melhor experiência de unboxing que tenho. O baralho superou as expectativas."},
-  {stars:5,name:"Fernanda O.",city:"Curitiba, PR",ctx:"Ocultista",text:"O baralho Tarot das Trevas tem a coerência visual que falta em muitos baralhos — cada arcano segue uma linguagem estética que facilita a memorização."}
-]};
-
-allData["sombral-pins-esmalte-dark"]={avg:4.7,total:30,dist:{5:67,4:23,3:10},reviews:[
-  {stars:5,name:"Amanda R.",city:"São Paulo, SP",ctx:"Colecionadora",text:"Os pins chegaram em caixinha individual com espuma — nunca vi esse nível de embalagem para pins. O esmalte é denso e o metal pesado."},
-  {stars:5,name:"Bernardo F.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei o Pentagrama e o Crânio. O esmalte não lascou em nenhum dos dois após 2 meses de uso diário. Qualidade que justifica o preço."},
-  {stars:4,name:"Cláudia M.",city:"Porto Alegre, RS",ctx:"Estética dark",text:"Pins lindos com acabamento premium. Só achei que a trava traseira poderia ser mais resistente — a do Crânio afrouxou após algumas semanas."},
-  {stars:5,name:"Douglas T.",city:"Curitiba, PR",ctx:"",text:"O Pentagrama tem detalhes de esmalte que você só percebe de perto. A precisão dos contornos em metal é impressionante para esse preço."},
-  {stars:5,name:"Elaine B.",city:"São Paulo, SP",ctx:"Gothic fashion",text:"Uso os pins nas minhas jaquetas de couro. O Ouija ficou perfeito na gola. Metal que não enferruja mesmo com chuva ocasional."},
-  {stars:3,name:"Flávio A.",city:"Salvador, BA",ctx:"",text:"O pin do Crânio é bonito mas chegou com um arranhão superficial no esmalte. Atendimento foi ok mas esperava produto perfeito."},
-  {stars:5,name:"Gisele R.",city:"Belo Horizonte, MG",ctx:"",text:"Comprei o Kit 3 Peças e o custo-benefício é excelente. Cada pin individualmente valeria o preço do kit inteiro."},
-  {stars:5,name:"Heitor S.",city:"Florianópolis, SC",ctx:"Colecionador",text:"A qualidade do esmalte cloisonné é notável — cores vivas com divisórias metálicas precisas. Nível de acabamento de colecionador."},
-  {stars:4,name:"Íris M.",city:"São Paulo, SP",ctx:"",text:"Muito bonitos. Só gostaria que o Pentagrama viesse em tamanho maior — é um pouco pequeno para jaqueta. Para bolsa é perfeito."},
-  {stars:5,name:"Júlio F.",city:"Recife, PE",ctx:"",text:"O Ouija tem detalhes que parecem impossíveis para esmalte — as letras são minúsculas e perfeitamente legíveis. Trabalho artesanal impressionante."},
-  {stars:5,name:"Karla N.",city:"São Paulo, SP",ctx:"Bruxaria",text:"Uso o Pentagrama como amuleto na jaqueta. A qualidade do metal transmite peso e seriedade — não é aquele pin plástico de evento."},
-  {stars:5,name:"Leonardo B.",city:"Campinas, SP",ctx:"",text:"Comprei como presente para minha namorada gótica. Ela ficou apaixonada com a embalagem antes mesmo de ver os pins. Detalhe que faz diferença."},
-  {stars:4,name:"Mariana T.",city:"Porto Alegre, RS",ctx:"",text:"Pins de qualidade excelente. Só o prazo demorou mais que o esperado. O Crânio e o Pentagrama são lindos pessoalmente."},
-  {stars:5,name:"Natã R.",city:"São Paulo, SP",ctx:"Dark aesthetic",text:"O acabamento dos pins da SOMBRAL é consistentemente superior a qualquer outro que já comprei online. Compra segura e produto premium."},
-  {stars:5,name:"Olívia C.",city:"Rio de Janeiro, RJ",ctx:"",text:"O Kit 3 Peças com Fases da Lua, Crânio e Pentagrama ficou perfeito na minha bolsa preta. Combinação visual impecável."},
-  {stars:3,name:"Paulo V.",city:"São Paulo, SP",ctx:"",text:"Produto bonito mas a trava traseira do Ouija estava defeituosa — soltou no primeiro dia. Substituíram mas o processo levou alguns dias."},
-  {stars:5,name:"Queila F.",city:"Goiânia, GO",ctx:"Colecionadora",text:"Já comprei pins em lojas internacionais e a qualidade da SOMBRAL é comparável. Para o preço em real, é um negócio extraordinário."},
-  {stars:5,name:"Rodrigo A.",city:"Curitiba, PR",ctx:"",text:"O Pentagrama tem aquele peso satisfatório que indica metal sólido — não é aquele alumínio oco que dobra com pressão leve."},
-  {stars:4,name:"Simone L.",city:"São Paulo, SP",ctx:"",text:"Muito satisfeita com o Crânio e o Ouija. Só gostaria que viessem com sachetinho individual de proteção para guardar fora do uso."},
-  {stars:5,name:"Thiago P.",city:"Belo Horizonte, MG",ctx:"Gothic",text:"O Ouija tem letras gravadas sob o esmalte que aparecem com luz direta. Esse nível de detalhe não é comum em pins acessíveis."},
-  {stars:5,name:"Uma R.",city:"São Paulo, SP",ctx:"",text:"Quarto pedido na SOMBRAL só de pins. A consistência de qualidade entre pedidos é o que me faz voltar sempre."},
-  {stars:5,name:"Valéria M.",city:"Florianópolis, SC",ctx:"Estética dark",text:"Comprei o Kit 3 Peças e cada pin é único — não é o mesmo design em cores diferentes. Cada um tem identidade e simbolismo próprios."},
-  {stars:3,name:"Vítor S.",city:"Manaus, AM",ctx:"",text:"Pin bonito mas o prazo de entrega demorou mais que o esperado. O produto chegou bem embalado e sem defeitos — apenas a espera foi longa."},
-  {stars:5,name:"Wandessa C.",city:"São Paulo, SP",ctx:"",text:"O Kit 3 Peças custo-benefício excelente. Três pins de qualidade pelo preço de dois. Minha combinação foi Fases da Lua, Crânio e Pentagrama."},
-  {stars:5,name:"Xavier R.",city:"Belo Horizonte, MG",ctx:"",text:"As Fases da Lua na jaqueta recebem elogios constantes. Metal sólido que não amassa com pressão leve. Qualidade que você sente antes de fixar."},
-  {stars:5,name:"Yasmin F.",city:"Rio de Janeiro, RJ",ctx:"Estética dark",text:"Comprei o Ouija como primeira peça e voltei para comprar mais quatro. Esse nível de acabamento em pin esmaltado não é comum no Brasil."}
-]};
-
-allData["sombral-gargantilha-das-sombras-com-pingente-ocultista"]={avg:4.7,total:28,dist:{5:64,4:25,3:11},reviews:[
-  {stars:5,name:"Larissa M.",city:"Rio de Janeiro, RJ",ctx:"",text:"O veludo é macio e o pingente Pentagrama é pesado do jeito certo — não é aquele plástico oco. Uso todo dia e já recebi vários elogios."},
-  {stars:4,name:"Bruna K.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o Pentagrama e a qualidade surpreendeu. O fecho ajustável funciona muito bem. Tirei uma estrela porque o prazo demorou um pouco mais que o esperado."},
-  {stars:5,name:"Fernanda O.",city:"Florianópolis, SC",ctx:"",text:"Finalmente uma peça gótica que não parece fantasia barata. O metal oxidado tem acabamento real e o Pentagrama é preciso nos detalhes."},
-  {stars:3,name:"Patrícia A.",city:"Salvador, BA",ctx:"",text:"O veludo é bonito mas o comprimento mínimo ficou largo no meu pescoço fino. O Pentagrama em si é excelente."},
-  {stars:5,name:"Giovanna R.",city:"São Paulo, SP",ctx:"Estética dark",text:"Uso com looks alternativos e é o acessório que mais recebe comentário. A qualidade do metal não desbotou nem na chuva."},
-  {stars:4,name:"Sabrina C.",city:"Campinas, SP",ctx:"",text:"Boa qualidade e entrega dentro do prazo. O Pentagrama é lindo pessoalmente — melhor do que nas fotos. Só esperava que viesse numa caixinha."},
-  {stars:5,name:"Renata F.",city:"Curitiba, PR",ctx:"Gótica há 8 anos",text:"Tenho muitas gargantilhas e essa é uma das melhores. O veludo não descostura e o metal do Pentagrama é sólido."},
-  {stars:5,name:"Camila S.",city:"São Paulo, SP",ctx:"",text:"O Pentagrama ficou ainda mais bonito pessoalmente do que nas fotos. O veludo tem aquele toque aveludado real — não é sintético barato."},
-  {stars:3,name:"Mariana L.",city:"Recife, PE",ctx:"",text:"A peça é bonita mas o veludo começou a desfiar levemente nas bordas após 3 semanas de uso diário intenso. Para uso ocasional é ótima."},
-  {stars:5,name:"Juliana B.",city:"Belo Horizonte, MG",ctx:"",text:"Presente para minha sobrinha que ama estética dark. Ela ficou apaixonada. O Pentagrama é delicado e poderoso ao mesmo tempo."}
-]};
-
-allData["sombral-kit-runas-nordicas-das-raizes-sombrias"]={avg:4.7,total:26,dist:{5:65,4:19,3:16},reviews:[
-  {stars:5,name:"André S.",city:"Brasília, DF",ctx:"Praticante nórdico",text:"As pedras de Ônix têm peso e textura que transmitem seriedade. Os símbolos estão gravados com profundidade, não pintados. A bolsa de veludo foi um bônus que não esperava."},
-  {stars:5,name:"Juliana P.",city:"São Paulo, SP",ctx:"",text:"Pesquisei muito antes de comprar. Esse kit de Ônix é o melhor custo-benefício que encontrei. As 24 pedras chegaram perfeitas, sem nenhuma lascada."},
-  {stars:4,name:"Rafael C.",city:"Recife, PE",ctx:"",text:"O Ônix tem um brilho intenso e os símbolos estão gravados com precisão. Só achei o guia um pouco básico para quem já conhece runas. As pedras em si são excepcionais."},
-  {stars:5,name:"Daniela F.",city:"Curitiba, PR",ctx:"Iniciante",text:"Meu primeiro kit de runas. O Ônix tem uma energia densa e o toque das pedras é incrível. A bolsa de veludo facilita guardar e transportar."},
-  {stars:3,name:"Marcos T.",city:"Goiânia, GO",ctx:"",text:"As pedras de Ônix são bonitas mas duas chegaram com símbolos levemente tortos. O atendimento resolveu, mas o processo levou alguns dias."},
-  {stars:5,name:"Letícia V.",city:"Belo Horizonte, MG",ctx:"Wicca há 2 anos",text:"Uso o kit de Ônix nas minhas práticas semanais. O brilho escuro da pedra potencializa a conexão com a energia das runas. Kit completo e honesto."}
-]};
-
-allData["sombral-tapecaria-do-veu"]={avg:4.8,total:27,dist:{5:81,4:15,3:4},reviews:[
-  {stars:5,name:"Isabela V.",city:"São Paulo, SP",ctx:"",text:"Transformou meu quarto completamente. O Pentagrama 130x150 cobre a parede inteira e as cores são muito mais vivas do que na foto. Arte densa e impressionante."},
-  {stars:5,name:"Viviane A.",city:"Belo Horizonte, MG",ctx:"",text:"O Pentagrama 130x150 cobre a parede inteira e a qualidade de impressão é nítida até de perto. Lavei na máquina fria e não desbotou nada."},
-  {stars:4,name:"Carlos H.",city:"Rio de Janeiro, RJ",ctx:"",text:"Qualidade ótima mas demorou 14 dias para chegar. Dentro do prazo informado mas esperava antes. O Pentagrama em si é lindo."},
-  {stars:5,name:"Amanda B.",city:"Fortaleza, CE",ctx:"Decoração dark",text:"A tapeçaria tem uma presença absurda na parede. O Pentagrama tem detalhes que você só percebe de perto — linhas precisas e proporções corretas."},
-  {stars:5,name:"Renato S.",city:"Porto Alegre, RS",ctx:"",text:"Comprei para meu espaço de meditação. O Pentagrama 130x150 preenche a parede sem ficar exagerado. Ponto focal poderoso para práticas."}
-]};
-
-allData["sombral-estatua-das-guardias-em-resina"]={avg:4.5,total:25,dist:{5:64,4:16,3:20},reviews:[
-  {stars:5,name:"Priscila D.",city:"Rio de Janeiro, RJ",ctx:"Altar há 5 anos",text:"A Lilith chegou com nível de detalhe que me surpreendeu. O acabamento pintado à mão tem imperfeições sutis que a tornam única — não é resina lisa e genérica."},
-  {stars:4,name:"Gustavo L.",city:"Porto Alegre, RS",ctx:"",text:"Comprei a Hecate e o detalhamento é bom. A base é pesada e estável. A pintura poderia ser mais refinada em alguns pontos mas de longe parece perfeita."},
-  {stars:5,name:"Ana C.",city:"Salvador, BA",ctx:"",text:"Comprei a Hecate e ela domina qualquer espaço. As cores escuras e ricas criam presença real. Meu altar ficou completo."},
-  {stars:3,name:"Paulo M.",city:"Campinas, SP",ctx:"",text:"A Lilith é bonita mas chegou com uma pequena lasca na base. O atendimento compensou com desconto. Resultado final ok."},
-  {stars:5,name:"Melissa R.",city:"Florianópolis, SC",ctx:"Wicca",text:"O Baphomet tem uma presença intimidante do jeito certo. Os chifres, a expressão, a posição das mãos — cada detalhe foi pensado."}
-]};
-
-allData["sombral-pulseira-do-escudo-negro"]={avg:4.8,total:32,dist:{5:75,4:15,3:10},reviews:[
-  {stars:5,name:"Renata F.",city:"São Paulo, SP",ctx:"",text:"Uso a Turmalina Negra há dois meses e o fio não afrouxou nem uma vez. As pedras são densas e o sachê de veludo foi uma surpresa muito boa."},
-  {stars:5,name:"Lucas W.",city:"Florianópolis, SC",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre. As pedras têm brilho natural e tamanho uniforme. O cartão de ativação foi um detalhe especial."},
-  {stars:4,name:"Mariana B.",city:"Fortaleza, CE",ctx:"",text:"Presenteei minha mãe com a Turmalina Negra e ela adorou. Única ressalva: o tamanho único pode ficar largo para pulsos muito finos."},
-  {stars:5,name:"Sérgio A.",city:"Brasília, DF",ctx:"Proteção energética",text:"Uso a Turmalina Negra como escudo diário. Após uma semana senti diferença real nos ambientes que frequento. Pedras densas, sem arranhões."},
-  {stars:5,name:"Cláudia N.",city:"Goiânia, GO",ctx:"",text:"Comprei a Hematita/Ônix/Olho de Tigre e a qualidade é consistente. As pedras têm peso satisfatório no pulso."}
-]};
-
-allData["sombral-bola-de-cristal-do-abismo-k9"]={avg:4.7,total:24,dist:{5:67,4:21,3:12},reviews:[
-  {stars:5,name:"Eduardo N.",city:"Brasília, DF",ctx:"",text:"A bola de 8cm com Base Vulcânica é impressionante — luz passa direto e cria reflexos no teto que parecem mágicos. Base vulcânica tem acabamento textural único."},
-  {stars:5,name:"Simone A.",city:"São Paulo, SP",ctx:"Meditação há 7 anos",text:"Comprei o 8cm com Base Vulcânica. Chegou envolto em camurça dentro de uma caixa sólida. Tamanho perfeito para o altar — imponente sem sobrecarregar."},
-  {stars:4,name:"Felipe R.",city:"Porto Alegre, RS",ctx:"",text:"Comprei o 6cm com Base Madeira. Qualidade acima do esperado. Só achei a base de madeira um pouco simples para a esfera. A bola K9 em si é excelente."},
-  {stars:5,name:"Cristiane B.",city:"Curitiba, PR",ctx:"Divinação",text:"Uso o 8cm em sessões de scrying. A clareza do K9 facilita o foco — muito menos distorção do que vidro comum. Ferramenta real de divinação."}
-]};
-
-allData["sombral-grimorio-das-bruxas"]={avg:4.9,total:29,dist:{5:86,4:10,3:4},reviews:[
-  {stars:5,name:"Tatiana M.",city:"São Paulo, SP",ctx:"Bruxaria há 4 anos",text:"A encadernação costurada faz toda a diferença — abri no meio e o livro fica plano sem forçar. O papel tem gramatura boa, não transparece."},
-  {stars:5,name:"Rodrigo S.",city:"Curitiba, PR",ctx:"",text:"Capa dura com relevo — dá pra sentir os detalhes com o dedo. Li o capítulo de proteção primeiro e já apliquei dois rituais com resultado real."},
-  {stars:5,name:"Aline G.",city:"Rio de Janeiro, RJ",ctx:"",text:"Comprei como presente. A pessoa disse que é o melhor livro de magia que já teve. Linguagem acessível mas séria — não infantiliza o assunto."},
-  {stars:4,name:"Bruno F.",city:"Porto Alegre, RS",ctx:"Ocultismo",text:"Conteúdo excelente. Tirei uma estrela porque esperava mais capítulos sobre magia goética. O que tem é muito bom, mas poderia ser mais aprofundado."},
-  {stars:5,name:"Renata C.",city:"Belo Horizonte, MG",ctx:"Wicca",text:"Já li três vezes e cada vez descubro algo novo. O índice facilita encontrar os rituais quando preciso rápido durante a prática."}
-]};
-
-// ---- SISTEMA DE REVIEWS ----
-function makeCard(r){
-  var sc=r.stars<=3?'s3':(r.stars===4?'s4':'');
-  var stars='★'.repeat(r.stars)+'☆'.repeat(5-r.stars);
-  return '<div class="review-card">'+
-    '<span class="review-stars '+sc+'">'+stars+'</span>'+
-    '<p class="review-text">"'+r.text+'"</p>'+
-    '<div class="review-footer">'+
-      '<div><p class="review-name">'+r.name+(r.ctx?' · <span style="font-weight:400;color:var(--text-muted)">'+r.ctx+'</span>':'')+' </p>'+
-      '<p class="review-city">'+r.city+'</p></div>'+
-      '<span class="review-verified">✓ Verificado</span>'+
+function makeCard(r) {
+  var sc = r.stars <= 3 ? 's3' : (r.stars === 4 ? 's4' : '');
+  var stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+  return '<div class="review-card">' +
+    '<span class="review-stars ' + sc + '">' + stars + '</span>' +
+    '<p class="review-text">"' + esc(r.text) + '"</p>' +
+    '<div class="review-footer">' +
+      '<div><p class="review-name">' + esc(r.name) + (r.ctx ? ' · <span style="font-weight:400;color:var(--text-muted)">' + esc(r.ctx) + '</span>' : '') + '</p>' +
+      '<p class="review-city">' + esc(r.city) + '</p></div>' +
+      '<span class="review-verified">✓ Verificado</span>' +
     '</div></div>';
 }
 
-function renderNav(){
-  var navEl=document.getElementById('reviews-nav');
-  if(!navEl)return;
-  var list=window._revList;
-  var total=Math.ceil(list.length/PER_PAGE);
-  navEl.innerHTML=
-    '<button class="rev-btn" onclick="window.revNav(-1)" '+(currentPage===0?'disabled':'')+'>&#8249;</button>'+
-    '<span class="rev-info">Mostrando '+(currentPage*PER_PAGE+1)+'-'+Math.min((currentPage+1)*PER_PAGE,list.length)+' de '+list.length+' avaliações</span>'+
-    '<button class="rev-btn" onclick="window.revNav(1)" '+(currentPage>=total-1?'disabled':'')+'>&#8250;</button>'+
-    (total>1?'<button class="rev-ver-todas" onclick="window.verTodas()">VER TODAS ('+list.length+')</button>':'');
+function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+function renderGrid() {
+  var gridEl = document.getElementById('reviews-grid');
+  var navEl = document.getElementById('reviews-nav');
+  if (!gridEl) return;
+  var items = allReviews.slice(currentPage * PER_PAGE, (currentPage + 1) * PER_PAGE);
+  gridEl.innerHTML = items.map(makeCard).join('');
+  var total = Math.ceil(allReviews.length / PER_PAGE);
+  navEl.innerHTML =
+    '<button class="rev-btn" onclick="window.revNav(-1)" ' + (currentPage === 0 ? 'disabled' : '') + '>&#8249;</button>' +
+    '<span class="rev-info">Mostrando ' + (currentPage * PER_PAGE + 1) + '-' + Math.min((currentPage + 1) * PER_PAGE, allReviews.length) + ' de ' + allReviews.length + ' avaliações</span>' +
+    '<button class="rev-btn" onclick="window.revNav(1)" ' + (currentPage >= total - 1 ? 'disabled' : '') + '>&#8250;</button>' +
+    (total > 1 ? '<button class="rev-ver-todas" onclick="window.verTodas()">VER TODAS (' + allReviews.length + ')</button>' : '');
 }
 
-function renderGrid(){
-  var gridEl=document.getElementById('reviews-grid');
-  if(!gridEl)return;
-  var list=window._revList;
-  var items=list.slice(currentPage*PER_PAGE,(currentPage+1)*PER_PAGE);
-  gridEl.innerHTML=items.map(makeCard).join('');
-  renderNav();
-}
-
-window.revNav=function(dir){
-  var total=Math.ceil(window._revList.length/PER_PAGE);
-  currentPage=Math.max(0,Math.min(currentPage+dir,total-1));
+window.revNav = function(dir) {
+  var total = Math.ceil(allReviews.length / PER_PAGE);
+  currentPage = Math.max(0, Math.min(currentPage + dir, total - 1));
   renderGrid();
-  document.getElementById('reviews-grid').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('reviews-grid').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 };
 
-window.verTodas=function(){
-  var gridEl=document.getElementById('reviews-grid');
-  var navEl=document.getElementById('reviews-nav');
-  gridEl.innerHTML=window._revList.map(makeCard).join('');
-  navEl.innerHTML='<button class="rev-ver-todas" onclick="window.recolher()">RECOLHER</button>';
+window.verTodas = function() {
+  document.getElementById('reviews-grid').innerHTML = allReviews.map(makeCard).join('');
+  document.getElementById('reviews-nav').innerHTML = '<button class="rev-ver-todas" onclick="window.recolher()">RECOLHER</button>';
 };
 
-window.recolher=function(){
-  currentPage=0;
-  renderGrid();
-};
+window.recolher = function() { currentPage = 0; renderGrid(); };
 
-window._renderReviews=renderGrid;
-window._setCurrentPage=function(p){currentPage=p;};
-
-// ---- CARREGAR REVIEWS DO FIREBASE ----
-async function loadReviews(){
+async function loadReviews() {
   try {
     const q = query(
       collection(db, 'reviews'),
@@ -403,79 +249,58 @@ async function loadReviews(){
       orderBy('createdAt', 'desc')
     );
     const snap = await getDocs(q);
-    if(!snap.empty){
-      var fbReviews = [];
-      snap.forEach(doc => {
-        var d = doc.data();
-        fbReviews.push({stars:d.stars, name:d.name, city:d.city||'Brasil', ctx:d.ctx||'', text:d.text});
-      });
-      // Merge: Firebase aprovados + hardcoded originais
-      var hardcoded = allData[HANDLE] ? allData[HANDLE].reviews : [];
-      window._revList = fbReviews.concat(hardcoded);
-    } else {
-      // Sem reviews no Firebase ainda — usa hardcoded
-      var data = allData[HANDLE];
-      window._revList = data ? data.reviews.slice() : [];
-    }
-  } catch(e){
-    // Fallback para hardcoded se Firebase falhar
-    var data = allData[HANDLE];
-    window._revList = data ? data.reviews.slice() : [];
+    allReviews = [];
+    snap.forEach(doc => {
+      var d = doc.data();
+      allReviews.push({ stars: d.stars, name: d.name, city: d.city || '', ctx: d.ctx || '', text: d.text });
+    });
+  } catch(e) {
+    console.warn('[Reviews] Firebase error:', e);
+    allReviews = [];
   }
 
-  // Calcula stats
-  var list = window._revList;
-  var data = allData[HANDLE];
-  if(list.length > 0){
-    var total = list.length;
-    var avg = (list.reduce(function(s,r){return s+r.stars;},0)/total);
-    var dist = {5:0,4:0,3:0};
-    list.forEach(function(r){ if(dist[r.stars]!==undefined) dist[r.stars]++; });
-    dist[5]=Math.round(dist[5]/total*100); dist[4]=Math.round(dist[4]/total*100); dist[3]=Math.round(dist[3]/total*100);
-
-    var rEl=document.getElementById('product-rating-inline');
-    if(rEl)rEl.innerHTML='<span class="stars-inline">'+'★'.repeat(Math.round(avg))+'☆'.repeat(5-Math.round(avg))+'</span><span class="rating-text">'+avg.toFixed(1)+' · '+total+' avaliações</span>';
-
-    var topEl=document.getElementById('reviews-top');
-    if(topEl){
-      var bars=[[5,'5 ★'],[4,'4 ★'],[3,'3 ★']].map(function(b){
-        return '<div class="bar-row"><span class="bar-label">'+b[1]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(dist[b[0]]||0)+'%"></div></div><span class="bar-pct">'+(dist[b[0]]||0)+'%</span></div>';
-      }).join('');
-      topEl.innerHTML='<div class="reviews-summary-box"><div class="reviews-avg-num">'+avg.toFixed(1)+'</div><div class="reviews-avg-stars">★★★★★</div><div class="reviews-total">'+total+' avaliações</div></div><div class="reviews-bars">'+bars+'</div>';
-    }
-
-    var tEl=document.getElementById('reviews-title-line');
-    if(tEl)tEl.textContent='✦ O que dizem as Sombras ('+total+' avaliações recentes)';
-
-    renderGrid();
-  } else if(data) {
-    // fallback completo
-    window._revList = data.reviews.slice();
-    var rEl=document.getElementById('product-rating-inline');
-    if(rEl)rEl.innerHTML='<span class="stars-inline">'+'★'.repeat(Math.round(data.avg))+'☆'.repeat(5-Math.round(data.avg))+'</span><span class="rating-text">'+data.avg.toFixed(1)+' · '+data.total+' avaliações</span>';
-    var topEl=document.getElementById('reviews-top');
-    if(topEl){
-      var bars=[[5,'5 ★'],[4,'4 ★'],[3,'3 ★']].map(function(b){
-        return '<div class="bar-row"><span class="bar-label">'+b[1]+'</span><div class="bar-track"><div class="bar-fill" style="width:'+(data.dist[b[0]]||0)+'%"></div></div><span class="bar-pct">'+(data.dist[b[0]]||0)+'%</span></div>';
-      }).join('');
-      topEl.innerHTML='<div class="reviews-summary-box"><div class="reviews-avg-num">'+data.avg.toFixed(1)+'</div><div class="reviews-avg-stars">★★★★★</div><div class="reviews-total">'+data.total+' avaliações</div></div><div class="reviews-bars">'+bars+'</div>';
-    }
-    var tEl=document.getElementById('reviews-title-line');
-    if(tEl)tEl.textContent='✦ O que dizem as Sombras ('+data.reviews.length+' avaliações recentes)';
-    renderGrid();
+  if (allReviews.length === 0) {
+    document.getElementById('reviews-grid').innerHTML = '';
+    document.getElementById('reviews-nav').innerHTML = '';
+    document.getElementById('reviews-title-line').textContent = '';
+    document.getElementById('reviews-top').innerHTML = '';
+    document.getElementById('product-rating-inline').innerHTML = '';
+    return;
   }
+
+  var total = allReviews.length;
+  var avg = allReviews.reduce(function(s, r) { return s + r.stars; }, 0) / total;
+  var dist = { 5: 0, 4: 0, 3: 0 };
+  allReviews.forEach(function(r) { if (dist[r.stars] !== undefined) dist[r.stars]++; });
+  dist[5] = Math.round(dist[5] / total * 100);
+  dist[4] = Math.round(dist[4] / total * 100);
+  dist[3] = Math.round(dist[3] / total * 100);
+
+  var rEl = document.getElementById('product-rating-inline');
+  if (rEl) rEl.innerHTML = '<span class="stars-inline">' + '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg)) + '</span><span class="rating-text">' + avg.toFixed(1) + ' · ' + total + ' avaliações</span>';
+
+  var topEl = document.getElementById('reviews-top');
+  if (topEl) {
+    var bars = [[5,'5 ★'],[4,'4 ★'],[3,'3 ★']].map(function(b) {
+      return '<div class="bar-row"><span class="bar-label">' + b[1] + '</span><div class="bar-track"><div class="bar-fill" style="width:' + (dist[b[0]] || 0) + '%"></div></div><span class="bar-pct">' + (dist[b[0]] || 0) + '%</span></div>';
+    }).join('');
+    topEl.innerHTML = '<div class="reviews-summary-box"><div class="reviews-avg-num">' + avg.toFixed(1) + '</div><div class="reviews-avg-stars">★★★★★</div><div class="reviews-total">' + total + ' avaliações</div></div><div class="reviews-bars">' + bars + '</div>';
+  }
+
+  var tEl = document.getElementById('reviews-title-line');
+  if (tEl) tEl.textContent = '✦ O que dizem as Sombras (' + total + ' avaliações recentes)';
+
+  renderGrid();
 }
 
-// ---- FORM SUBMIT ----
-window.submitReview = async function(){
-  var starsEl=document.querySelector('input[name="stars"]:checked');
-  var name=document.getElementById('review-name').value.trim();
-  var city=document.getElementById('review-city').value.trim();
-  var text=document.getElementById('review-text').value.trim();
-  if(!starsEl){alert('Selecione uma nota em estrelas.');return;}
-  if(!name){alert('Digite seu nome.');return;}
-  if(text.length<20){alert('Escreva ao menos 20 caracteres.');return;}
-
+window.submitReview = async function() {
+  var starsEl = document.querySelector('input[name="stars"]:checked');
+  var name = document.getElementById('review-name').value.trim();
+  var city = document.getElementById('review-city').value.trim();
+  var text = document.getElementById('review-text').value.trim();
+  if (!starsEl) { alert('Selecione uma nota em estrelas.'); return; }
+  if (!name) { alert('Digite seu nome.'); return; }
+  if (text.length < 20) { alert('Escreva ao menos 20 caracteres.'); return; }
   try {
     await addDoc(collection(db, 'reviews'), {
       productHandle: HANDLE,
@@ -485,66 +310,63 @@ window.submitReview = async function(){
       ctx: '',
       text: text,
       status: 'pending',
+      verified: false,
       createdAt: serverTimestamp()
     });
-  } catch(e){
-    console.warn('Firebase error:', e);
-  }
-
-  document.querySelectorAll('input[name="stars"]').forEach(function(i){i.checked=false;});
-  document.getElementById('review-name').value='';
-  document.getElementById('review-city').value='';
-  document.getElementById('review-text').value='';
-  var msg=document.getElementById('review-success');
-  msg.style.display='block';
-  setTimeout(function(){msg.style.display='none';},4000);
+  } catch(e) { console.warn('[Reviews] Erro ao salvar:', e); }
+  document.querySelectorAll('input[name="stars"]').forEach(function(i) { i.checked = false; });
+  document.getElementById('review-name').value = '';
+  document.getElementById('review-city').value = '';
+  document.getElementById('review-text').value = '';
+  var msg = document.getElementById('review-success');
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 4000);
 };
 
-// ---- GALERIA ----
-(function(){
-  var images=[{%- for image in product.images -%}{src:"{{ image | img_url: '800x800' }}",alt:"{{ image.alt | escape }}"}{% unless forloop.last %},{% endunless %}{%- endfor -%}];
-  var currentIndex=0;
-  var mainImg=document.getElementById('main-product-image');
-  var counter=document.getElementById('gallery-counter');
-  var select=document.getElementById('variant-select');
-  var priceEl=document.getElementById('variant-price');
-  var btnPr=document.getElementById('btn-price');
+// ---- GALERIA E VARIANTES ----
+(function() {
+  var images = [{%- for image in product.images -%}{src:"{{ image | img_url: '800x800' }}",alt:"{{ image.alt | escape }}"}{% unless forloop.last %},{% endunless %}{%- endfor -%}];
+  var currentIndex = 0;
+  var mainImg = document.getElementById('main-product-image');
+  var counter = document.getElementById('gallery-counter');
+  var select = document.getElementById('variant-select');
+  var priceEl = document.getElementById('variant-price');
+  var btnPr = document.getElementById('btn-price');
 
-  window.goToImage=function(i){
-    if(!images.length||i<0||i>=images.length)return;
-    currentIndex=i;
-    if(mainImg){mainImg.style.opacity='0';setTimeout(function(){mainImg.src=images[i].src;mainImg.alt=images[i].alt;mainImg.style.opacity='1';},180);}
-    if(counter)counter.textContent=(i+1)+' / '+images.length;
+  window.goToImage = function(i) {
+    if (!images.length || i < 0 || i >= images.length) return;
+    currentIndex = i;
+    if (mainImg) { mainImg.style.opacity='0'; setTimeout(function(){mainImg.src=images[i].src;mainImg.alt=images[i].alt;mainImg.style.opacity='1';},180); }
+    if (counter) counter.textContent = (i + 1) + ' / ' + images.length;
     document.querySelectorAll('.product-thumb').forEach(function(t){t.classList.toggle('active',parseInt(t.dataset.index)===i);});
   };
-  window.galleryNav=function(dir){goToImage((currentIndex+dir+images.length)%images.length);};
+  window.galleryNav = function(dir) { goToImage((currentIndex + dir + images.length) % images.length); };
 
-  document.querySelectorAll('.variant-option').forEach(function(opt){
-    opt.addEventListener('click',function(){
+  document.querySelectorAll('.variant-option').forEach(function(opt) {
+    opt.addEventListener('click', function() {
       this.parentElement.querySelectorAll('.variant-option').forEach(function(s){s.classList.remove('active');});
       this.classList.add('active');
-      var vals=[];
+      var vals = [];
       document.querySelectorAll('.variant-options').forEach(function(g){var a=g.querySelector('.variant-option.active');if(a)vals.push(a.dataset.value);});
-      var matched=null;
+      var matched = null;
       Array.from(select.options).forEach(function(o){if(o.text.trim()===vals.join(' / '))matched=o;});
-      if(matched){
-        select.value=matched.value;
-        var price=matched.dataset.price;
-        if(price){if(priceEl)priceEl.textContent='R$ '+price;if(btnPr)btnPr.textContent=price;}
-        var varImgSrc=matched.dataset.image;
-        if(varImgSrc&&varImgSrc!=='null'&&varImgSrc!==''){
-          var norm=function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''};
-          var target=norm(varImgSrc);
-          var found=-1;
-          for(var i=0;i<images.length;i++){if(norm(images[i].src)===target){found=i;break;}}
-          if(found>=0)goToImage(found);
-          else{var idx=parseInt(matched.dataset.imageIndex);if(!isNaN(idx)&&idx>=0&&images[idx])goToImage(idx);}
+      if (matched) {
+        select.value = matched.value;
+        var price = matched.dataset.price;
+        if (price) { if(priceEl)priceEl.textContent='R$ '+price; if(btnPr)btnPr.textContent=price; }
+        var varImgSrc = matched.dataset.image;
+        if (varImgSrc && varImgSrc !== 'null' && varImgSrc !== '') {
+          var norm = function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''};
+          var target = norm(varImgSrc);
+          var found = -1;
+          for (var i = 0; i < images.length; i++){if(norm(images[i].src)===target){found=i;break;}}
+          if (found >= 0) goToImage(found);
+          else { var idx=parseInt(matched.dataset.imageIndex); if(!isNaN(idx)&&idx>=0&&images[idx])goToImage(idx); }
         }
       }
     });
   });
 })();
 
-// ---- INIT ----
 loadReviews();
 </script>
