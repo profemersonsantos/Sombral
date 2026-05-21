@@ -43,59 +43,53 @@ color: var(--text-muted);
 letter-spacing: 0.1em;
 margin-top: 0.8rem;
 }
-.products-grid {
+.col-products-grid {
 display: grid;
 grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 gap: 1.5rem;
 }
-.product-card {
+.col-product-card {
 background: var(--bg-card);
 border: 1px solid var(--border);
 overflow: hidden;
 transition: all 0.3s ease;
 position: relative;
+text-decoration: none;
+color: inherit;
+display: block;
 }
-.product-card::before {
-content: '';
-position: absolute;
-inset: 0;
-background: linear-gradient(135deg, rgba(123,47,190,0.05), transparent);
-opacity: 0;
-transition: opacity 0.3s;
-}
-.product-card:hover {
+.col-product-card:hover {
 border-color: var(--accent);
 transform: translateY(-4px);
 box-shadow: 0 8px 30px rgba(123,47,190,0.2);
 }
-.product-card:hover::before { opacity: 1; }
-.product-card-image {
+.col-product-image {
 aspect-ratio: 1;
-overflow: visible;
-background: transparent;
+overflow: hidden;
+background: var(--bg-card);
+display: flex;
+align-items: center;
+justify-content: center;
 }
-.product-card-image img {
+.col-product-image img {
 width: 100%;
 height: 100%;
-object-fit: contain;
+object-fit: cover;
 transition: transform 0.4s ease;
-background: transparent;
-mix-blend-mode: multiply;
 }
-.product-card:hover .product-card-image img { transform: scale(1.05); }
-.product-card-placeholder {
-width: 100%; height: 100%;
-display: flex; align-items: center; justify-content: center;
-font-size: 3rem; color: var(--accent);
-background: radial-gradient(ellipse at center, rgba(123,47,190,0.1), transparent);
+.col-product-card:hover .col-product-image img { transform: scale(1.05); }
+.col-product-placeholder {
+font-size: 3rem;
+color: var(--accent);
+opacity: 0.4;
 }
-.product-card-info {
+.col-product-info {
 padding: 1.2rem;
 display: flex;
 flex-direction: column;
 gap: 0.7rem;
 }
-.product-card-title {
+.col-product-title {
 font-family: 'Cinzel', serif;
 font-size: 0.85rem;
 font-weight: 600;
@@ -103,24 +97,24 @@ letter-spacing: 0.05em;
 line-height: 1.4;
 color: var(--text);
 }
-.product-card-price {
+.col-product-price {
 display: flex;
 align-items: center;
 gap: 0.6rem;
 }
-.price-old {
+.col-price-old {
 color: var(--text-muted);
 text-decoration: line-through;
 font-size: 0.8rem;
 }
-.price-current {
+.col-price-current {
 color: var(--gold);
 font-family: 'Cinzel', serif;
 font-weight: 700;
 font-size: 1rem;
 }
-.btn-invocar {
-display: inline-block;
+.col-btn-invocar {
+display: block;
 background: linear-gradient(135deg, #8b0050, var(--cta));
 color: #fff;
 font-family: 'Cinzel', serif;
@@ -134,11 +128,10 @@ cursor: pointer;
 clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
 transition: all 0.3s ease;
 box-shadow: 0 0 12px rgba(196,30,138,0.3);
-text-decoration: none;
 text-align: center;
+text-decoration: none;
 }
-.btn-invocar:hover {
-transform: translateY(-2px);
+.col-btn-invocar:hover {
 box-shadow: 0 0 22px rgba(196,30,138,0.5);
 }
 .collection-empty {
@@ -151,10 +144,10 @@ font-size: 1.2rem;
 }
 @media (max-width: 768px) {
 .collection-page { padding: 6rem 1.2rem 3rem; }
-.products-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+.col-products-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
 }
 @media (max-width: 480px) {
-.products-grid { grid-template-columns: 1fr; }
+.col-products-grid { grid-template-columns: 1fr; }
 }
 </style>
 <div class="collection-page">
@@ -167,31 +160,29 @@ font-size: 1.2rem;
 <p class="collection-count">{{ collection.products_count }} produto{% if collection.products_count != 1 %}s{% endif %} encontrado{% if collection.products_count != 1 %}s{% endif %}</p>
 </div>
 {%- if collection.products_count > 0 -%}
-<div class="products-grid">
+<div class="col-products-grid">
 {%- for product in collection.products -%}
-<div class="product-card">
-<a href="{{ product.url }}" style="text-decoration:none;color:inherit;">
-<div class="product-card-image">
+<a href="{{ product.url }}" class="col-product-card">
+<div class="col-product-image">
 {%- if product.featured_image -%}
-<img src="{{ product.featured_image | img_url: '400x400' }}"
+<img src="{{ product.featured_image | img_url: '400x400', crop: 'center' }}"
 alt="{{ product.title | escape }}"
 loading="lazy">
 {%- else -%}
-<div class="product-card-placeholder"><span>✦</span></div>
+<div class="col-product-placeholder">✦</div>
 {%- endif -%}
 </div>
-<div class="product-card-info">
-<h3 class="product-card-title">{{ product.title }}</h3>
-<div class="product-card-price">
+<div class="col-product-info">
+<h3 class="col-product-title">{{ product.title }}</h3>
+<div class="col-product-price">
 {%- if product.compare_at_price > product.price -%}
-<span class="price-old">{{ product.compare_at_price | money }}</span>
+<span class="col-price-old">{{ product.compare_at_price | money }}</span>
 {%- endif -%}
-<span class="price-current">{{ product.price | money }}</span>
+<span class="col-price-current">{{ product.price | money }}</span>
 </div>
-<a href="{{ product.url }}" class="btn-invocar">Invocar</a>
+<span class="col-btn-invocar">Invocar</span>
 </div>
 </a>
-</div>
 {%- endfor -%}
 </div>
 {%- else -%}
