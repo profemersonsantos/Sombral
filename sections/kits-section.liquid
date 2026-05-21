@@ -2,9 +2,10 @@
 <div class="section-header">
 <div class="section-eyebrow">✦ Bundles ✦</div>
 <h2 class="section-title">Kits das Sombras</h2>
-<p class="section-subtitle">Conjuntos montados para acelerar sua prática ou presente perfeito.</p>
+<p class="section-subtitle">Conjuntos montados para acelerar sua prática.</p>
 </div>
 <div class="kits-grid">
+<!-- KIT 1: Iniciação -->
 <div class="kit-card">
 <div class="kit-badge">Mais Vendido</div>
 <div class="kit-icon">🌑</div>
@@ -20,8 +21,12 @@
 <span class="kit-old-price">R$ 262,60</span>
 <span class="kit-new-price">R$ 223,90</span>
 </div>
-<a href="/collections/all" class="btn-primary">Invocar o Kit</a>
+<button class="btn-primary kit-btn" id="btn-kit-iniciacao" onclick="addKitToCart('iniciacao', this)">
+Invocar o Kit
+</button>
+<p class="kit-discount-info">15% off — você economiza R$ 38,70</p>
 </div>
+<!-- KIT 2: Altar Completo -->
 <div class="kit-card kit-featured">
 <div class="kit-badge">Completo</div>
 <div class="kit-icon">⛧</div>
@@ -37,8 +42,12 @@
 <span class="kit-old-price">R$ 358,95</span>
 <span class="kit-new-price">R$ 305,90</span>
 </div>
-<a href="/collections/all" class="btn-primary">Invocar o Kit</a>
+<button class="btn-primary kit-btn" id="btn-kit-altar" onclick="addKitToCart('altar', this)">
+Invocar o Kit
+</button>
+<p class="kit-discount-info">15% off — você economiza R$ 53,05</p>
 </div>
+<!-- KIT 3: Identidade Dark -->
 <div class="kit-card">
 <div class="kit-badge">Identidade</div>
 <div class="kit-icon">🌙</div>
@@ -53,7 +62,147 @@
 <span class="kit-old-price">R$ 224,05</span>
 <span class="kit-new-price">R$ 190,90</span>
 </div>
-<a href="/collections/all" class="btn-primary">Invocar o Kit</a>
+<button class="btn-primary kit-btn" id="btn-kit-identidade" onclick="addKitToCart('identidade', this)">
+Invocar o Kit
+</button>
+<p class="kit-discount-info">15% off — você economiza R$ 33,15</p>
 </div>
 </div>
 </section>
+<style>
+.kit-btn { width: 100%; text-align: center; cursor: pointer; }
+.kit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.kit-discount-info {
+text-align: center;
+font-size: 0.72rem;
+color: #25d366;
+font-family: 'Cinzel', serif;
+letter-spacing: 0.06em;
+margin-top: 0.5rem;
+}
+.kit-toast {
+position: fixed;
+bottom: 2rem;
+left: 50%;
+transform: translateX(-50%) translateY(100px);
+background: #111118;
+border: 1px solid #25d366;
+color: #25d366;
+font-family: 'Cinzel', serif;
+font-size: 0.82rem;
+letter-spacing: 0.08em;
+padding: 1rem 2rem;
+z-index: 9999;
+transition: transform 0.4s ease;
+text-align: center;
+max-width: 90vw;
+}
+.kit-toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+<div class="kit-toast" id="kit-toast">✦ Kit adicionado ao carrinho!</div>
+<script>
+// IDs das variantes de cada produto
+var KITS = {
+iniciacao: {
+name: "Kit Iniciação das Sombras",
+coupon: "KIT-INICIACAO",
+kitPrice: 22390, // em centavos
+fullPrice: 26260,
+items: [
+{ variantId: 54223136424241, title: "Runas Nórdicas", price: 7490 },
+{ variantId: 54223136751921, title: "Pulseira do Escudo Negro", price: 3990 },
+{ variantId: 54223137112369, title: "Almanaque Wicca 2026", price: 5790 },
+{ variantId: 54223136915761, title: "Bola de Cristal K9 6cm", price: 8990 }
+]
+},
+altar: {
+name: "Kit Altar Completo",
+coupon: "KIT-ALTAR",
+kitPrice: 30590,
+fullPrice: 35895,
+items: [
+{ variantId: 54257474830641, title: "Estátua das Guardiãs", price: 6990 },
+{ variantId: 54223136588081, title: "Tapeçaria do Véu", price: 5990 },
+{ variantId: 54223136948529, title: "Bola de Cristal K9 8cm", price: 8990 },
+{ variantId: 54223137014065, title: "Grimório das Bruxas", price: 13925 }
+]
+},
+identidade: {
+name: "Kit Identidade Dark",
+coupon: "KIT-IDENTIDADE",
+kitPrice: 19090,
+fullPrice: 22405,
+items: [
+{ variantId: 54223136293169, title: "Gargantilha das Sombras", price: 4490 },
+{ variantId: 54223136751921, title: "Pulseira do Escudo Negro", price: 3990 },
+{ variantId: 54223137014065, title: "Grimório das Bruxas", price: 13925 }
+]
+}
+};
+async function addKitToCart(kitId, btn) {
+var kit = KITS[kitId];
+if (!kit) return;
+// Desabilitar botão durante processo
+btn.disabled = true;
+btn.textContent = 'Adicionando...';
+try {
+// Calcular desconto proporcional por item
+var totalOriginal = kit.items.reduce(function(s, i) { return s + i.price; }, 0);
+var discountRatio = kit.kitPrice / totalOriginal;
+// Montar itens com preço ajustado proporcionalmente
+var items = kit.items.map(function(item) {
+var adjustedPrice = Math.round(item.price * discountRatio);
+return {
+id: item.variantId,
+quantity: 1,
+properties: {
+'_kit': kit.name,
+'_kit_price': 'R$ ' + (kit.kitPrice / 100).toFixed(2).replace('.', ','),
+'_preco_original': 'R$ ' + (item.price / 100).toFixed(2).replace('.', ',')
+}
+};
+});
+// Adicionar ao carrinho via API Shopify
+var res = await fetch('/cart/add.js', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ items: items })
+});
+if (!res.ok) throw new Error('Erro ao adicionar');
+// Adicionar nota ao carrinho identificando o kit e desconto
+var discount = kit.fullPrice - kit.kitPrice;
+await fetch('/cart/update.js', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+note: kit.name + ' — Desconto de R$ ' + (discount / 100).toFixed(2).replace('.', ',') + ' aplicado (15% off)'
+})
+});
+// Atualizar contador do carrinho
+var cartRes = await fetch('/cart.js');
+var cartData = await cartRes.json();
+var countEl = document.querySelector('.cart-count');
+if (countEl) countEl.textContent = cartData.item_count;
+// Mudar botão para sucesso
+btn.textContent = '✓ Redirecionando...';
+btn.style.background = 'linear-gradient(135deg, #1a5c2a, #25d366)';
+showToast('✦ Kit adicionado! Aplicando desconto de 15%...');
+// Redirecionar ao checkout com cupom automático
+setTimeout(function() {
+window.location.href = '/checkout?discount=' + kit.coupon;
+}, 1200);
+} catch(e) {
+btn.disabled = false;
+btn.textContent = 'Invocar o Kit';
+showToast('❌ Erro ao adicionar. Tente novamente.', true);
+}
+}
+function showToast(msg, isError) {
+var toast = document.getElementById('kit-toast');
+toast.textContent = msg;
+toast.style.borderColor = isError ? '#c0392b' : '#25d366';
+toast.style.color = isError ? '#c0392b' : '#25d366';
+toast.classList.add('show');
+setTimeout(function() { toast.classList.remove('show'); }, 3500);
+}
+</script>
