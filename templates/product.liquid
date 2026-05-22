@@ -35,6 +35,21 @@
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
+/* RELACIONADOS */
+.related-section{max-width:1100px;margin:0 auto;padding:2rem 2rem 0;}
+.related-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
+.related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+.related-card{background:var(--bg-card);border:1px solid var(--border);overflow:hidden;transition:all 0.3s;text-decoration:none;display:flex;flex-direction:column;}
+.related-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 20px rgba(123,47,190,0.2);}
+.related-card-img{aspect-ratio:1/1;overflow:hidden;background:#0d0d1a;}
+.related-card-img img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;transition:transform 0.3s;}
+.related-card:hover .related-card-img img{transform:scale(1.05);}
+.related-card-info{padding:0.9rem;}
+.related-card-title{font-family:'Cinzel',serif;font-size:0.75rem;font-weight:600;letter-spacing:0.04em;line-height:1.4;color:var(--text);margin-bottom:0.4rem;}
+.related-card-price{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--gold);}
+.related-card-btn{margin:0 0.9rem 0.9rem;display:block;background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem;text-align:center;border:none;cursor:pointer;transition:all 0.2s;text-decoration:none;}
+.related-card-btn:hover{opacity:0.85;}
+/* REVIEWS */
 .reviews-section{max-width:1100px;margin:0 auto;padding:3rem 2rem 4rem;}
 .reviews-top{display:flex;align-items:flex-start;gap:3rem;margin-bottom:2.5rem;flex-wrap:wrap;}
 .reviews-summary-box{background:var(--bg-card);border:1px solid var(--border);padding:1.5rem 2rem;text-align:center;min-width:160px;}
@@ -87,6 +102,10 @@
 .reviews-grid{grid-template-columns:1fr;}
 .review-form-row{grid-template-columns:1fr;}
 .reviews-top{gap:1.5rem;}
+.related-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+.related-grid{grid-template-columns:repeat(2,1fr);}
 }
 </style>
 <nav class="breadcrumb">
@@ -155,6 +174,45 @@
 <div class="product-desc">{{ product.description }}</div>
 </div>
 </div>
+<!-- PRODUTOS RELACIONADOS -->
+{%- assign related_products = collections.all.products | where: 'handle', product.handle | first -%}
+{%- assign counter = 0 -%}
+{%- assign has_related = false -%}
+{%- for p in collections.all.products -%}
+{%- unless p.handle == product.handle -%}
+{%- assign counter = counter | plus: 1 -%}
+{%- if counter == 1 -%}{%- assign has_related = true -%}{%- endif -%}
+{%- endunless -%}
+{%- endfor -%}
+{%- if has_related -%}
+<div class="related-section">
+<p class="related-title">✦ Você também pode invocar</p>
+<div class="related-grid">
+{%- assign shown = 0 -%}
+{%- for p in collections.all.products -%}
+{%- unless p.handle == product.handle or shown >= 4 -%}
+{%- assign shown = shown | plus: 1 -%}
+<a href="{{ p.url }}" class="related-card">
+<div class="related-card-img">
+{%- if p.featured_image -%}
+<img src="{{ p.featured_image | img_url: '400x400' }}" alt="{{ p.title | escape }}" loading="lazy">
+{%- else -%}
+<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:150px;">
+<span style="font-size:2rem;color:var(--accent);opacity:0.3;">✦</span>
+</div>
+{%- endif -%}
+</div>
+<div class="related-card-info">
+<p class="related-card-title">{{ p.title | replace: 'SOMBRAL — ', '' }}</p>
+<p class="related-card-price">R$ {{ p.price_min | money_without_currency }}</p>
+</div>
+<span class="related-card-btn">Invocar</span>
+</a>
+{%- endunless -%}
+{%- endfor -%}
+</div>
+</div>
+{%- endif -%}
 <div class="reviews-section">
 <div class="reviews-top" id="reviews-top"></div>
 <p class="reviews-title-line" id="reviews-title-line"></p>
