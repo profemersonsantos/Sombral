@@ -165,21 +165,37 @@ DÚVIDAS? FALE COMIGO
 <div class="product-desc">{{ product.description }}</div>
 </div>
 </div>
-{% if recommendations.products.size > 0 %}
+{% assign related_collection = product.collections | first %}
+{% if related_collection %}
+{% assign related_products = related_collection.products | where: 'available', true %}
+{% assign related_count = 0 %}
+{% for p in related_products %}
+{% unless p.id == product.id %}
+{% assign related_count = related_count | plus: 1 %}
+{% endunless %}
+{% endfor %}
+{% endif %}
+{% if related_count > 0 %}
 <div class="related-section">
 <div class="related-title">✦ VOCÊ TAMBÉM PODE INVOCAR</div>
 <div class="related-grid">
-{% for product in recommendations.products limit: 4 %}
-<a href="{{ product.url }}" class="related-card">
+{% assign shown = 0 %}
+{% for p in related_products %}
+{% unless p.id == product.id %}
+{% if shown < 4 %}
+<a href="{{ p.url }}" class="related-card">
 <div class="related-card-img">
-<img src="{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}">
+<img src="{{ p.featured_image | img_url: '400x400' }}" alt="{{ p.title }}">
 </div>
 <div class="related-card-info">
-<div class="related-card-title">{{ product.title }}</div>
-<div class="related-card-price">R$ {{ product.price | money_without_currency }}</div>
+<div class="related-card-title">{{ p.title }}</div>
+<div class="related-card-price">R$ {{ p.price | money_without_currency }}</div>
 </div>
 <div class="related-card-btn">INVOCAR</div>
 </a>
+{% assign shown = shown | plus: 1 %}
+{% endif %}
+{% endunless %}
 {% endfor %}
 </div>
 </div>
