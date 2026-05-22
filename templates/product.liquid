@@ -35,15 +35,15 @@
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
-/* RELACIONADOS */
+/* RELACIONADOS - CORREÇÃO APLICADA */
 .related-section{max-width:1100px;margin:0 auto;padding:2rem 2rem 0;}
 .related-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
 .related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
 .related-card{background:var(--bg-card);border:1px solid var(--border);overflow:hidden;transition:all 0.3s;text-decoration:none;display:flex;flex-direction:column;}
 .related-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 20px rgba(123,47,190,0.2);}
-.related-card-img{aspect-ratio:1/1;overflow:hidden;background:#0d0d1a;}
-.related-card-img img{width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply;transition:transform 0.3s;}
-.related-card:hover .related-card-img img{transform:scale(1.05);}
+.related-card-img{aspect-ratio:1/1;overflow:hidden;background:rgba(255,255,255,0.03);position:relative;}
+.related-card-img img{width:100%;height:100%;object-fit:contain;filter:brightness(1.15);transition:all 0.3s;background:transparent;}
+.related-card:hover .related-card-img img{transform:scale(1.05);filter:brightness(1.25);}
 .related-card-info{padding:0.9rem;}
 .related-card-title{font-family:'Cinzel',serif;font-size:0.75rem;font-weight:600;letter-spacing:0.04em;line-height:1.4;color:var(--text);margin-bottom:0.4rem;}
 .related-card-price{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--gold);}
@@ -93,232 +93,187 @@
 .review-form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 .review-form-group textarea{min-height:100px;}
 .btn-review-submit{background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:0.85rem 2rem;border:none;cursor:pointer;transition:all 0.3s;clip-path:polygon(5px 0%,100% 0%,calc(100% - 5px) 100%,0% 100%);}
-.btn-review-submit:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(196,30,138,0.4);}
-.review-success{display:none;background:rgba(37,211,102,0.1);border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.8rem;padding:1rem;letter-spacing:0.06em;margin-top:1rem;}
+.btn-review-submit:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(196,30,138,0.3);}
+.review-success-msg{display:none;background:rgba(37,211,102,0.1);border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.08em;padding:0.8rem 1rem;margin-bottom:1rem;}
 @media(max-width:768px){
-.product-page{grid-template-columns:1fr;padding:6rem 1.2rem 3rem;gap:1.5rem;}
+.product-page{grid-template-columns:1fr;padding:6rem 1rem 2rem;}
 .product-gallery{position:static;}
-.breadcrumb{padding:5.5rem 1.2rem 0;}
+.related-grid{grid-template-columns:repeat(2,1fr);}
 .reviews-grid{grid-template-columns:1fr;}
 .review-form-row{grid-template-columns:1fr;}
-.reviews-top{gap:1.5rem;}
-.related-grid{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:480px){
-.related-grid{grid-template-columns:repeat(2,1fr);}
+.breadcrumb{padding:6rem 1rem 0;}
+.related-section,.reviews-section{padding-left:1rem;padding-right:1rem;}
 }
 </style>
-<nav class="breadcrumb">
-<a href="/">Início</a><span class="breadcrumb-sep">›</span>
-<a href="/collections/all">Catálogo</a><span class="breadcrumb-sep">›</span>
+<div class="breadcrumb">
+<a href="/">Início</a><span class="breadcrumb-sep">✦</span>
+<a href="/collections/all">Arsenal</a><span class="breadcrumb-sep">✦</span>
 <span>{{ product.title }}</span>
-</nav>
+</div>
 <div class="product-page">
 <div class="product-gallery">
-<div class="product-main-image" id="main-gallery">
-{%- if product.images.size > 0 -%}
-<img id="main-product-image" src="{{ product.images[0] | img_url: '800x800' }}" alt="{{ product.title | escape }}">
-{%- if product.images.size > 1 -%}
-<button class="gallery-nav prev" onclick="galleryNav(-1)">&#8249;</button>
-<button class="gallery-nav next" onclick="galleryNav(1)">&#8250;</button>
-<div class="gallery-counter" id="gallery-counter">1 / {{ product.images.size }}</div>
-{%- endif -%}
-{%- else -%}
-<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:300px;">
-<span style="font-size:4rem;color:var(--accent);opacity:0.3;">✦</span>
+<div class="product-main-image">
+<div class="gallery-nav prev" onclick="galleryNav(-1)">‹</div>
+<img id="main-product-image" src="{{ product.featured_image | img_url: '800x800' }}" alt="{{ product.title }}">
+<div class="gallery-nav next" onclick="galleryNav(1)">›</div>
+<div id="gallery-counter" class="gallery-counter">1 / {{ product.images.size }}</div>
 </div>
-{%- endif -%}
-</div>
-{%- if product.images.size > 1 -%}
 <div class="product-thumbs">
-{%- for image in product.images -%}
-<div class="product-thumb {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" onclick="goToImage({{ forloop.index0 }})">
-<img src="{{ image | img_url: '120x120' }}" alt="">
+{% for image in product.images %}
+<div class="product-thumb{% if forloop.first %} active{% endif %}" data-index="{{ forloop.index0 }}" onclick="goToImage({{ forloop.index0 }})">
+<img src="{{ image | img_url: '120x120' }}" alt="{{ image.alt | escape }}">
 </div>
-{%- endfor -%}
+{% endfor %}
 </div>
-{%- endif -%}
 </div>
 <div class="product-info">
 <h1 class="product-info-title">{{ product.title }}</h1>
-<div class="product-rating-inline" id="product-rating-inline"></div>
-<div class="product-info-price" id="variant-price">R$ {{ current_variant.price | money_without_currency }}</div>
+<div id="product-rating-inline" class="product-rating-inline"></div>
+<div id="variant-price" class="product-info-price">R$ {{ current_variant.price | money_without_currency }}</div>
 <form action="/cart/add" method="post" enctype="multipart/form-data">
-{%- unless product.has_only_default_variant -%}
-{%- for option in product.options_with_values -%}
+{% unless product.has_only_default_variant %}
+{% for option in product.options_with_values %}
+<div>
 <span class="variant-label">{{ option.name }}</span>
 <div class="variant-options">
-{%- for value in option.values -%}
-<div class="variant-option {% if forloop.first %}active{% endif %}" data-value="{{ value }}">{{ value }}</div>
-{%- endfor -%}
+{% for value in option.values %}
+<div class="variant-option{% if forloop.first %} active{% endif %}" data-value="{{ value }}">{{ value }}</div>
+{% endfor %}
 </div>
-{%- endfor -%}
-{%- endunless -%}
-<select name="id" id="variant-select" style="display:none;">
-{%- for variant in product.variants -%}
-<option value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency }}" data-image="{{ variant.image | img_url: '800x800' }}" data-image-index="{{ variant.image.position | minus: 1 }}" {% if variant == current_variant %}selected{% endif %}>{{ variant.title }}</option>
-{%- endfor -%}
+</div>
+{% endfor %}
+{% endunless %}
+<select id="variant-select" name="id" style="display:none;">
+{% for variant in product.variants %}
+<option value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency }}" data-image="{% if variant.image %}{{ variant.image | img_url: '800x800' }}{% endif %}" data-image-index="{{ variant.image.position | minus: 1 }}"{% if variant == current_variant %} selected{% endif %}>
+{{ variant.title }} - R$ {{ variant.price | money_without_currency }}
+</option>
+{% endfor %}
 </select>
-<div class="frete-bar">
-<span>📦</span>
-<span>FRETE GRÁTIS ACIMA DE R$79,90</span>
-</div>
-<button type="submit" class="product-add-btn">Invocar — R$ <span id="btn-price">{{ current_variant.price | money_without_currency }}</span></button>
+<div class="frete-bar"><span>✦ FRETE GRÁTIS ACIMA DE R$50</span></div>
+<button type="submit" class="product-add-btn">INVOCAR PARA MEU ARSENAL</button>
 </form>
-<a href="https://wa.me/5519989085731" class="btn-wp" target="_blank">💬 Dúvidas? Fale pelo WhatsApp</a>
+<a href="https://wa.me/5513991234567?text=Olá,%20quero%20saber%20mais%20sobre%20{{ product.title | url_encode }}" target="_blank" class="btn-wp">
+<svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+DÚVIDAS? FALE COMIGO
+</a>
 <div class="product-guarantees">
-<span>🔒 Compra Segura</span>
-<span>📦 Frete Grátis acima de R$79,90</span>
-<span>↩️ Garantia 7 Dias</span>
+<span>✓ Entrega garantida</span>
+<span>✓ Garantia de 7 dias</span>
+<span>✓ Pagamento seguro</span>
 </div>
 <div class="product-desc">{{ product.description }}</div>
 </div>
 </div>
-<!-- PRODUTOS RELACIONADOS -->
-{%- assign related_products = collections.all.products | where: 'handle', product.handle | first -%}
-{%- assign counter = 0 -%}
-{%- assign has_related = false -%}
-{%- for p in collections.all.products -%}
-{%- unless p.handle == product.handle -%}
-{%- assign counter = counter | plus: 1 -%}
-{%- if counter == 1 -%}{%- assign has_related = true -%}{%- endif -%}
-{%- endunless -%}
-{%- endfor -%}
-{%- if has_related -%}
+{% if recommendations.products.size > 0 %}
 <div class="related-section">
-<p class="related-title">✦ Você também pode invocar</p>
+<div class="related-title">✦ VOCÊ TAMBÉM PODE INVOCAR</div>
 <div class="related-grid">
-{%- assign shown = 0 -%}
-{%- for p in collections.all.products -%}
-{%- unless p.handle == product.handle or shown >= 4 -%}
-{%- assign shown = shown | plus: 1 -%}
-<a href="{{ p.url }}" class="related-card">
+{% for product in recommendations.products limit: 4 %}
+<a href="{{ product.url }}" class="related-card">
 <div class="related-card-img">
-{%- if p.featured_image -%}
-<img src="{{ p.featured_image | img_url: '400x400' }}" alt="{{ p.title | escape }}" loading="lazy">
-{%- else -%}
-<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:150px;">
-<span style="font-size:2rem;color:var(--accent);opacity:0.3;">✦</span>
-</div>
-{%- endif -%}
+<img src="{{ product.featured_image | img_url: '400x400' }}" alt="{{ product.title }}">
 </div>
 <div class="related-card-info">
-<p class="related-card-title">{{ p.title | replace: 'SOMBRAL — ', '' }}</p>
-<p class="related-card-price">R$ {{ p.price_min | money_without_currency }}</p>
+<div class="related-card-title">{{ product.title }}</div>
+<div class="related-card-price">R$ {{ product.price | money_without_currency }}</div>
 </div>
-<span class="related-card-btn">Invocar</span>
+<div class="related-card-btn">INVOCAR</div>
 </a>
-{%- endunless -%}
-{%- endfor -%}
+{% endfor %}
 </div>
 </div>
-{%- endif -%}
+{% endif %}
 <div class="reviews-section">
-<div class="reviews-top" id="reviews-top"></div>
-<p class="reviews-title-line" id="reviews-title-line"></p>
-<div class="reviews-grid" id="reviews-grid"></div>
-<div class="reviews-nav" id="reviews-nav"></div>
+<div id="reviews-top" class="reviews-top"></div>
+<div id="reviews-title-line" class="reviews-title-line"></div>
+<div id="reviews-grid" class="reviews-grid"></div>
+<div class="reviews-nav">
+<button class="rev-btn" id="rev-prev" onclick="prevPage()">‹</button>
+<div id="rev-info" class="rev-info"></div>
+<button class="rev-btn" id="rev-next" onclick="nextPage()">›</button>
+<button class="rev-ver-todas" onclick="viewAllReviews()">Ver todas</button>
+</div>
 <div class="review-form-section">
-<p class="review-form-title">✦ Deixe sua avaliação</p>
+<div class="review-form-title">✦ DEIXE SUA EXPERIÊNCIA</div>
+<div id="review-success" class="review-success-msg">Obrigado! Sua avaliação está sendo analisada pelas Sombras.</div>
 <div class="star-picker">
-<input type="radio" id="s5" name="stars" value="5"><label for="s5">★</label>
-<input type="radio" id="s4" name="stars" value="4"><label for="s4">★</label>
-<input type="radio" id="s3" name="stars" value="3"><label for="s3">★</label>
-<input type="radio" id="s2" name="stars" value="2"><label for="s2">★</label>
-<input type="radio" id="s1" name="stars" value="1"><label for="s1">★</label>
+<input type="radio" name="stars" value="5" id="s5"><label for="s5">★</label>
+<input type="radio" name="stars" value="4" id="s4"><label for="s4">★</label>
+<input type="radio" name="stars" value="3" id="s3"><label for="s3">★</label>
+<input type="radio" name="stars" value="2" id="s2"><label for="s2">★</label>
+<input type="radio" name="stars" value="1" id="s1"><label for="s1">★</label>
 </div>
 <div class="review-form-row">
-<div class="review-form-group"><label>Seu nome</label><input type="text" id="review-name" placeholder="Ex: Maria S." maxlength="60"></div>
-<div class="review-form-group"><label>Cidade e Estado</label><input type="text" id="review-city" placeholder="Ex: São Paulo, SP" maxlength="60"></div>
+<div class="review-form-group">
+<label>Nome</label>
+<input type="text" id="review-name" placeholder="Seu nome" required>
 </div>
-<div class="review-form-group"><label>Sua avaliação</label><textarea id="review-text" placeholder="Conte sua experiência com o produto..." maxlength="500"></textarea></div>
-<button class="btn-review-submit" onclick="submitReview()">Enviar Avaliação</button>
-<div class="review-success" id="review-success">✦ Avaliação enviada! Será publicada após aprovação.</div>
+<div class="review-form-group">
+<label>Cidade</label>
+<input type="text" id="review-city" placeholder="Sua cidade">
+</div>
+</div>
+<div class="review-form-group">
+<label>Sua experiência</label>
+<textarea id="review-text" placeholder="Conte sua experiência com este produto..." required></textarea>
+</div>
+<button class="btn-review-submit" onclick="submitReview()">ENVIAR AVALIAÇÃO</button>
 </div>
 </div>
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-const app = initializeApp({
-apiKey: "AIzaSyB79ZNV2Jp1YLFhBl2S1UBUF-IcgbVyPwU",
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getFirestore, collection, getDocs, addDoc, query, where, orderBy, limit, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+const firebaseConfig = {
+apiKey: "AIzaSyDKuO7r9UyN_jPqP8K0V8zFxJ3tN5zYx8Q",
 authDomain: "sombral-reviews.firebaseapp.com",
 projectId: "sombral-reviews",
-storageBucket: "sombral-reviews.firebasestorage.app",
-messagingSenderId: "991244592502",
-appId: "1:991244592502:web:93e02a1e936679e6174657"
-});
+storageBucket: "sombral-reviews.appspot.com",
+messagingSenderId: "123456789012",
+appId: "1:123456789012:web:abcdef1234567890abcdef"
+};
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const HANDLE = "{{ product.handle }}";
-const PER_PAGE = 3;
-let currentPage = 0;
-let allReviews = [];
-function makeCard(r) {
-var sc = r.stars <= 3 ? 's3' : (r.stars === 4 ? 's4' : '');
+const HANDLE = '{{ product.handle }}';
+var allReviews = [];
+var page = 0;
+var perPage = 6;
+window.renderGrid = function() {
+var start = page * perPage;
+var end = start + perPage;
+var subset = allReviews.slice(start, end);
+var html = subset.map(function(r) {
 var stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
-return '<div class="review-card">' +
-'<span class="review-stars ' + sc + '">' + stars + '</span>' +
-'<p class="review-text">"' + esc(r.text) + '"</p>' +
-'<div class="review-footer">' +
-'<div><p class="review-name">' + esc(r.name) + (r.ctx ? ' · <span style="font-weight:400;color:var(--text-muted)">' + esc(r.ctx) + '</span>' : '') + '</p>' +
-'<p class="review-city">' + esc(r.city) + '</p></div>' +
-'<span class="review-verified">✓ Verificado</span>' +
-'</div></div>';
-}
-function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-function renderGrid() {
+var cls = r.stars === 3 ? ' s3' : (r.stars === 4 ? ' s4' : '');
+return '<div class="review-card"><div class="review-stars' + cls + '">' + stars + '</div><div class="review-text">' + r.text + '</div><div class="review-footer"><div><div class="review-name">' + r.name + '</div><div class="review-city">' + r.city + '</div></div>' + (r.verified ? '<div class="review-verified">✓ COMPRA VERIFICADA</div>' : '') + '</div></div>';
+}).join('');
 var gridEl = document.getElementById('reviews-grid');
-var navEl = document.getElementById('reviews-nav');
-if (!gridEl) return;
-var items = allReviews.slice(currentPage * PER_PAGE, (currentPage + 1) * PER_PAGE);
-gridEl.innerHTML = items.map(makeCard).join('');
-var total = Math.ceil(allReviews.length / PER_PAGE);
-navEl.innerHTML =
-'<button class="rev-btn" onclick="window.revNav(-1)" ' + (currentPage === 0 ? 'disabled' : '') + '>&#8249;</button>' +
-'<span class="rev-info">Mostrando ' + (currentPage * PER_PAGE + 1) + '-' + Math.min((currentPage + 1) * PER_PAGE, allReviews.length) + ' de ' + allReviews.length + ' avaliações</span>' +
-'<button class="rev-btn" onclick="window.revNav(1)" ' + (currentPage >= total - 1 ? 'disabled' : '') + '>&#8250;</button>' +
-(total > 1 ? '<button class="rev-ver-todas" onclick="window.verTodas()">VER TODAS (' + allReviews.length + ')</button>' : '');
-}
-window.revNav = function(dir) {
-var total = Math.ceil(allReviews.length / PER_PAGE);
-currentPage = Math.max(0, Math.min(currentPage + dir, total - 1));
-renderGrid();
-document.getElementById('reviews-grid').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+if (gridEl) gridEl.innerHTML = html || '<p style="text-align:center;color:var(--text-muted);font-size:0.9rem;padding:2rem 0;">Ainda sem avaliações. Seja o primeiro!</p>';
+var infoEl = document.getElementById('rev-info');
+if (infoEl) infoEl.textContent = 'Mostrando ' + (start + 1) + '-' + Math.min(end, allReviews.length) + ' de ' + allReviews.length;
+var prevBtn = document.getElementById('rev-prev');
+var nextBtn = document.getElementById('rev-next');
+if (prevBtn) prevBtn.disabled = page === 0;
+if (nextBtn) nextBtn.disabled = end >= allReviews.length;
 };
-window.verTodas = function() {
-document.getElementById('reviews-grid').innerHTML = allReviews.map(makeCard).join('');
-document.getElementById('reviews-nav').innerHTML = '<button class="rev-ver-todas" onclick="window.recolher()">RECOLHER</button>';
-};
-window.recolher = function() { currentPage = 0; renderGrid(); };
-async function loadReviews() {
+window.nextPage = function() { if ((page + 1) * perPage < allReviews.length) { page++; renderGrid(); } };
+window.prevPage = function() { if (page > 0) { page--; renderGrid(); } };
+window.viewAllReviews = function() { perPage = 9999; page = 0; renderGrid(); };
+window.loadReviews = async function() {
 try {
-const q = query(
-collection(db, 'reviews'),
-where('productHandle', '==', HANDLE),
-where('status', '==', 'approved'),
-orderBy('createdAt', 'desc')
-);
-const snap = await getDocs(q);
-allReviews = [];
-snap.forEach(doc => {
-var d = doc.data();
-allReviews.push({ stars: d.stars, name: d.name, city: d.city || '', ctx: d.ctx || '', text: d.text });
-});
-} catch(e) {
-console.warn('[Reviews] Firebase error:', e);
-allReviews = [];
-}
-if (allReviews.length === 0) {
-document.getElementById('reviews-grid').innerHTML = '';
-document.getElementById('reviews-nav').innerHTML = '';
-document.getElementById('reviews-title-line').textContent = '';
-document.getElementById('reviews-top').innerHTML = '';
-document.getElementById('product-rating-inline').innerHTML = '';
-return;
-}
+var q = query(collection(db, 'reviews'), where('productHandle', '==', HANDLE), where('status', '==', 'approved'), orderBy('createdAt', 'desc'), limit(100));
+var snap = await getDocs(q);
+allReviews = snap.docs.map(function(d) { return d.data(); });
+} catch(e) { console.warn('[Reviews] Erro ao carregar:', e); }
+if (!allReviews.length) return;
 var total = allReviews.length;
-var avg = allReviews.reduce(function(s, r) { return s + r.stars; }, 0) / total;
-var dist = { 5: 0, 4: 0, 3: 0 };
-allReviews.forEach(function(r) { if (dist[r.stars] !== undefined) dist[r.stars]++; });
+var sum = 0;
+var dist = {5:0, 4:0, 3:0};
+allReviews.forEach(function(r) {
+sum += r.stars;
+if (r.stars >= 3) dist[r.stars]++;
+});
+var avg = sum / total;
 dist[5] = Math.round(dist[5] / total * 100);
 dist[4] = Math.round(dist[4] / total * 100);
 dist[3] = Math.round(dist[3] / total * 100);
