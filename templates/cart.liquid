@@ -1,31 +1,94 @@
+<style>
+.frete-progress-bar {
+background: rgba(201,168,76,0.06);
+border: 1px solid rgba(201,168,76,0.2);
+padding: 1rem 1.4rem;
+margin-bottom: 1.5rem;
+}
+.frete-progress-text {
+font-family: 'Cinzel', serif;
+font-size: 0.75rem;
+letter-spacing: 0.1em;
+color: #c9a84c;
+margin-bottom: 0.6rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.frete-progress-text span.frete-label { color: var(--text-muted); }
+.frete-track {
+width: 100%;
+height: 5px;
+background: var(--border);
+border-radius: 3px;
+overflow: hidden;
+}
+.frete-fill {
+height: 100%;
+background: linear-gradient(90deg, #7B2FBE, #c9a84c);
+border-radius: 3px;
+transition: width 0.4s ease;
+}
+.frete-conquistado {
+color: #25d366 !important;
+}
+.frete-conquistado-fill {
+background: linear-gradient(90deg, #1a5c2a, #25d366) !important;
+}
+</style>
 <div class="cart-page">
-  <h1 class="section-title">Seu Ritual de Compra</h1>
-  {%- if cart.item_count > 0 -%}
-    {%- form 'cart', cart -%}
-      {%- for item in cart.items -%}
-        <div class="cart-item">
-          <img src="{{ item.image | img_url: '120x' }}" alt="{{ item.title }}">
-          <div class="cart-item-info">
-            <p class="cart-item-title">{{ item.title }}</p>
-            <p class="cart-item-variant">{{ item.variant.title }}</p>
-            <p class="cart-item-price">{{ item.price | money }}</p>
-          </div>
-          <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" class="qty-input">
-          <a href="{{ item.url_to_remove }}" class="remove-item">✕</a>
-        </div>
-      {%- endfor -%}
-      <div class="cart-footer">
-        <div class="cart-total">
-          <span>Total:</span>
-          <span class="total-price">{{ cart.total_price | money }}</span>
-        </div>
-        <button type="submit" name="checkout" class="btn-invocar">Finalizar Ritual</button>
-      </div>
-    {%- endform -%}
-  {%- else -%}
-    <div class="cart-empty">
-      <p>Seu altar está vazio.</p>
-      <a href="/collections/all" class="btn-invocar">Explorar o Arsenal</a>
-    </div>
-  {%- endif -%}
+<h1 class="section-title">Seu Ritual de Compra</h1>
+{%- if cart.item_count > 0 -%}
+<!-- BARRA DE PROGRESSO FRETE GRÁTIS -->
+{%- assign frete_minimo = 7990 -%}
+{%- assign total_centavos = cart.total_price -%}
+{%- assign falta = frete_minimo | minus: total_centavos -%}
+{%- assign progresso = total_centavos | times: 100 | divided_by: frete_minimo -%}
+{%- if progresso > 100 -%}{%- assign progresso = 100 -%}{%- endif -%}
+<div class="frete-progress-bar">
+{%- if falta > 0 -%}
+<div class="frete-progress-text">
+<span class="frete-label">📦 Frete Grátis</span>
+<span>Falta <strong>{{ falta | money }}</strong></span>
+</div>
+<div class="frete-track">
+<div class="frete-fill" style="width: {{ progresso }}%"></div>
+</div>
+{%- else -%}
+<div class="frete-progress-text frete-conquistado">
+<span>✦ Parabéns! Você ganhou Frete Grátis!</span>
+<span>🎉</span>
+</div>
+<div class="frete-track">
+<div class="frete-fill frete-conquistado-fill" style="width: 100%"></div>
+</div>
+{%- endif -%}
+</div>
+{%- form 'cart', cart -%}
+{%- for item in cart.items -%}
+<div class="cart-item">
+<img src="{{ item.image | img_url: '120x' }}" alt="{{ item.title }}">
+<div class="cart-item-info">
+<p class="cart-item-title">{{ item.title }}</p>
+<p class="cart-item-variant">{{ item.variant.title }}</p>
+<p class="cart-item-price">{{ item.price | money }}</p>
+</div>
+<input type="number" name="updates[]" value="{{ item.quantity }}" min="0" class="qty-input">
+<a href="{{ item.url_to_remove }}" class="remove-item">✕</a>
+</div>
+{%- endfor -%}
+<div class="cart-footer">
+<div class="cart-total">
+<span>Total:</span>
+<span class="total-price">{{ cart.total_price | money }}</span>
+</div>
+<button type="submit" name="checkout" class="btn-invocar">Finalizar Ritual</button>
+</div>
+{%- endform -%}
+{%- else -%}
+<div class="cart-empty">
+<p>Seu altar está vazio.</p>
+<a href="/collections/all" class="btn-invocar">Explorar o Arsenal</a>
+</div>
+{%- endif -%}
 </div>
