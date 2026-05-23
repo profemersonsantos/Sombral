@@ -1,4 +1,5 @@
 {% assign current_variant = product.selected_or_first_available_variant %}
+{% assign yt_id = product.metafields.custom.youtube_video_id %}
 <style>
 .product-page{display:grid;grid-template-columns:1fr 1fr;gap:3rem;max-width:1100px;margin:0 auto;padding:8rem 2rem 4rem;align-items:start;}
 .product-gallery{position:sticky;top:7rem;}
@@ -40,6 +41,10 @@
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
+.product-video-section{max-width:1100px;margin:0 auto;padding:2rem 2rem 0;}
+.product-video-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
+.product-video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border:1px solid var(--border);}
+.product-video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
 /* RELACIONADOS */
 .related-section{max-width:1100px;margin:0 auto;padding:2rem 2rem 0;}
 .related-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
@@ -107,7 +112,7 @@
 .reviews-grid{grid-template-columns:1fr;}
 .review-form-row{grid-template-columns:1fr;}
 .breadcrumb{padding:6rem 1rem 0;}
-.related-section,.reviews-section{padding-left:1rem;padding-right:1rem;}
+.related-section,.reviews-section,.product-video-section{padding-left:1rem;padding-right:1rem;}
 }
 </style>
 <div class="breadcrumb">
@@ -177,6 +182,20 @@ DÚVIDAS? FALE COMIGO
 <div class="product-desc">{{ product.description }}</div>
 </div>
 </div>
+{% if yt_id != blank %}
+<div class="product-video-section">
+<div class="product-video-title">✦ VEJA ANTES DE INVOCAR</div>
+<div class="product-video-wrap">
+<iframe
+src="https://www.youtube.com/embed/{{ yt_id }}?rel=0&modestbranding=1&color=white"
+title="Vídeo do produto {{ product.title }}"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+allowfullscreen
+loading="lazy">
+</iframe>
+</div>
+</div>
+{% endif %}
 {% assign related_collection = product.collections | first %}
 {% if related_collection %}
 {% assign related_products = related_collection.products | where: 'available', true %}
