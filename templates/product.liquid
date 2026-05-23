@@ -106,6 +106,8 @@
 .btn-review-submit:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(196,30,138,0.3);}
 .review-success-msg{display:none;background:rgba(37,211,102,0.1);border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.08em;padding:0.8rem 1rem;margin-bottom:1rem;}
 @media(max-width:768px){
+.product-main-image img{mix-blend-mode:normal;}
+.product-thumb img{mix-blend-mode:normal;}
 .product-page{grid-template-columns:1fr;padding:6rem 1rem 2rem;}
 .product-gallery{position:static;}
 .related-grid{grid-template-columns:repeat(2,1fr);}
@@ -187,11 +189,11 @@ DÚVIDAS? FALE COMIGO
 <div class="product-video-title">✦ VEJA ANTES DE INVOCAR</div>
 <div class="product-video-wrap">
 <iframe
-src="https://www.youtube.com/embed/{{ yt_id }}?rel=0&modestbranding=1&color=white"
-title="Vídeo do produto {{ product.title }}"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-allowfullscreen
-loading="lazy">
+  src="https://www.youtube.com/embed/{{ yt_id }}?rel=0&modestbranding=1&color=white"
+  title="Vídeo do produto {{ product.title }}"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+  loading="lazy">
 </iframe>
 </div>
 </div>
@@ -412,7 +414,7 @@ var price = matched.dataset.price;
 if (price) { if(priceEl)priceEl.textContent='R$ '+price; if(btnPr)btnPr.textContent=price; }
 var varImgSrc = matched.dataset.image;
 if (varImgSrc && varImgSrc !== 'null' && varImgSrc !== '') {
-var norm = function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''};
+var norm = function(u){return u?u.split('?')[0].replace(/_\d+x[\d]*\./,'.'):''}; 
 var target = norm(varImgSrc);
 var found = -1;
 for (var i = 0; i < images.length; i++){if(norm(images[i].src)===target){found=i;break;}}
