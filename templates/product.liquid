@@ -29,13 +29,18 @@
 .variant-option.active{background:rgba(123,47,190,0.15);border-color:var(--accent);color:var(--text);}
 .frete-bar{display:flex;align-items:center;justify-content:center;gap:0.5rem;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);padding:0.55rem 1rem;margin-bottom:0.5rem;}
 .frete-bar span{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;color:#c9a84c;}
+.delivery-estimate{display:flex;align-items:center;gap:0.7rem;background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.2);padding:0.6rem 1rem;margin-bottom:0.5rem;}
+.delivery-icon{font-size:1.2rem;line-height:1;}
+.delivery-info{display:flex;flex-direction:column;gap:0.1rem;}
+.delivery-label{font-family:'Cinzel',serif;font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(37,211,102,0.7);}
+.delivery-date{font-family:'Cinzel',serif;font-size:0.78rem;font-weight:600;color:#25d366;letter-spacing:0.06em;}
 .product-add-btn{width:100%;background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:1rem;border:none;cursor:pointer;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);transition:all 0.3s;box-shadow:0 0 20px rgba(196,30,138,0.3);}
 .product-add-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(196,30,138,0.5);}
 .btn-wp{display:flex;align-items:center;justify-content:center;gap:0.5rem;background:transparent;border:1px solid #25d366;color:#25d366;font-family:'Cinzel',serif;font-size:0.78rem;letter-spacing:0.1em;padding:0.8rem;text-decoration:none;transition:all 0.2s;}
 .btn-wp:hover{background:rgba(37,211,102,0.1);}
 .product-guarantees{display:flex;gap:1rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
 .product-desc{color:var(--text-muted);font-size:0.88rem;line-height:1.7;padding-top:1rem;border-top:1px solid var(--border);}
-/* RELACIONADOS - CORREÇÃO APLICADA */
+/* RELACIONADOS */
 .related-section{max-width:1100px;margin:0 auto;padding:2rem 2rem 0;}
 .related-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;color:var(--text);margin-bottom:1.5rem;padding-bottom:0.8rem;border-bottom:1px solid var(--border);}
 .related-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
@@ -151,6 +156,13 @@
 {% endfor %}
 </select>
 <div class="frete-bar"><span>✦ FRETE GRÁTIS ACIMA DE R$50</span></div>
+<div class="delivery-estimate" id="delivery-estimate">
+<div class="delivery-icon">🚚</div>
+<div class="delivery-info">
+<span class="delivery-label">ESTIMATIVA DE ENTREGA</span>
+<span class="delivery-date" id="delivery-date-text">Calculando...</span>
+</div>
+</div>
 <button type="submit" class="product-add-btn">INVOCAR PARA MEU ARSENAL</button>
 </form>
 <a href="https://wa.me/5513991234567?text=Olá,%20quero%20saber%20mais%20sobre%20{{ product.title | url_encode }}" target="_blank" class="btn-wp">
@@ -335,6 +347,22 @@ var msg = document.getElementById('review-success');
 msg.style.display = 'block';
 setTimeout(function() { msg.style.display = 'none'; }, 4000);
 };
+// Delivery estimate
+(function(){
+var today=new Date();
+var day=today.getDay();
+var hour=today.getHours();
+function addBD(date,days){var d=new Date(date);var a=0;while(a<days){d.setDate(d.getDate()+1);var w=d.getDay();if(w!==0&&w!==6)a++;}return d;}
+var mn=5,mx=8;
+if(hour>=14||day===0||day===6){mn++;mx++;}
+var d1=addBD(today,mn);
+var d2=addBD(today,mx);
+var mo=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var s1=d1.getDate()+' '+mo[d1.getMonth()];
+var s2=d2.getDate()+' '+mo[d2.getMonth()];
+var el=document.getElementById('delivery-date-text');
+if(el)el.textContent='Entre '+s1+' e '+s2;
+})();
 (function() {
 var images = [{%- for image in product.images -%}{src:"{{ image | img_url: '800x800' }}",alt:"{{ image.alt | escape }}"}{% unless forloop.last %},{% endunless %}{%- endfor -%}];
 var currentIndex = 0;
