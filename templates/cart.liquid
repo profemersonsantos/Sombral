@@ -1,94 +1,149 @@
+{% assign free_shipping_threshold = 8000 %}
+{% assign cart_total = cart.total_price %}
+{% assign remaining = free_shipping_threshold | minus: cart_total %}
 <style>
-.frete-progress-bar {
-background: rgba(201,168,76,0.06);
-border: 1px solid rgba(201,168,76,0.2);
-padding: 1rem 1.4rem;
-margin-bottom: 1.5rem;
-}
-.frete-progress-text {
-font-family: 'Cinzel', serif;
-font-size: 0.75rem;
-letter-spacing: 0.1em;
-color: #c9a84c;
-margin-bottom: 0.6rem;
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-.frete-progress-text span.frete-label { color: var(--text-muted); }
-.frete-track {
-width: 100%;
-height: 5px;
-background: var(--border);
-border-radius: 3px;
-overflow: hidden;
-}
-.frete-fill {
-height: 100%;
-background: linear-gradient(90deg, #7B2FBE, #c9a84c);
-border-radius: 3px;
-transition: width 0.4s ease;
-}
-.frete-conquistado {
-color: #25d366 !important;
-}
-.frete-conquistado-fill {
-background: linear-gradient(90deg, #1a5c2a, #25d366) !important;
+.cart-page{max-width:760px;margin:0 auto;padding:8rem 2rem 4rem;}
+.cart-title{font-family:'Cinzel',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:700;text-align:center;margin-bottom:2rem;letter-spacing:0.06em;}
+.frete-progress-wrap{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);padding:0.8rem 1.2rem;margin-bottom:1.5rem;}
+.frete-progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;}
+.frete-progress-label{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;color:#c9a84c;display:flex;align-items:center;gap:0.4rem;}
+.frete-progress-remaining{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text-muted);}
+.frete-progress-bar{width:100%;height:6px;background:rgba(201,168,76,0.15);border-radius:3px;overflow:hidden;}
+.frete-progress-fill{height:100%;background:linear-gradient(90deg,#8b0050,#c9a84c);border-radius:3px;transition:width 0.3s ease;}
+.frete-achieved{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:#25d366;text-align:center;padding:0.5rem;background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.2);}
+.cart-items{margin-bottom:1.5rem;}
+.cart-item{display:grid;grid-template-columns:80px 1fr auto;gap:1rem;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border);}
+.cart-item:last-child{border-bottom:none;}
+.cart-item-img{width:80px;height:80px;object-fit:contain;background:transparent;}
+.cart-item-title{font-family:'Cinzel',serif;font-size:0.82rem;font-weight:600;letter-spacing:0.04em;margin-bottom:0.3rem;}
+.cart-item-variant{font-size:0.75rem;color:var(--text-muted);margin-bottom:0.5rem;}
+.cart-item-price{font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;color:var(--gold);}
+.qty-wrap{display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem;}
+.qty-btn{width:26px;height:26px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.qty-btn:hover{border-color:var(--accent);}
+.qty-num{font-family:'Cinzel',serif;font-size:0.82rem;min-width:20px;text-align:center;}
+.cart-item-remove{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:0.3rem;transition:color 0.2s;}
+.cart-item-remove:hover{color:#E24B4A;}
+.upsell-section{background:var(--bg-card);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1.2rem;margin-bottom:1.5rem;}
+.upsell-title{font-family:'Cinzel',serif;font-size:0.72rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;}
+.upsell-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;}
+.upsell-card{background:var(--bg);border:1px solid var(--border);padding:0.7rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+.upsell-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.upsell-card img{width:100%;aspect-ratio:1/1;object-fit:contain;margin-bottom:0.4rem;}
+.upsell-card-title{font-family:'Cinzel',serif;font-size:0.68rem;font-weight:600;letter-spacing:0.03em;line-height:1.3;margin-bottom:0.3rem;color:var(--text);}
+.upsell-card-price{font-family:'Cinzel',serif;font-size:0.78rem;font-weight:700;color:var(--gold);margin-bottom:0.5rem;}
+.upsell-add-btn{width:100%;background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:700;letter-spacing:0.1em;padding:0.45rem;border:none;cursor:pointer;transition:all 0.2s;}
+.upsell-add-btn:hover{opacity:0.85;}
+.cart-summary{background:var(--bg-card);border:1px solid var(--border);padding:1.2rem;margin-bottom:1rem;}
+.cart-summary-row{display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;font-size:0.85rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.04em;}
+.cart-summary-row.total{font-size:1.1rem;font-weight:700;color:var(--text);border-top:1px solid var(--border);margin-top:0.4rem;padding-top:0.8rem;}
+.cart-summary-row.total span:last-child{color:var(--gold);}
+.installment-hint{font-size:0.72rem;color:var(--text-muted);text-align:center;margin-bottom:1rem;font-family:'Cinzel',serif;letter-spacing:0.04em;}
+.installment-hint strong{color:var(--gold);}
+.cart-checkout-btn{display:block;width:100%;background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:1.1rem;border:none;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);transition:all 0.3s;box-shadow:0 0 20px rgba(196,30,138,0.3);text-align:center;text-decoration:none;}
+.cart-checkout-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(196,30,138,0.5);}
+.cart-guarantees{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;padding-top:1rem;font-size:0.7rem;color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:0.05em;}
+.cart-empty{text-align:center;padding:4rem 0;}
+.cart-empty-title{font-family:'Cinzel',serif;font-size:1.2rem;font-weight:700;margin-bottom:1rem;}
+.cart-empty-sub{color:var(--text-muted);font-size:0.88rem;margin-bottom:2rem;}
+.cart-empty-btn{display:inline-block;background:linear-gradient(135deg,#8b0050,var(--cta));color:#fff;font-family:'Cinzel',serif;font-size:0.8rem;font-weight:700;letter-spacing:0.12em;padding:0.8rem 2rem;text-decoration:none;clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);}
+@media(max-width:600px){
+.cart-page{padding:6rem 1rem 3rem;}
+.upsell-grid{grid-template-columns:repeat(2,1fr);}
+.cart-item{grid-template-columns:64px 1fr auto;}
+.cart-item-img{width:64px;height:64px;}
 }
 </style>
 <div class="cart-page">
-<h1 class="section-title">Seu Ritual de Compra</h1>
-{%- if cart.item_count > 0 -%}
-<!-- BARRA DE PROGRESSO FRETE GRÁTIS -->
-{%- assign frete_minimo = 7990 -%}
-{%- assign total_centavos = cart.total_price -%}
-{%- assign falta = frete_minimo | minus: total_centavos -%}
-{%- assign progresso = total_centavos | times: 100 | divided_by: frete_minimo -%}
-{%- if progresso > 100 -%}{%- assign progresso = 100 -%}{%- endif -%}
-<div class="frete-progress-bar">
-{%- if falta > 0 -%}
-<div class="frete-progress-text">
-<span class="frete-label">📦 Frete Grátis</span>
-<span>Falta <strong>{{ falta | money }}</strong></span>
-</div>
-<div class="frete-track">
-<div class="frete-fill" style="width: {{ progresso }}%"></div>
-</div>
-{%- else -%}
-<div class="frete-progress-text frete-conquistado">
-<span>✦ Parabéns! Você ganhou Frete Grátis!</span>
-<span>🎉</span>
-</div>
-<div class="frete-track">
-<div class="frete-fill frete-conquistado-fill" style="width: 100%"></div>
-</div>
-{%- endif -%}
-</div>
-{%- form 'cart', cart -%}
-{%- for item in cart.items -%}
-<div class="cart-item">
-<img src="{{ item.image | img_url: '120x' }}" alt="{{ item.title }}">
-<div class="cart-item-info">
-<p class="cart-item-title">{{ item.title }}</p>
-<p class="cart-item-variant">{{ item.variant.title }}</p>
-<p class="cart-item-price">{{ item.price | money }}</p>
-</div>
-<input type="number" name="updates[]" value="{{ item.quantity }}" min="0" class="qty-input">
-<a href="{{ item.url_to_remove }}" class="remove-item">✕</a>
-</div>
-{%- endfor -%}
-<div class="cart-footer">
-<div class="cart-total">
-<span>Total:</span>
-<span class="total-price">{{ cart.total_price | money }}</span>
-</div>
-<button type="submit" name="checkout" class="btn-invocar">Finalizar Ritual</button>
-</div>
-{%- endform -%}
-{%- else -%}
+{% if cart.item_count == 0 %}
 <div class="cart-empty">
-<p>Seu altar está vazio.</p>
-<a href="/collections/all" class="btn-invocar">Explorar o Arsenal</a>
+<div class="cart-empty-title">Seu arsenal está vazio</div>
+<div class="cart-empty-sub">Os rituais aguardam. Invoque seus itens.</div>
+<a href="/collections/all" class="cart-empty-btn">EXPLORAR O ARSENAL</a>
 </div>
-{%- endif -%}
+{% else %}
+<h1 class="cart-title">✦ Seu Ritual de Compra</h1>
+{% if remaining > 0 %}
+{% assign pct = cart_total | times: 100 | divided_by: free_shipping_threshold %}
+{% if pct > 100 %}{% assign pct = 100 %}{% endif %}
+<div class="frete-progress-wrap">
+<div class="frete-progress-top">
+<div class="frete-progress-label">🔥 FRETE GRÁTIS</div>
+<div class="frete-progress-remaining">Falta {{ remaining | money }} para ganhar</div>
+</div>
+<div class="frete-progress-bar">
+<div class="frete-progress-fill" style="width:{{ pct }}%;"></div>
+</div>
+</div>
+{% else %}
+<div class="frete-achieved">✦ PARABÉNS — VOCÊ GANHOU FRETE GRÁTIS!</div>
+{% endif %}
+<div class="cart-items">
+{% for item in cart.items %}
+<div class="cart-item">
+<img class="cart-item-img" src="{{ item.image | img_url: '160x160' }}" alt="{{ item.title }}">
+<div>
+<div class="cart-item-title">{{ item.product.title }}</div>
+{% unless item.variant.title == 'Default Title' %}
+<div class="cart-item-variant">{{ item.variant.title }}</div>
+{% endunless %}
+<div class="cart-item-price">{{ item.final_line_price | money }}</div>
+<div class="qty-wrap">
+<a href="/cart/change?id={{ item.key }}&quantity={{ item.quantity | minus: 1 }}" class="qty-btn">−</a>
+<span class="qty-num">{{ item.quantity }}</span>
+<a href="/cart/change?id={{ item.key }}&quantity={{ item.quantity | plus: 1 }}" class="qty-btn">+</a>
+</div>
+</div>
+<a href="/cart/change?id={{ item.key }}&quantity=0" class="cart-item-remove">✕</a>
+</div>
+{% endfor %}
+</div>
+{% if remaining > 0 and remaining < 5000 %}
+<div class="upsell-section">
+<div class="upsell-title">✦ adicione mais {{ remaining | money }} e ganhe frete grátis</div>
+<div class="upsell-grid">
+<div class="upsell-card">
+<img src="https://cdn.shopify.com/s/files/1/0982/7686/8401/files/2bf8f941-ce71-4ebc-a3da-4c23db115258.png" alt="Pulseira do Escudo Negro">
+<div class="upsell-card-title">Pulseira do Escudo Negro</div>
+<div class="upsell-card-price">R$ 39,90</div>
+<a href="/cart/add?id=54223136751921&quantity=1" class="upsell-add-btn">+ INVOCAR</a>
+</div>
+<div class="upsell-card">
+<img src="https://cdn.shopify.com/s/files/1/0982/7686/8401/files/a63fc26a-abc4-4713-b9cf-a3a2902bdf97.png" alt="Grimório das Bruxas">
+<div class="upsell-card-title">Grimório das Bruxas</div>
+<div class="upsell-card-price">R$ 49,25</div>
+<a href="/cart/add?id=54223137014065&quantity=1" class="upsell-add-btn">+ INVOCAR</a>
+</div>
+<div class="upsell-card">
+<img src="https://cdn.shopify.com/s/files/1/0982/7686/8401/files/1_838edf48-3b85-4519-9d88-5bc5a190c426.png" alt="Gargantilha das Sombras">
+<div class="upsell-card-title">Gargantilha das Sombras</div>
+<div class="upsell-card-price">R$ 44,90</div>
+<a href="/cart/add?id=54223136293169&quantity=1" class="upsell-add-btn">+ INVOCAR</a>
+</div>
+</div>
+</div>
+{% endif %}
+<div class="cart-summary">
+<div class="cart-summary-row">
+<span>Subtotal</span>
+<span>{{ cart.total_price | money }}</span>
+</div>
+<div class="cart-summary-row">
+<span>Frete</span>
+<span>{% if remaining <= 0 %}Grátis{% else %}Calculado no checkout{% endif %}</span>
+</div>
+<div class="cart-summary-row total">
+<span>Total</span>
+<span>{{ cart.total_price | money }}</span>
+</div>
+</div>
+{% assign installment = cart.total_price | divided_by: 3 %}
+<div class="installment-hint">ou <strong>3x de {{ installment | money }} sem juros</strong> no cartão</div>
+<a href="/checkout" class="cart-checkout-btn">FINALIZAR RITUAL</a>
+<div class="cart-guarantees">
+<span>✓ Pagamento seguro</span>
+<span>✓ Garantia de 7 dias</span>
+<span>✓ Entrega rastreada</span>
+</div>
+{% endif %}
 </div>
