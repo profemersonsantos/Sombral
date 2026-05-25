@@ -11,12 +11,12 @@
 </nav>
 <div class="header-actions">
 {% if customer %}
-<a href="/account" class="btn-conta" title="Minha conta" aria-label="Minha conta">
-<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+<a href="/account" class="btn-conta" title="Minha conta — {{ customer.first_name }}" aria-label="Minha conta">
+<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
 </a>
 {% else %}
-<a href="/account/login" class="btn-conta" title="Entrar" aria-label="Entrar na conta">
-<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+<a href="/account/login" class="btn-conta" title="Entrar na conta" aria-label="Entrar na conta">
+<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
 </a>
 {% endif %}
 <a href="/cart" class="cart-link">
@@ -41,8 +41,11 @@
 <a href="/cart">🛒 Carrinho ({{ cart.item_count }})</a>
 </div>
 <style>
-.btn-conta{display:flex;align-items:center;color:var(--text-muted);transition:color 0.2s;padding:2px;}
+.header-actions{display:flex;align-items:center;gap:0.6rem;}
+.btn-conta{display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:color 0.2s;width:32px;height:32px;}
 .btn-conta:hover{color:var(--gold);}
+.cart-link{display:flex;align-items:center;gap:0.3rem;font-size:0.9rem;color:var(--text-muted);transition:color 0.2s;}
+.cart-link:hover{color:var(--text);}
 .nav-rastrear{position:relative;}
 .nav-rastrear::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform 0.2s;transform-origin:left;}
 .nav-rastrear:hover::after{transform:scaleX(1);}
