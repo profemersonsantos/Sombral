@@ -7,9 +7,18 @@
 <a href="/collections/decoracao-das-sombras">Decoração</a>
 <a href="/collections/identidade-dark">Identidade</a>
 <a href="/collections/entrada-ate-r-51" style="color:#25d366;font-weight:700;">✦ Até R$50</a>
-<a href="/pages/rastrear-pedido" style="color:var(--gold);">📦 Rastrear</a>
+<a href="/apps/track123" style="color:var(--gold);" class="nav-rastrear">🔮 Rastrear Pedido</a>
 </nav>
 <div class="header-actions">
+{% if customer %}
+<a href="/account" class="btn-conta" title="Minha conta" aria-label="Minha conta">
+<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+</a>
+{% else %}
+<a href="/account/login" class="btn-conta" title="Entrar" aria-label="Entrar na conta">
+<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+</a>
+{% endif %}
 <a href="/cart" class="cart-link">
 🛒 <span class="cart-count">{{ cart.item_count }}</span>
 </a>
@@ -22,7 +31,20 @@
 <a href="/collections/decoracao-das-sombras">Decoração</a>
 <a href="/collections/identidade-dark">Identidade</a>
 <a href="/collections/entrada-ate-r-51" style="color:#25d366;font-weight:700;">✦ Até R$50</a>
-<a href="/pages/rastrear-pedido" style="color:var(--gold);">📦 Rastrear Pedido</a>
-<a href="/cart">Carrinho ({{ cart.item_count }})</a>
+<a href="/apps/track123" style="color:var(--gold);">🔮 Rastrear Pedido</a>
+{% if customer %}
+<a href="/account">👤 Minha Conta</a>
+<a href="/account/logout">Sair</a>
+{% else %}
+<a href="/account/login">👤 Entrar / Cadastrar</a>
+{% endif %}
+<a href="/cart">🛒 Carrinho ({{ cart.item_count }})</a>
 </div>
+<style>
+.btn-conta{display:flex;align-items:center;color:var(--text-muted);transition:color 0.2s;padding:2px;}
+.btn-conta:hover{color:var(--gold);}
+.nav-rastrear{position:relative;}
+.nav-rastrear::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform 0.2s;transform-origin:left;}
+.nav-rastrear:hover::after{transform:scaleX(1);}
+</style>
 </header>
